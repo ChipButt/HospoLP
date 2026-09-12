@@ -1,0 +1,19 @@
+{
+  "slug": "bulls-head-bidford",
+  "name": "The Bulls Head",
+  "location": "Bidford-on-Avon",
+  "type": "pub",
+  "domain": "thebullsheadbidford.co.uk",
+  "editorSubdomain": "edit.thebullsheadbidford.co.uk",
+  "modules": {
+    "announcement": true,
+    "hours": true,
+    "drinks": true,
+    "food": false,
+    "events": true,
+    "gallery": true,
+    "facilities": true,
+    "booking": false,
+    "reviews": false
+  }
+}
