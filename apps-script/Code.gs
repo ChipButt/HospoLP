@@ -13,7 +13,10 @@ const CONFIG = {
   ]
 };
 
-function doGet() {
+function doGet(e) {
+  const mode = String((e && e.parameter && e.parameter.mode) || '').trim();
+  if (mode === 'editor') return renderEditor_(e);
+  if (mode === 'content') return serveEditorContent_(e);
   return HtmlService.createTemplateFromFile('Index')
     .evaluate()
     .setTitle('HospoLP Website Brief')
