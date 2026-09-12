@@ -9,15 +9,18 @@
 7. Remove, rename or combine pages only when the client brief gives a good reason. For example, a business with no drinks offering does not need a Drinks page.
 8. Redesign the public-facing pages and `assets/styles.css` so the site suits that business. The repeatable element is the architecture and workflow, not the visual design.
 9. Keep shared customer-editable data in `content/*.json` so information can be reused across pages without duplication.
-10. Keep `assets/app.js` capable of loading shared content from both the homepage and nested pages using the page base path.
-11. Keep the customer-editable content model where useful; add/remove editor fields to match the package sold.
-12. Give each public page appropriate page-specific title/description metadata while keeping the shared business details accurate.
-13. Connect Pages CMS and invite the customer by email.
+10. Keep `assets/app.js` wired to the HospoLP visual editor data service, with repository JSON as the fallback source.
+11. Add the business to `EDITOR_CONFIG.SITES` in `apps-script/Editor.gs`, including its authorised client email address, public URL and GitHub raw content base.
+12. Set the client repo's `/edit/` page to open the HospoLP editor with that site's fixed site ID.
+13. Keep the customer-editable content model restricted to routine business information. Do not expose design, code, deployment or repository controls.
 14. Enable GitHub Pages for the new repository and connect that business's domain.
-15. Test every page and navigation link on desktop and mobile.
+15. Test email-code sign-in, live preview, publishing, every public page and navigation link on desktop and mobile.
 16. Complete `LAUNCH-CHECKLIST.md` before handover.
 
 ## Standard page rule
 A major user task should normally have its own page. Menu, opening hours, events and visit/contact information should not be buried halfway down a homepage unless the brief specifically calls for a single-page site.
+
+## Standard editor rule
+The client should only ever see their own branded website editor: controls on the left, live webpage preview on the right, and a clear **Publish changes** action. Clients should never see GitHub repositories, JSON files, Pages CMS or other customers.
 
 The repeatable product is the package and workflow, not a requirement for every customer's website to look the same.
