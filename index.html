@@ -1,36 +1,25 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>The Lantern Yard | Café & Bar</title>
-  <meta name="description" content="The Lantern Yard is a relaxed all-day café and neighbourhood bar serving coffee, food and evening drinks." />
-  <meta name="theme-color" content="#7a3e2e" />
-  <meta property="og:type" content="website" />
-  <meta property="og:title" content="The Lantern Yard | Café & Bar" />
-  <meta property="og:description" content="Coffee by day, drinks by night, good food throughout." />
-  <link rel="stylesheet" href="assets/styles.css" />
+  <meta name="description" content="The Lantern Yard is a relaxed all-day café and neighbourhood bar serving coffee, food and evening drinks.">
+  <meta name="theme-color" content="#7a3e2e">
+  <link rel="stylesheet" href="assets/styles.css">
   <script defer src="assets/app.js"></script>
   <script id="business-schema" type="application/ld+json">{}</script>
 </head>
-<body>
+<body data-base="">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header" id="top"><div class="shell header-inner"><a class="brand" href="#top" aria-label="The Lantern Yard home"><span class="brand-mark" aria-hidden="true">LY</span><span class="brand-copy"><strong data-site="name">The Lantern Yard</strong><small data-site="locationLine">Market Quarter</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button><nav class="primary-nav" id="primary-nav" aria-label="Main navigation"><a href="#about">Our place</a><a href="#food" data-nav-food>Eat</a><a href="#drinks" data-nav-drinks>Drink</a><a href="#hours">Hours</a><a href="#whats-on">Events</a><a href="#visit">Find us</a></nav></div></header>
-  <div class="load-error" data-load-error hidden role="alert">Some live information could not be loaded. Please contact us if you need to confirm details before visiting.</div>
+  <header class="site-header"><div class="shell header-inner"><a class="brand" href="./"><span class="brand-mark">LY</span><span class="brand-copy"><strong data-site="name">The Lantern Yard</strong><small data-site="locationLine">Market Quarter</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button><nav class="primary-nav" id="primary-nav"><a href="about/">Our place</a><a href="food/">Eat</a><a href="drinks/">Drink</a><a href="hours/">Hours</a><a href="whats-on/">Events</a><a href="visit/">Find us</a></nav></div></header>
+  <div class="load-error" data-load-error hidden>Some live information could not be loaded.</div>
   <main id="main">
-    <section class="hero"><div class="shell hero-grid"><div class="hero-copy"><p class="eyebrow" data-site="heroEyebrow"></p><h1><span data-site="name"></span><em data-site="locationLine"></em></h1><p class="hero-intro" data-site="strapline"></p><div class="hero-actions"><a class="button button-primary" href="#food">See the menu</a><a class="button button-ghost" href="#visit">Find us</a></div></div><aside class="hero-card"><div class="hero-card-topline">Today</div><div class="today-status" data-today-status>Checking opening hours…</div><div class="today-hours" data-today-hours></div><div class="mini-rule"></div><p data-site="shortWelcome"></p></aside></div></section>
+    <section class="hero"><div class="shell hero-grid"><div class="hero-copy"><p class="eyebrow" data-site="heroEyebrow"></p><h1><span data-site="name"></span><em data-site="locationLine"></em></h1><p class="hero-intro" data-site="strapline"></p><div class="hero-actions"><a class="button button-primary" href="food/">See the menu</a><a class="button button-ghost" href="visit/">Find us</a></div></div><aside class="hero-card"><div class="hero-card-topline">Today</div><div class="today-status" data-today-status>Checking opening hours…</div><div class="today-hours" data-today-hours></div><div class="mini-rule"></div><p data-site="shortWelcome"></p></aside></div></section>
     <section class="notice-bar" data-notice-section hidden><div class="shell notice-inner"><strong data-notice-title></strong><span data-notice-text></span></div></section>
-    <section class="section about" id="about"><div class="shell two-column"><div class="section-heading"><p class="eyebrow">Day into night</p><h2 data-site="aboutHeading"></h2></div><div class="prose"><p class="lead" data-site="aboutLead"></p><p data-site="aboutBody"></p><div class="fact-row" data-facts></div></div></div></section>
-    <section class="section food-section" id="food" data-food-section><div class="shell"><div class="section-heading centered"><p class="eyebrow">Kitchen</p><h2 data-food="heading"></h2><p data-food="intro"></p></div><div class="menu-sections" data-menu-sections></div></div></section>
-    <section class="section drinks-section" id="drinks" data-drinks-section><div class="shell"><div class="section-heading"><p class="eyebrow">Coffee to cocktails</p><h2 data-drinks="heading"></h2><p data-drinks="intro"></p></div><div class="drink-grid" data-drink-grid></div></div></section>
-    <section class="section hours-section" id="hours"><div class="shell"><div class="section-heading centered"><p class="eyebrow">Plan your visit</p><h2>Opening hours</h2></div><div class="hours-grid" data-hours-grid></div></div></section>
-    <section class="section events-section" id="whats-on"><div class="shell"><div class="section-heading split-heading"><div><p class="eyebrow">After hours</p><h2>What’s happening</h2></div><p data-events="intro"></p></div><div class="event-grid" data-event-grid></div></div></section>
-    <section class="section features-section"><div class="shell"><div class="feature-strip" data-feature-strip></div></div></section>
-    <section class="section gallery-section" data-gallery-section hidden><div class="shell"><div class="gallery-grid" data-gallery-grid></div></div></section>
-    <section class="section visit-section" id="visit"><div class="shell visit-grid"><div class="visit-card"><p class="eyebrow">Come by</p><h2>Easy to find, easy to stay</h2><address data-site="address"></address><div class="contact-stack"><a data-phone-link><span>Call</span><strong data-site="phone"></strong></a><a data-email-link><span>Email</span><strong data-site="email"></strong></a></div><div class="visit-actions"><a class="button button-primary" data-link="mapsUrl">Directions</a></div></div><div class="map-card"><iframe data-map-frame title="Map" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>
+    <section class="section"><div class="shell"><div class="section-heading centered"><p class="eyebrow">Explore The Lantern Yard</p><h2>Everything has its own place.</h2><p>Rather than one long scrolling page, each main part of the business has its own page so visitors can get straight to what they need.</p></div><div class="page-card-grid"><a class="page-card" href="about/"><small>Our place</small><h3>About</h3><p>What The Lantern Yard is all about.</p></a><a class="page-card" href="food/"><small>Kitchen</small><h3>Eat</h3><p>Menus, dishes and current availability.</p></a><a class="page-card" href="drinks/"><small>Bar</small><h3>Drink</h3><p>Coffee, cocktails and everything between.</p></a><a class="page-card" href="hours/"><small>Plan ahead</small><h3>Hours</h3><p>Opening times for every day of the week.</p></a><a class="page-card" href="whats-on/"><small>Calendar</small><h3>Events</h3><p>What is happening and when.</p></a><a class="page-card" href="visit/"><small>Come by</small><h3>Visit</h3><p>Address, contact details and facilities.</p></a></div></div></section>
   </main>
-  <footer class="site-footer"><div class="shell footer-grid"><div><div class="footer-brand" data-site="name"></div><p data-site="address"></p></div><div class="footer-links"><a href="#food">Menu</a><a href="#hours">Hours</a><a href="#visit">Contact</a></div><p class="footer-small">© <span data-current-year></span> <span data-site="name"></span>. <span data-site="footerNote"></span></p></div></footer>
-  <nav class="mobile-actions" aria-label="Quick actions"><a data-mobile-phone href="#visit">Call</a><a data-link="mapsUrl" href="#visit">Directions</a><a href="#food">Menu</a></nav>
-  <dialog class="lightbox" data-lightbox><button type="button" data-lightbox-close aria-label="Close image">×</button><img data-lightbox-image alt="" /></dialog>
+  <footer class="site-footer"><div class="shell footer-grid"><div><div class="footer-brand" data-site="name"></div><p data-site="address"></p></div><div class="footer-links"><a href="food/">Menu</a><a href="hours/">Hours</a><a href="visit/">Contact</a></div><p class="footer-small">© <span data-current-year></span> <span data-site="name"></span>. <span data-site="footerNote"></span></p></div></footer>
+  <nav class="mobile-actions"><a data-mobile-phone href="visit/">Call</a><a href="food/">Menu</a><a href="hours/">Hours</a></nav>
 </body>
 </html>
