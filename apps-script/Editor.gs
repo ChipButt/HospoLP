@@ -49,7 +49,7 @@ function resumeEditorSession(siteId, token) {
 }
 
 function changeEditorPassword(siteId, token, currentPassword, newPassword) {
-  const session = requireEditorSession_(siteId, token);
+  requireEditorSession_(siteId, token);
   const site = getEditorSite_(siteId);
   if (!verifyPassword_(currentPassword, site.password_salt, site.password_hash)) throw new Error('Current password is incorrect.');
   validatePassword_(newPassword);
@@ -235,12 +235,11 @@ function sanitiseAssetName_(value) {
 function sanitiseEditorPayload_(payload) {
   const text = v => String(v == null ? '' : v).slice(0,5000);
   const bool = v => !!v;
-  const arr = v => Array.isArray(v) ? v : [];
   const p = JSON.parse(JSON.stringify(payload || {}));
   const out = {};
   if (p.site) {
     out.site = p.site;
-    ['name','locationLine','heroEyebrow','strapline','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','mapsUrl','seoTitle','seoDescription','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in out.site) out.site[k] = text(out.site[k]); });
+    ['name','locationLine','heroEyebrow','heroTitle','heroSubtitle','strapline','heroNote','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','mapsUrl','seoTitle','seoDescription','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in out.site) out.site[k] = text(out.site[k]); });
     if (Array.isArray(out.site.facts)) out.site.facts = out.site.facts.slice(0,30).map(text);
     if (out.site.notice) out.site.notice = {enabled:bool(out.site.notice.enabled),title:text(out.site.notice.title),text:text(out.site.notice.text)};
   }
