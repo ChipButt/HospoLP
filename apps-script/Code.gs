@@ -166,7 +166,7 @@ function buildReadableBrief_(p) {
   const arr = v => Array.isArray(v) ? v.join(', ') : (v || '');
   const section = (title, lines) => `\n\n=== ${title.toUpperCase()} ===\n${lines.filter(Boolean).join('\n')}`;
   return [
-    'HOSP OLP WEBSITE BRIEF',
+    'HOSPOLP WEBSITE BRIEF',
     `Submitted: ${new Date().toLocaleString('en-GB')}`,
     section('Business', [
       `Business name: ${p.businessName || ''}`,
