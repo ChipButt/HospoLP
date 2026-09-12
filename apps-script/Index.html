@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="robots" content="noindex,nofollow">
+  <style>
+    :root{--bg:#f6f2ea;--card:#fffdf8;--ink:#1f2523;--muted:#68716d;--line:#dcd5c8;--accent:#365f4b;--accent2:#d8e5dd;--danger:#a52f2f;--shadow:0 18px 45px rgba(34,44,39,.09)}
+    *{box-sizing:border-box} body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.5}
+    .wrap{max-width:980px;margin:0 auto;padding:32px 18px 80px}.hero{padding:28px 0 18px}.kicker{font-size:.78rem;letter-spacing:.13em;text-transform:uppercase;font-weight:800;color:var(--accent)}h1{font-size:clamp(2rem,7vw,4.6rem);line-height:.96;margin:.35rem 0 1rem;letter-spacing:-.05em}h2{font-size:1.45rem;margin:0 0 .4rem}p{margin:.4rem 0}.intro{max-width:720px;font-size:1.08rem;color:var(--muted)}
+    .progress-shell{position:sticky;top:0;z-index:5;background:rgba(246,242,234,.94);backdrop-filter:blur(10px);padding:10px 0 14px}.progress-row{display:flex;justify-content:space-between;gap:12px;font-size:.82rem;color:var(--muted);margin-bottom:6px}.track{height:8px;background:#e5dfd5;border-radius:999px;overflow:hidden}.bar{height:100%;width:0;background:var(--accent);transition:width .2s ease}
+    form{display:grid;gap:18px}.section{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:24px;box-shadow:var(--shadow)}.section-head{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}.num{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--accent);color:white;font-weight:800;flex:0 0 auto}.help{color:var(--muted);font-size:.92rem}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.full{grid-column:1/-1}.field{display:grid;gap:7px}.field label,.label{font-weight:750;font-size:.92rem}.required:after{content:" *";color:var(--danger)}input,textarea,select{width:100%;border:1px solid #cfc7b8;border-radius:12px;background:white;color:var(--ink);padding:12px 13px;font:inherit}textarea{min-height:105px;resize:vertical}input:focus,textarea:focus,select:focus{outline:3px solid rgba(54,95,75,.13);border-color:var(--accent)}
+    .checks{display:flex;flex-wrap:wrap;gap:9px}.check{position:relative}.check input{position:absolute;opacity:0;pointer-events:none}.check span{display:inline-block;border:1px solid #cfc7b8;background:white;padding:9px 12px;border-radius:999px;cursor:pointer;font-size:.9rem}.check input:checked+span{background:var(--accent);border-color:var(--accent);color:white}.hours{display:grid;grid-template-columns:140px 1fr;gap:9px 14px;align-items:center}.hours .day{font-weight:750}.hours input{padding:10px 12px}
+    .conditional{display:none}.conditional.show{display:block}.upload-zone{border:2px dashed #b9b1a3;border-radius:18px;padding:20px;background:#fbf8f2}.upload-group{display:grid;gap:9px;margin:14px 0}.file-list{display:grid;gap:8px;margin-top:12px}.file-pill{display:flex;justify-content:space-between;gap:10px;background:white;border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.86rem}.small{font-size:.82rem;color:var(--muted)}
+    .review{background:var(--accent2);border-radius:14px;padding:14px 16px}.submit-row{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.primary{appearance:none;border:0;border-radius:999px;background:var(--accent);color:white;padding:14px 22px;font:inherit;font-weight:800;cursor:pointer}.primary[disabled]{opacity:.5;cursor:wait}.status{font-size:.92rem;color:var(--muted)}.error{color:var(--danger)}.success{border:1px solid #bdd1c4;background:#eef7f1;border-radius:20px;padding:28px;text-align:center;display:none}.success h2{font-size:2rem}.hidden{display:none!important}
+    @media(max-width:700px){.grid{grid-template-columns:1fr}.full{grid-column:auto}.section{padding:19px}.hours{grid-template-columns:100px 1fr}.wrap{padding-top:18px}}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header class="hero"><div class="kicker">HospoLP Website Brief</div><h1>Tell us about your business.</h1><p class="intro">Fill this in as simply as you like. Short answers are fine. Upload your best original photos, logo and menus, and we’ll use everything here to create the first version of your website.</p></header>
+  <div class="progress-shell"><div class="progress-row"><span>Your progress</span><span id="progressText">0% complete</span></div><div class="track"><div class="bar" id="progressBar"></div></div></div>
+
+  <form id="briefForm">
+    <section class="section"><div class="section-head"><div class="num">1</div><div><h2>Your business</h2><p class="help">The basic information customers should be able to find.</p></div></div><div class="grid">
+      <div class="field"><label class="required">Business name</label><input name="businessName" required></div>
+      <div class="field"><label>Business type</label><select name="businessType"><option value="">Choose one</option><option>Pub</option><option>Bar</option><option>Restaurant</option><option>Café</option><option>Hotel / B&B</option><option>Other</option></select></div>
+      <div class="field full"><label>Full address</label><textarea name="address" rows="3"></textarea></div>
+      <div class="field"><label>Public phone number</label><input name="phone" type="tel"></div>
+      <div class="field"><label>Public email address</label><input name="publicEmail" type="email"></div>
+      <div class="field full"><label>Existing website or domain, if you have one</label><input name="existingWebsite" type="url" placeholder="https://"></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">2</div><div><h2>About the business</h2><p class="help">Don’t worry about writing polished website copy — tell us the facts and we’ll shape it.</p></div></div><div class="grid">
+      <div class="field full"><label>How would you describe the business in a sentence or two?</label><textarea name="businessDescription"></textarea></div>
+      <div class="field full"><label>What would you most like people to know?</label><textarea name="importantMessage"></textarea></div>
+      <div class="field full"><label>What are you particularly known for?</label><textarea name="knownFor" placeholder="For example: Sunday lunch, cocktails, cask ale, live music, local produce…"></textarea></div>
+      <div class="field full"><div class="label">What feels like you?</div><div class="checks" data-name="atmosphere"></div></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">3</div><div><h2>Opening hours</h2><p class="help">Write times naturally, for example “12pm–11pm” or “Closed”.</p></div></div><div class="hours" id="hoursGrid"></div><div class="field" style="margin-top:16px"><label>Anything else we should know about your hours?</label><textarea name="hoursNotes" rows="3"></textarea></div></section>
+
+    <section class="section"><div class="section-head"><div class="num">4</div><div><h2>Food & menus</h2></div></div>
+      <div class="field"><div class="label">Do you currently serve food?</div><div class="checks"><label class="check"><input type="radio" name="servesFoodChoice" value="yes"><span>Yes</span></label><label class="check"><input type="radio" name="servesFoodChoice" value="no"><span>No</span></label></div></div>
+      <div id="foodFields" class="conditional"><div class="grid" style="margin-top:18px"><div class="field full"><label>Normal food serving times</label><textarea name="foodHours" rows="3"></textarea></div><div class="field full"><div class="label">Which menus do you have?</div><div class="checks" data-name="menuTypes"></div></div><div class="field full"><label>Anything important to mention about the food?</label><textarea name="foodNotes"></textarea></div></div></div>
+    </section>
+
+    <section class="section"><div class="section-head"><div class="num">5</div><div><h2>Drinks, events & facilities</h2></div></div><div class="grid">
+      <div class="field full"><div class="label">Drinks you’d particularly like featured</div><div class="checks" data-name="drinkTypes"></div></div>
+      <div class="field full"><label>Specific drinks, breweries, brands or products</label><textarea name="drinkDetails"></textarea></div>
+      <div class="field full"><label>Regular events / what’s on</label><textarea name="events" placeholder="For example: Live music every Saturday from 8pm; quiz every other Thursday…"></textarea></div>
+      <div class="field full"><div class="label">Facilities & features</div><div class="checks" data-name="facilities"></div></div>
+      <div class="field full"><label>Other facilities or anything worth explaining</label><textarea name="facilityNotes"></textarea></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">6</div><div><h2>Bookings & social media</h2></div></div><div class="grid">
+      <div class="field full"><div class="label">Do you take bookings?</div><div class="checks"><label class="check"><input type="radio" name="takesBookingsChoice" value="yes"><span>Yes</span></label><label class="check"><input type="radio" name="takesBookingsChoice" value="no"><span>No</span></label></div></div>
+      <div id="bookingFields" class="conditional full"><div class="grid"><div class="field full"><div class="label">How can people book?</div><div class="checks" data-name="bookingMethods"></div></div><div class="field full"><label>Booking link, phone, email or other instructions</label><textarea name="bookingDetails"></textarea></div></div></div>
+      <div class="field"><label>Facebook</label><input name="facebook"></div><div class="field"><label>Instagram</label><input name="instagram"></div><div class="field"><label>TikTok</label><input name="tiktok"></div><div class="field"><label>Other social link</label><input name="otherSocial"></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">7</div><div><h2>Brand & look</h2><p class="help">You don’t need to design the website. This just helps us understand your taste.</p></div></div><div class="grid">
+      <div class="field"><label>Existing brand colours, if any</label><input name="brandColours"></div><div class="field"><label>Existing font/typeface, if any</label><input name="typeface"></div>
+      <div class="field full"><div class="label">How should the website feel?</div><div class="checks" data-name="websiteFeel"></div></div>
+      <div class="field full"><label>Any colours you definitely don’t want?</label><input name="coloursAvoid"></div>
+      <div class="field full"><label>Websites you like, and what you like about them</label><textarea name="referenceWebsites"></textarea></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">8</div><div><h2>Photos, logo & documents</h2><p class="help">Original files are best. Please avoid screenshots or images re-downloaded from social media where possible.</p></div></div>
+      <div class="upload-zone"><p><strong>You can upload original, high-quality files.</strong></p><p class="small">Up to 25 MB per file and 40 files in one submission. Images, PDFs, Word documents and spreadsheets are accepted. Files are uploaded one at a time at the end, so you can send far more than a 10 MB email attachment.</p>
+        <div class="upload-group"><label class="label">Logo / brand files</label><input id="brandFiles" type="file" multiple accept="image/*,.pdf,.doc,.docx"></div>
+        <div class="upload-group"><label class="label">Photos</label><input id="photoFiles" type="file" multiple accept="image/*"></div>
+        <div class="upload-group"><label class="label">Menus / price lists / event documents</label><input id="menuFiles" type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"></div>
+        <div class="upload-group"><label class="label">Anything else useful</label><input id="otherFiles" type="file" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"></div>
+        <div id="fileList" class="file-list"></div>
+      </div>
+      <div class="field" style="margin-top:16px"><label class="check" style="display:inline-block"><input type="checkbox" id="assetPermission"><span>I confirm I’m allowed to provide these files for use on the business website.</span></label></div>
+    </section>
+
+    <section class="section"><div class="section-head"><div class="num">9</div><div><h2>Final details</h2></div></div><div class="grid">
+      <div class="field full"><label>Any reviews/testimonials you particularly want considered?</label><textarea name="reviews"></textarea></div>
+      <div class="field full"><label>Anything we should NOT advertise?</label><textarea name="doNotAdvertise" placeholder="For example, services or facilities shown on old pages that you no longer offer."></textarea></div>
+      <div class="field full"><label>Anything else we should know?</label><textarea name="anythingElse"></textarea></div>
+      <div class="field"><label>Most important action for a visitor</label><select name="primaryAction"><option value="">Choose one</option><option>Visit us</option><option>Book a table</option><option>Call us</option><option>View our menu</option><option>Find our opening hours</option><option>See what’s on</option><option>Book accommodation</option><option>Make an enquiry</option><option>Other</option></select></div>
+      <div class="field"><label>Most important thing visitors should know</label><input name="primaryMessage"></div>
+    </div></section>
+
+    <section class="section"><div class="section-head"><div class="num">10</div><div><h2>Your details</h2><p class="help">So we know who the brief came from and can confirm receipt.</p></div></div><div class="grid">
+      <div class="field"><label class="required">Your name</label><input name="contactName" required></div><div class="field"><label class="required">Your email address</label><input name="contactEmail" type="email" required></div><div class="field"><label>Your phone number</label><input name="contactPhone" type="tel"></div>
+    </div></section>
+
+    <section class="section"><div class="review"><strong>Before you send it:</strong> You don’t need to have answered every optional question. If you’ve given us the key facts and uploaded the useful files you have, we can build from there.</div><div class="submit-row" style="margin-top:18px"><button class="primary" id="submitBtn" type="submit">Send website brief</button><span id="status" class="status">Your progress is saved automatically on this device until you submit.</span></div></section>
+  </form>
+
+  <div class="success" id="success"><h2>Brief received.</h2><p>Your information and files have been uploaded successfully. We’ll use them to prepare the first version of your website.</p></div>
+</div>
+
+<script>
+const options={
+  atmosphere:['Traditional','Modern','Relaxed','Upmarket','Family-friendly','Lively','Cosy','Casual','Quirky'],
+  menuTypes:['Main menu','Lunch','Dinner','Breakfast','Brunch','Sunday menu','Children’s menu','Desserts','Specials','Takeaway'],
+  drinkTypes:['Real ale','Beer / lager','Wine','Cocktails','Spirits','Coffee','Tea','Soft drinks','Alcohol-free drinks'],
+  facilities:['Dog friendly','Family friendly','Beer garden / outdoor seating','Covered outdoor seating','Wi-Fi','Parking','Disabled access','Baby changing','Real fire','Live music','Sports TV','Pool table','Darts','Function room','Private hire','Accommodation','Takeaway','Cask / real ale','EV charging','Bicycle parking'],
+  bookingMethods:['Phone','Email','Facebook / social media','Online booking system'],
+  websiteFeel:['Traditional','Modern','Clean','Colourful','Minimal','Premium','Rustic','Friendly','Fun','Elegant','Cosy','Bold','Quirky']
+};
+const days=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+const form=document.getElementById('briefForm'), statusEl=document.getElementById('status'), submitBtn=document.getElementById('submitBtn');
+const fileInputs=[['brandFiles','brand'],['photoFiles','photos'],['menuFiles','menus'],['otherFiles','other']];
+const DRAFT_KEY='hospolp-website-brief-draft-v1';
+
+Object.entries(options).forEach(([name,values])=>{const box=document.querySelector(`[data-name="${name}"]`);values.forEach((v,i)=>{const id=`${name}-${i}`;box.insertAdjacentHTML('beforeend',`<label class="check"><input type="checkbox" data-array="${name}" value="${escapeAttr(v)}" id="${id}"><span>${escapeHtml(v)}</span></label>`);});});
+days.forEach(day=>document.getElementById('hoursGrid').insertAdjacentHTML('beforeend',`<div class="day">${day}</div><input name="hours_${day}" placeholder="e.g. 12pm–11pm or Closed">`));
+
+document.querySelectorAll('input[name="servesFoodChoice"]').forEach(el=>el.addEventListener('change',()=>toggle('foodFields',el.value==='yes')));
+document.querySelectorAll('input[name="takesBookingsChoice"]').forEach(el=>el.addEventListener('change',()=>toggle('bookingFields',el.value==='yes')));
+function toggle(id,on){document.getElementById(id).classList.toggle('show',on)}
+
+form.addEventListener('input',()=>{saveDraft();updateProgress();});
+form.addEventListener('change',()=>{saveDraft();updateProgress();renderFiles();});
+fileInputs.forEach(([id])=>document.getElementById(id).addEventListener('change',renderFiles));
+
+function collectPayload(){
+  const fd=new FormData(form), p={};
+  for(const [k,v] of fd.entries()) if(!k.startsWith('hours_') && !k.endsWith('Choice')) p[k]=String(v).trim();
+  Object.keys(options).forEach(name=>p[name]=[...document.querySelectorAll(`[data-array="${name}"]:checked`)].map(x=>x.value));
+  p.openingHours={}; days.forEach(day=>p.openingHours[day]=fd.get(`hours_${day}`)||'');
+  p.servesFood=fd.get('servesFoodChoice')==='yes'; p.takesBookings=fd.get('takesBookingsChoice')==='yes';
+  p.assetPermission=document.getElementById('assetPermission').checked;
+  p.submittedFrom='HospoLP Client Intake'; p.schemaVersion=1;
+  return p;
+}
+
+function saveDraft(){try{localStorage.setItem(DRAFT_KEY,JSON.stringify(collectPayload()))}catch(e){}}
+function restoreDraft(){try{const p=JSON.parse(localStorage.getItem(DRAFT_KEY)||'null');if(!p)return;Object.entries(p).forEach(([k,v])=>{if(k==='openingHours'){Object.entries(v||{}).forEach(([d,val])=>{const el=form.elements[`hours_${d}`];if(el)el.value=val;});return;}if(Array.isArray(v)){document.querySelectorAll(`[data-array="${k}"]`).forEach(el=>el.checked=v.includes(el.value));return;}if(k==='servesFood'){const el=form.querySelector(`[name="servesFoodChoice"][value="${v?'yes':'no'}"]`);if(el)el.checked=true;toggle('foodFields',v);return;}if(k==='takesBookings'){const el=form.querySelector(`[name="takesBookingsChoice"][value="${v?'yes':'no'}"]`);if(el)el.checked=true;toggle('bookingFields',v);return;}if(k==='assetPermission'){document.getElementById('assetPermission').checked=!!v;return;}const el=form.elements[k];if(el&&typeof v==='string')el.value=v;});}catch(e){}}
+function updateProgress(){const required=[form.elements.businessName,form.elements.contactName,form.elements.contactEmail];const key=[form.elements.address,form.elements.businessDescription,...days.map(d=>form.elements[`hours_${d}`])];const filled=[...required,...key].filter(el=>String(el.value||'').trim()).length;const total=required.length+key.length;const pct=Math.round((filled/total)*100);document.getElementById('progressBar').style.width=pct+'%';document.getElementById('progressText').textContent=pct+'% complete';}
+
+function selectedFiles(){const out=[];fileInputs.forEach(([id,category])=>[...document.getElementById(id).files].forEach(file=>out.push({file,category})));return out;}
+function renderFiles(){const files=selectedFiles(), box=document.getElementById('fileList');box.innerHTML='';files.forEach(({file,category})=>box.insertAdjacentHTML('beforeend',`<div class="file-pill"><span>${escapeHtml(file.name)}</span><span>${category} · ${formatBytes(file.size)}</span></div>`));if(files.length)box.insertAdjacentHTML('beforeend',`<div class="small">${files.length} file${files.length===1?'':'s'} selected · ${formatBytes(files.reduce((n,x)=>n+x.file.size,0))} total</div>`);}
+
+form.addEventListener('submit',async e=>{
+  e.preventDefault();
+  if(!form.reportValidity())return;
+  if(!document.getElementById('assetPermission').checked && selectedFiles().length){statusEl.textContent='Please confirm you are allowed to provide the uploaded files.';statusEl.className='status error';return;}
+  const files=selectedFiles();
+  if(files.length>40){fail('Please select no more than 40 files.');return;}
+  const oversized=files.find(x=>x.file.size>25*1024*1024);if(oversized){fail(`${oversized.file.name} is over the 25 MB per-file limit.`);return;}
+  submitBtn.disabled=true;statusEl.className='status';statusEl.textContent='Creating your website brief…';
+  try{
+    const started=await gas('startSubmission',collectPayload());
+    const uploaded=[];
+    for(let i=0;i<files.length;i++){
+      const item=files[i];statusEl.textContent=`Uploading ${i+1} of ${files.length}: ${item.file.name}`;
+      const data=await readBase64(item.file);
+      const result=await gas('uploadAsset',started.submissionId,{name:item.file.name,mimeType:item.file.type||'application/octet-stream',data,category:item.category});uploaded.push(result);
+    }
+    statusEl.textContent='Finishing submission…';await gas('finishSubmission',started.submissionId,uploaded);
+    localStorage.removeItem(DRAFT_KEY);form.classList.add('hidden');document.querySelector('.progress-shell').classList.add('hidden');document.getElementById('success').style.display='block';window.scrollTo({top:0,behavior:'smooth'});
+  }catch(err){fail(err&&err.message?err.message:String(err));submitBtn.disabled=false;}
+});
+
+function gas(name,...args){return new Promise((resolve,reject)=>{google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args);});}
+function readBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]||'');r.onerror=reject;r.readAsDataURL(file);});}
+function fail(msg){statusEl.textContent=msg;statusEl.className='status error';}
+function formatBytes(n){if(n<1024)return n+' B';if(n<1048576)return (n/1024).toFixed(1)+' KB';return (n/1048576).toFixed(1)+' MB'}
+function escapeHtml(s){return String(s).replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]))}
+function escapeAttr(s){return escapeHtml(s)}
+restoreDraft();updateProgress();renderFiles();
+</script>
+</body>
+</html>
