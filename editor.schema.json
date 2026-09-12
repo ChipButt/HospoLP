@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "pages": [
+    {"id":"home","label":"Home","url":"","groups":[
+      {"label":"Homepage","fields":[
+        {"label":"Main strapline","type":"text","path":"site.strapline"},
+        {"label":"Welcome text","type":"textarea","path":"site.shortWelcome"},
+        {"label":"Main message","type":"text","path":"site.primaryMessage"},
+        {"label":"Logo","type":"image","path":"site.logoImage"},
+        {"label":"Hero image","type":"image","path":"site.heroImage"}
+      ]}
+    ]},
+    {"id":"about","label":"About","url":"about/","groups":[{"label":"About","fields":[{"label":"Heading","type":"text","path":"site.aboutHeading"},{"label":"Introduction","type":"textarea","path":"site.aboutLead"},{"label":"Main text","type":"textarea","path":"site.aboutBody"}]}]},
+    {"id":"food","label":"Food","url":"food/","groups":[{"label":"Menu","fields":[{"label":"Menu heading","type":"text","path":"menu.heading"},{"label":"Introduction","type":"textarea","path":"menu.intro"},{"label":"Menu sections","type":"menu","path":"menu.sections"}]}]},
+    {"id":"hours","label":"Hours","url":"hours/","groups":[{"label":"Opening Hours","fields":[{"label":"Hours note","type":"textarea","path":"hours.note"},{"label":"Weekly hours","type":"hours","path":"hours.hours"}]}]},
+    {"id":"events","label":"What's On","url":"whats-on/","groups":[{"label":"Events","fields":[{"label":"Introduction","type":"textarea","path":"events.intro"},{"label":"Events","type":"events","path":"events.items"}]}]},
+    {"id":"visit","label":"Visit","url":"visit/","groups":[{"label":"Contact","fields":[{"label":"Address","type":"textarea","path":"site.address"},{"label":"Phone","type":"text","path":"site.phone"},{"label":"Email","type":"text","path":"site.email"}]},{"label":"Facilities","fields":[{"label":"Facilities","type":"features","path":"features.items"}]},{"label":"Gallery","fields":[{"label":"Show gallery","type":"boolean","path":"gallery.enabled"},{"label":"Photos","type":"gallery","path":"gallery.items"}]}]}
+  ]
+}
