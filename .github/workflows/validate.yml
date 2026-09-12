@@ -1,0 +1,28 @@
+name: Validate website
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate JavaScript
+        run: node --check assets/app.js
+      - name: Validate JSON content
+        run: |
+          node -e "const fs=require('fs'); for(const f of fs.readdirSync('content').filter(f=>f.endsWith('.json'))){JSON.parse(fs.readFileSync('content/'+f,'utf8')); console.log('OK',f)}"
+      - name: Check required files
+        run: |
+          test -f index.html
+          test -f .pages.yml
+          test -f assets/styles.css
+          test -f assets/app.js
+          test -f content/site.json
+          test -f content/hours.json

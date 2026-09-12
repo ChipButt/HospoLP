@@ -2,18 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>The Bulls Head | Bidford-on-Avon</title>
-  <meta name="description" content="The Bulls Head — a welcoming village pub at 36 High Street, Bidford-on-Avon." />
+  <meta name="description" content="The Bulls Head, 36 High Street, Bidford-on-Avon. Opening hours, drinks, live music, contact details and visitor information." />
   <meta name="theme-color" content="#173f35" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="The Bulls Head | Bidford-on-Avon" />
+  <meta property="og:description" content="A welcoming village pub in the heart of Bidford-on-Avon." />
   <link rel="stylesheet" href="assets/styles.css" />
   <script defer src="assets/app.js"></script>
+  <script id="business-schema" type="application/ld+json">{}</script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header" id="top"><div class="shell header-inner"><a class="brand" href="#top"><span class="brand-mark">BH</span><span class="brand-copy"><strong data-site="name">The Bulls Head</strong><small data-site="locationLine">Bidford-on-Avon</small></span></a><button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button><nav class="primary-nav" id="primary-nav"><a href="#about">About</a><a href="#hours">Hours</a><a href="#drinks" data-nav-drinks>Drinks</a><a href="#food" data-nav-food hidden>Food</a><a href="#whats-on">What's On</a><a href="#visit">Visit</a></nav></div></header>
+  <header class="site-header" id="top">
+    <div class="shell header-inner">
+      <a class="brand" href="#top" aria-label="The Bulls Head home"><span class="brand-mark" aria-hidden="true">BH</span><span class="brand-copy"><strong data-site="name">The Bulls Head</strong><small data-site="locationLine">Bidford-on-Avon</small></span></a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-nav"><span></span><span></span><span></span><span class="sr-only">Toggle navigation</span></button>
+      <nav class="primary-nav" id="primary-nav" aria-label="Main navigation"><a href="#about">About</a><a href="#hours">Hours</a><a href="#drinks" data-nav-drinks>Drinks</a><a href="#food" data-nav-food hidden>Food</a><a href="#whats-on">What's On</a><a href="#visit">Visit</a></nav>
+    </div>
+  </header>
+
+  <div class="load-error" data-load-error hidden role="alert">Some live information could not be loaded. Please call the pub if you need to confirm details before travelling.</div>
+
   <main id="main">
-    <section class="hero"><div class="hero-texture"></div><div class="shell hero-grid"><div class="hero-copy reveal"><p class="eyebrow" data-site="heroEyebrow"></p><h1><span data-site="name"></span><em data-site="locationLine"></em></h1><p class="hero-intro" data-site="strapline"></p><div class="hero-actions"><a class="button button-primary" href="#hours">See opening hours</a><a class="button button-ghost" data-link="mapsUrl" href="#visit">Get directions</a></div></div><aside class="hero-card reveal"><div class="hero-card-topline">Today</div><div class="today-status" data-today-status>Checking opening hours…</div><div class="today-hours" data-today-hours></div><div class="mini-rule"></div><p data-site="shortWelcome"></p><a class="text-link" href="#visit">Plan your visit →</a></aside></div></section>
+    <section class="hero"><div class="hero-texture"></div><div class="shell hero-grid"><div class="hero-copy reveal"><p class="eyebrow" data-site="heroEyebrow"></p><h1><span data-site="name"></span><em data-site="locationLine"></em></h1><p class="hero-intro" data-site="strapline"></p><div class="hero-actions"><a class="button button-primary" href="#hours">See opening hours</a><a class="button button-ghost" data-link="mapsUrl" href="#visit">Get directions</a></div></div><aside class="hero-card reveal"><div class="hero-card-topline">Right now</div><div class="today-status" data-today-status>Checking opening hours…</div><div class="today-hours" data-today-hours></div><div class="mini-rule"></div><p data-site="shortWelcome"></p><a class="text-link" href="#visit">Plan your visit →</a></aside></div></section>
     <section class="notice-bar" data-notice-section hidden><div class="shell notice-inner"><strong data-notice-title></strong><span data-notice-text></span></div></section>
     <section class="section about" id="about"><div class="shell two-column"><div class="section-heading reveal"><p class="eyebrow">A village local</p><h2 data-site="aboutHeading"></h2></div><div class="prose reveal"><p class="lead" data-site="aboutLead"></p><p data-site="aboutBody"></p><div class="fact-row" data-facts></div></div></div></section>
     <section class="section hours-section" id="hours"><div class="shell"><div class="section-heading centered reveal"><p class="eyebrow">When we're open</p><h2>Opening hours</h2><p>Pop in for a pint, catch up with friends, or settle in for the evening.</p></div><div class="hours-grid reveal" data-hours-grid></div></div></section>
@@ -21,9 +34,13 @@
     <section class="section food-section" id="food" data-food-section hidden><div class="shell"><div class="section-heading reveal"><p class="eyebrow">From the kitchen</p><h2 data-food="heading"></h2><p data-food="intro"></p></div><div class="menu-sections" data-menu-sections></div></div></section>
     <section class="section events-section" id="whats-on"><div class="shell"><div class="section-heading split-heading reveal"><div><p class="eyebrow">What's on</p><h2>Reasons to stay for one more</h2></div><p data-events="intro"></p></div><div class="event-grid reveal" data-event-grid></div></div></section>
     <section class="section features-section"><div class="shell"><div class="feature-strip reveal" data-feature-strip></div></div></section>
-    <section class="section gallery-section" data-gallery-section><div class="shell"><div class="section-heading centered reveal"><p class="eyebrow">Inside & out</p><h2>Come as you are</h2></div><div class="gallery-grid reveal" data-gallery-grid></div><p class="gallery-note" data-gallery-note></p></div></section>
-    <section class="section visit-section" id="visit"><div class="shell visit-grid"><div class="visit-card reveal"><p class="eyebrow">Find us</p><h2>Right in the heart of Bidford</h2><address data-site="address"></address><div class="contact-stack"><a data-phone-link><span>Call</span><strong data-site="phone"></strong></a><a data-email-link><span>Email</span><strong data-site="email"></strong></a></div><div class="visit-actions"><a class="button button-primary" data-link="mapsUrl">Open in Maps</a><a class="button button-outline" data-link="facebook" hidden>Facebook</a></div></div><div class="map-card reveal"><iframe data-map-frame title="Map of The Bulls Head" loading="lazy"></iframe></div></div></section>
+    <section class="section gallery-section" data-gallery-section><div class="shell"><div class="section-heading centered reveal"><p class="eyebrow">Inside & out</p><h2>Come as you are</h2></div><div class="gallery-grid reveal" data-gallery-grid></div></div></section>
+    <section class="section visit-section" id="visit"><div class="shell visit-grid"><div class="visit-card reveal"><p class="eyebrow">Find us</p><h2>Right in the heart of Bidford</h2><address data-site="address"></address><div class="contact-stack"><a data-phone-link><span>Call</span><strong data-site="phone"></strong></a><a data-email-link><span>Email</span><strong data-site="email"></strong></a></div><div class="visit-actions"><a class="button button-primary" data-link="mapsUrl">Open in Maps</a><a class="button button-outline" data-link="facebook" hidden>Facebook</a></div></div><div class="map-card reveal"><iframe data-map-frame title="Map of The Bulls Head" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></div></div></section>
   </main>
+
   <footer class="site-footer"><div class="shell footer-grid"><div><div class="footer-brand" data-site="name"></div><p data-site="address"></p></div><div class="footer-links"><a href="#hours">Opening hours</a><a href="#whats-on">What's on</a><a href="#visit">Contact</a></div><p class="footer-small">© <span data-current-year></span> <span data-site="name"></span>. <span data-site="footerNote"></span></p></div></footer>
+
+  <nav class="mobile-actions" aria-label="Quick actions"><a data-mobile-phone href="#visit">Call</a><a data-link="mapsUrl" href="#visit">Directions</a><a href="#hours">Hours</a></nav>
+  <dialog class="lightbox" data-lightbox><button type="button" data-lightbox-close aria-label="Close image">×</button><img data-lightbox-image alt="" /></dialog>
 </body>
 </html>
