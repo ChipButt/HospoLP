@@ -1,0 +1,125 @@
+media:
+  input: media/images
+  output: /media/images
+
+content:
+  - name: site
+    label: Homepage & Contact
+    type: file
+    path: content/site.json
+    fields:
+      - { name: name, label: Business name, type: string }
+      - { name: locationLine, label: Location, type: string }
+      - { name: heroEyebrow, label: Small heading, type: string }
+      - { name: strapline, label: Main strapline, type: string }
+      - { name: shortWelcome, label: Short welcome, type: text }
+      - { name: aboutHeading, label: About heading, type: string }
+      - { name: aboutLead, label: About introduction, type: text }
+      - { name: aboutBody, label: About text, type: text }
+      - { name: facts, label: Quick facts, type: list, field: { name: fact, label: Fact, type: string } }
+      - { name: address, label: Address, type: string }
+      - { name: phone, label: Phone, type: string }
+      - { name: email, label: Email, type: string }
+      - { name: facebook, label: Facebook link, type: string }
+      - name: notice
+        label: Announcement
+        type: object
+        fields:
+          - { name: enabled, label: Show announcement, type: boolean }
+          - { name: title, label: Heading, type: string }
+          - { name: text, label: Message, type: text }
+
+  - name: hours
+    label: Opening Hours
+    type: file
+    path: content/hours.json
+    fields:
+      - name: hours
+        label: Days
+        type: list
+        fields:
+          - { name: day, label: Day, type: string }
+          - { name: display, label: Display hours, type: string }
+          - { name: opens, label: Opens, type: string }
+          - { name: closes, label: Closes, type: string }
+          - { name: closed, label: Closed all day, type: boolean }
+
+  - name: drinks
+    label: Drinks
+    type: file
+    path: content/drinks.json
+    fields:
+      - { name: enabled, label: Show drinks section, type: boolean }
+      - { name: heading, label: Heading, type: string }
+      - { name: intro, label: Introduction, type: text }
+      - name: items
+        label: Drinks
+        type: list
+        fields:
+          - { name: name, label: Name, type: string }
+          - { name: category, label: Category, type: string }
+          - { name: style, label: Description, type: string }
+          - { name: abv, label: ABV, type: string }
+
+  - name: menu
+    label: Food Menu
+    type: file
+    path: content/menu.json
+    fields:
+      - { name: enabled, label: Show food section, type: boolean }
+      - { name: heading, label: Heading, type: string }
+      - { name: intro, label: Introduction, type: text }
+      - name: sections
+        label: Menu sections
+        type: list
+        fields:
+          - { name: name, label: Section name, type: string }
+          - name: items
+            label: Dishes
+            type: list
+            fields:
+              - { name: name, label: Dish, type: string }
+              - { name: description, label: Description, type: text }
+              - { name: price, label: Price, type: string }
+              - { name: available, label: Available, type: boolean }
+
+  - name: events
+    label: What's On
+    type: file
+    path: content/events.json
+    fields:
+      - { name: intro, label: Introduction, type: text }
+      - name: items
+        label: Events
+        type: list
+        fields:
+          - { name: enabled, label: Show event, type: boolean }
+          - { name: title, label: Event name, type: string }
+          - { name: when, label: When, type: string }
+          - { name: description, label: Description, type: text }
+
+  - name: facilities
+    label: Facilities
+    type: file
+    path: content/features.json
+    fields:
+      - name: items
+        label: Facilities
+        type: list
+        fields:
+          - { name: label, label: Facility, type: string }
+          - { name: enabled, label: Show, type: boolean }
+
+  - name: gallery
+    label: Gallery
+    type: file
+    path: content/gallery.json
+    fields:
+      - { name: enabled, label: Show gallery, type: boolean }
+      - { name: note, label: Internal note, type: text }
+      - name: items
+        label: Photos
+        type: list
+        fields:
+          - { name: image, label: Photo, type: image }
+          - { name: alt, label: Description, type: string }
