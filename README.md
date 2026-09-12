@@ -1,23 +1,14 @@
-# The Lantern Yard — HospoLP second-client test
+# HospoLP — Hospitality Website Demo
 
-This branch is a deliberate second-client conversion of the HospoLP reference package.
+This repository is the public demo implementation of the HospoLP hospitality website package.
 
-The business is fictional. Its purpose is to prove that the package can be duplicated and substantially restyled without rebuilding deployment, editor configuration, validation or content architecture.
+The current demo business is **The Lantern Yard**, a fictional contemporary café/bar used to demonstrate how the same underlying package can be redesigned for a different hospitality business.
 
-## What changed from the reference client
-- Entire visual direction and colour palette
-- Hero/header treatment
-- Section order and headings
-- Food enabled and promoted ahead of drinks
-- New hours, menu, drinks, events, facilities and business copy
-- Gallery disabled until approved photography exists
+## Purpose
+- Demonstrate the finished customer-facing website package
+- Show that branding, layout, section order and content can vary by business
+- Keep the reusable deployment, editor and validation plumbing proven
+- Act as the base/reference repo for creating new client-specific repositories
 
-## What did not need rebuilding
-- Pages CMS content editor structure
-- GitHub Pages deployment workflow
-- JSON validation workflow
-- Content-loading/rendering engine
-- Mobile navigation behaviour
-- Opening-status logic
-- Structured-data logic
-- Customer handover/deployment documentation
+## Client workflow
+For a real customer, duplicate this repository into a new repo, customise the business content and design, connect that repo to the customer's domain, and give the customer access only to the restricted editor.
