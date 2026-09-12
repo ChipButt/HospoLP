@@ -2,22 +2,27 @@ media:
   input: media/images
   output: /media/images
 
+settings:
+  commit:
+    message: "Content update: {message}"
+
 content:
   - name: site
     label: Homepage & Contact
     type: file
     path: content/site.json
+    operations: { delete: false }
     fields:
-      - { name: name, label: Business name, type: string }
-      - { name: locationLine, label: Location, type: string }
+      - { name: name, label: Business name, type: string, required: true }
+      - { name: locationLine, label: Location, type: string, required: true }
       - { name: heroEyebrow, label: Small heading, type: string }
       - { name: strapline, label: Main strapline, type: string }
       - { name: shortWelcome, label: Short welcome, type: text }
       - { name: aboutHeading, label: About heading, type: string }
       - { name: aboutLead, label: About introduction, type: text }
       - { name: aboutBody, label: About text, type: text }
-      - { name: facts, label: Quick facts, type: list, field: { name: fact, label: Fact, type: string } }
-      - { name: address, label: Address, type: string }
+      - { name: facts, label: Quick facts, type: string, list: true }
+      - { name: address, label: Address, type: string, required: true }
       - { name: phone, label: Phone, type: string }
       - { name: email, label: Email, type: string }
       - { name: facebook, label: Facebook link, type: string }
@@ -33,30 +38,42 @@ content:
     label: Opening Hours
     type: file
     path: content/hours.json
+    operations: { delete: false }
     fields:
       - name: hours
         label: Days
-        type: list
+        type: object
+        list:
+          min: 7
+          max: 7
+          collapsible:
+            collapsed: true
+            summary: "{day}: {display}"
         fields:
-          - { name: day, label: Day, type: string }
+          - { name: day, label: Day, type: string, readonly: true }
           - { name: display, label: Display hours, type: string }
-          - { name: opens, label: Opens, type: string }
-          - { name: closes, label: Closes, type: string }
+          - { name: opens, label: Opens (24-hour), type: string }
+          - { name: closes, label: Closes (24-hour), type: string }
           - { name: closed, label: Closed all day, type: boolean }
 
   - name: drinks
     label: Drinks
     type: file
     path: content/drinks.json
+    operations: { delete: false }
     fields:
       - { name: enabled, label: Show drinks section, type: boolean }
       - { name: heading, label: Heading, type: string }
       - { name: intro, label: Introduction, type: text }
       - name: items
         label: Drinks
-        type: list
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{name}"
         fields:
-          - { name: name, label: Name, type: string }
+          - { name: name, label: Name, type: string, required: true }
           - { name: category, label: Category, type: string }
           - { name: style, label: Description, type: string }
           - { name: abv, label: ABV, type: string }
@@ -65,20 +82,29 @@ content:
     label: Food Menu
     type: file
     path: content/menu.json
+    operations: { delete: false }
     fields:
       - { name: enabled, label: Show food section, type: boolean }
       - { name: heading, label: Heading, type: string }
       - { name: intro, label: Introduction, type: text }
       - name: sections
         label: Menu sections
-        type: list
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{name}"
         fields:
-          - { name: name, label: Section name, type: string }
+          - { name: name, label: Section name, type: string, required: true }
           - name: items
             label: Dishes
-            type: list
+            type: object
+            list:
+              collapsible:
+                collapsed: true
+                summary: "{name} — {price}"
             fields:
-              - { name: name, label: Dish, type: string }
+              - { name: name, label: Dish, type: string, required: true }
               - { name: description, label: Description, type: text }
               - { name: price, label: Price, type: string }
               - { name: available, label: Available, type: boolean }
@@ -87,14 +113,19 @@ content:
     label: What's On
     type: file
     path: content/events.json
+    operations: { delete: false }
     fields:
       - { name: intro, label: Introduction, type: text }
       - name: items
         label: Events
-        type: list
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{title} — {when}"
         fields:
           - { name: enabled, label: Show event, type: boolean }
-          - { name: title, label: Event name, type: string }
+          - { name: title, label: Event name, type: string, required: true }
           - { name: when, label: When, type: string }
           - { name: description, label: Description, type: text }
 
@@ -102,24 +133,34 @@ content:
     label: Facilities
     type: file
     path: content/features.json
+    operations: { delete: false }
     fields:
       - name: items
         label: Facilities
-        type: list
+        type: object
+        list:
+          collapsible:
+            collapsed: true
+            summary: "{label}"
         fields:
-          - { name: label, label: Facility, type: string }
+          - { name: label, label: Facility, type: string, required: true }
           - { name: enabled, label: Show, type: boolean }
 
   - name: gallery
     label: Gallery
     type: file
     path: content/gallery.json
+    operations: { delete: false }
     fields:
       - { name: enabled, label: Show gallery, type: boolean }
-      - { name: note, label: Internal note, type: text }
       - name: items
         label: Photos
-        type: list
+        type: object
+        list:
+          max: 12
+          collapsible:
+            collapsed: true
+            summary: "{alt}"
         fields:
-          - { name: image, label: Photo, type: image }
-          - { name: alt, label: Description, type: string }
+          - { name: image, label: Photo, type: image, required: true }
+          - { name: alt, label: Description, type: string, required: true }
