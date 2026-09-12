@@ -9,6 +9,13 @@ const EDITOR_CONFIG = {
       publicUrl: 'https://chipbutt.github.io/MimsFlans/',
       rawBase: 'https://raw.githubusercontent.com/ChipButt/MimsFlans/main/content/',
       files: ['site','hours','drinks','menu','events','features','gallery','theme']
+    },
+    'lantern-yard': {
+      name: 'The Lantern Yard',
+      allowedEmails: ['jameschipbutt@hotmail.com'],
+      publicUrl: 'https://chipbutt.github.io/HospoLP/',
+      rawBase: 'https://raw.githubusercontent.com/ChipButt/HospoLP/main/content/',
+      files: ['site','hours','drinks','menu','events','features','gallery','theme']
     }
   }
 };
@@ -169,9 +176,7 @@ function sanitiseEditorPayload_(siteId, p) {
     out.menu.intro = text(p.menu.intro);
     out.menu.sections = arr(p.menu.sections).slice(0,20).map(s => ({name:text(s.name),items:arr(s.items).slice(0,100).map(i => ({name:text(i.name),description:text(i.description),price:text(i.price).slice(0,40),available:bool(i.available)}))}));
   }
-  if (p.events) {
-    out.events = {intro:text(p.events.intro),items:arr(p.events.items).slice(0,50).map(i => ({enabled:bool(i.enabled),title:text(i.title),when:text(i.when),description:text(i.description)}))};
-  }
+  if (p.events) out.events = {intro:text(p.events.intro),items:arr(p.events.items).slice(0,50).map(i => ({enabled:bool(i.enabled),title:text(i.title),when:text(i.when),description:text(i.description)}))};
   if (p.features) out.features = {items:arr(p.features.items).slice(0,50).map(i => ({label:text(i.label),enabled:bool(i.enabled)}))};
   if (p.gallery) out.gallery = {enabled:bool(p.gallery.enabled),items:arr(p.gallery.items).slice(0,24).map(i => ({image:text(i.image),alt:text(i.alt)}))};
   return out;
