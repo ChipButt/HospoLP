@@ -1,18 +1,32 @@
-# HospoLP — Hospitality Website Package
+# HospoLP — sellable hospitality website package
 
-This repository is one complete hospitality website for one customer/location. The current reference implementation is The Bulls Head, Bidford-on-Avon.
+HospoLP is one complete website for one hospitality business/location. The current reference implementation is The Bulls Head, Bidford-on-Avon.
 
-## Commercial model
-- Build and tailor the public website for the business.
-- Launch this repository to that business's own domain.
-- Give the customer a restricted basic content editor for routine changes.
-- Keep design, code, deployment and GitHub management with the developer.
+## Product model
+The customer buys a prebuilt, tailored website. The agency manages GitHub, deployment, design and technical changes. The customer receives the live site plus a basic editor for routine content updates.
 
-## New customer
-Duplicate this repository into a new repository, then change the business content, branding, layout and components as needed. The package/features can remain familiar, but the visual design should be bespoke to each business.
+## Customer can edit
+Opening hours, homepage/about wording, contact details, announcement banner, drinks, food/menu prices and availability, events, facilities and gallery images.
 
-## Editable customer content
-Opening hours, business/contact copy, announcement, drinks, menu and prices, events, facilities and gallery images.
+## Customer does not edit
+HTML, CSS, JavaScript, theme/layout, navigation architecture, deployment, GitHub settings, domain/DNS or editor configuration.
 
-## Developer-owned areas
-Layout, CSS, JavaScript, component structure, deployment, domain configuration and advanced integrations.
+## One customer = one repository
+To create another business website, duplicate this repository into a new repo and then change the branding, content, imagery, layout and components as required. The product/package is repeatable; the public design does not have to be.
+
+## Included
+- Responsive public website
+- Mobile Call / Directions / Hours actions
+- Opening-now status
+- Optional food section
+- Drinks, events, facilities and gallery
+- Announcement banner
+- Map/contact section
+- Pages CMS restricted content configuration
+- `/edit/` shortcut to the editor
+- GitHub Actions validation
+- GitHub Pages deployment workflow
+- Launch, handover and new-client documentation
+
+## Setup documents
+See `docs/NEW-CLIENT.md`, `docs/EDITOR.md`, `docs/DOMAIN-AND-DEPLOYMENT.md`, `docs/LAUNCH-CHECKLIST.md` and `docs/HANDOVER.md`.
