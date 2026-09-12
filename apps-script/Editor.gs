@@ -1,28 +1,20 @@
 const EDITOR_CONFIG = {
-  DATA_PARENT_FOLDER_ID: '1xjbLwbzT7JJoHHYH8V82IAtaWuRx1Owx',
+  REGISTRY_SPREADSHEET_ID: '12otLULjhJZ8dln9jPWa_DByUQ750NRHkhhciuCZimlY',
+  REGISTRY_SHEET: 'Clients',
   SESSION_SECONDS: 21600,
-  CODE_SECONDS: 600,
-  SITES: {
-    'mims-flans': {
-      name: 'Mim’s Flans',
-      allowedEmails: ['jameschipbutt@hotmail.com'],
-      publicUrl: 'https://chipbutt.github.io/MimsFlans/',
-      rawBase: 'https://raw.githubusercontent.com/ChipButt/MimsFlans/main/content/',
-      files: ['site','hours','drinks','menu','events','features','gallery','theme']
-    }
-  }
+  GITHUB_API: 'https://api.github.com',
+  STANDARD_CONTENT_FILES: ['site','hours','menu','events','features','gallery','drinks','theme']
 };
 
 function renderEditor_(e) {
   const siteId = String((e && e.parameter && e.parameter.site) || '').trim();
-  const site = EDITOR_CONFIG.SITES[siteId];
-  if (!site) return HtmlService.createHtmlOutput('Unknown website.');
+  const site = getEditorSite_(siteId);
   const t = HtmlService.createTemplateFromFile('EditorUI');
-  t.siteId = siteId;
-  t.siteName = site.name;
-  t.publicUrl = site.publicUrl;
+  t.siteId = site.site_id;
+  t.siteName = site.business_name;
+  t.publicUrl = site.public_url;
   return t.evaluate()
-    .setTitle(`${site.name} Website Editor`)
+    .setTitle(`${site.business_name} Website Editor`)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -30,137 +22,234 @@ function renderEditor_(e) {
 function serveEditorContent_(e) {
   const siteId = String((e && e.parameter && e.parameter.site) || '').trim();
   const callback = String((e && e.parameter && e.parameter.callback) || '').trim();
-  if (!EDITOR_CONFIG.SITES[siteId]) return ContentService.createTextOutput('/* unknown site */').setMimeType(ContentService.MimeType.JAVASCRIPT);
   if (!/^[A-Za-z_$][0-9A-Za-z_$\.]*$/.test(callback)) return ContentService.createTextOutput('/* invalid callback */').setMimeType(ContentService.MimeType.JAVASCRIPT);
-  const data = getEditorData_(siteId);
-  return ContentService.createTextOutput(`${callback}(${JSON.stringify(data)});`).setMimeType(ContentService.MimeType.JAVASCRIPT);
+  try {
+    const data = getEditorData_(siteId);
+    return ContentService.createTextOutput(`${callback}(${JSON.stringify(data)});`).setMimeType(ContentService.MimeType.JAVASCRIPT);
+  } catch (err) {
+    return ContentService.createTextOutput(`${callback}({});`).setMimeType(ContentService.MimeType.JAVASCRIPT);
+  }
 }
 
-function requestEditorCode(siteId, email) {
+function loginEditor(siteId, email, password) {
   const site = getEditorSite_(siteId);
   const cleanEmail = String(email || '').trim().toLowerCase();
-  if (!site.allowedEmails.map(x => x.toLowerCase()).includes(cleanEmail)) { Utilities.sleep(350); return {success:true}; }
-  const code = String(Math.floor(100000 + Math.random() * 900000));
-  CacheService.getScriptCache().put(`editor-code:${siteId}:${cleanEmail}`, code, EDITOR_CONFIG.CODE_SECONDS);
-  MailApp.sendEmail({to:cleanEmail,subject:`${site.name} website editor sign-in code`,htmlBody:`<p>Your ${site.name} website editor code is:</p><p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p><p>This code expires in 10 minutes.</p>`});
-  return {success:true};
-}
-
-function verifyEditorCode(siteId, email, code) {
-  const site = getEditorSite_(siteId);
-  const cleanEmail = String(email || '').trim().toLowerCase();
-  if (!site.allowedEmails.map(x => x.toLowerCase()).includes(cleanEmail)) throw new Error('This email is not authorised for this website.');
-  const cache = CacheService.getScriptCache();
-  const key = `editor-code:${siteId}:${cleanEmail}`;
-  const expected = cache.get(key);
-  if (!expected || String(code || '').trim() !== expected) throw new Error('That code is incorrect or has expired.');
-  cache.remove(key);
+  if (cleanEmail !== String(site.login_email || '').trim().toLowerCase() || !verifyPassword_(password, site.password_salt, site.password_hash)) {
+    Utilities.sleep(400);
+    throw new Error('Email or password is incorrect.');
+  }
   const token = Utilities.getUuid() + Utilities.getUuid();
-  cache.put(`editor-session:${token}`, JSON.stringify({siteId,email:cleanEmail}), EDITOR_CONFIG.SESSION_SECONDS);
-  return {token,siteName:site.name,publicUrl:site.publicUrl,data:getEditorData_(siteId)};
+  CacheService.getScriptCache().put(`editor-session:${token}`, JSON.stringify({siteId:site.site_id,email:cleanEmail}), EDITOR_CONFIG.SESSION_SECONDS);
+  return editorBootstrap_(site, token);
 }
 
 function resumeEditorSession(siteId, token) {
   requireEditorSession_(siteId, token);
+  return editorBootstrap_(getEditorSite_(siteId), token);
+}
+
+function changeEditorPassword(siteId, token, currentPassword, newPassword) {
+  const session = requireEditorSession_(siteId, token);
   const site = getEditorSite_(siteId);
-  return {siteName:site.name,publicUrl:site.publicUrl,data:getEditorData_(siteId)};
+  if (!verifyPassword_(currentPassword, site.password_salt, site.password_hash)) throw new Error('Current password is incorrect.');
+  validatePassword_(newPassword);
+  const salt = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  const hash = hashPassword_(newPassword, salt);
+  updateRegistryCredentials_(site._row, salt, hash);
+  return {success:true};
+}
+
+function editorBootstrap_(site, token) {
+  return {
+    token: token,
+    siteName: site.business_name,
+    publicUrl: site.public_url,
+    data: getEditorData_(site.site_id),
+    schema: getEditorSchema_(site)
+  };
 }
 
 function publishEditorData(siteId, token, payload) {
   requireEditorSession_(siteId, token);
-  const cleaned = sanitiseEditorPayload_(siteId, payload || {});
-  writeEditorData_(siteId, cleaned);
-  return {success:true,publishedAt:new Date().toISOString(),data:cleaned};
+  const site = getEditorSite_(siteId);
+  const cleaned = sanitiseEditorPayload_(payload || {});
+  const root = site.content_root || 'content';
+  Object.keys(cleaned).forEach(name => {
+    if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
+    githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from HospoLP editor`);
+  });
+  return {success:true,publishedAt:new Date().toISOString(),data:getEditorData_(siteId)};
 }
 
 function uploadEditorImage(siteId, token, asset) {
   requireEditorSession_(siteId, token);
-  if (!asset || !asset.data || !asset.name) throw new Error('Invalid image.');
+  const site = getEditorSite_(siteId);
+  if (!asset || !asset.data || !asset.name) throw new Error('Choose an image first.');
   const mime = String(asset.mimeType || '').toLowerCase();
   if (!mime.startsWith('image/')) throw new Error('Only image files are allowed.');
   const bytes = Utilities.base64Decode(asset.data);
-  if (bytes.length > 10 * 1024 * 1024) throw new Error('Images must be 10 MB or smaller.');
-  const folder = getEditorSiteFolder_(siteId);
-  const imageFolder = getOrCreateFolder_(folder, 'Images');
-  const file = imageFolder.createFile(Utilities.newBlob(bytes, mime, sanitiseFileName_(asset.name)));
-  try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (err) { console.warn(err); }
-  return {url:`https://drive.google.com/uc?export=view&id=${file.getId()}`,name:file.getName()};
+  if (bytes.length > 8 * 1024 * 1024) throw new Error('Images must be 8 MB or smaller.');
+  const ext = imageExtension_(asset.name, mime);
+  const stem = sanitiseAssetName_(asset.name.replace(/\.[^.]+$/, '')) || 'image';
+  const filename = `${Date.now()}-${stem}.${ext}`;
+  const mediaRoot = site.media_root || 'media/editor';
+  const path = `${mediaRoot}/${filename}`;
+  githubWriteBase64_(site, path, asset.data, `Upload ${filename} from HospoLP editor`);
+  return {path:path,name:filename};
 }
 
 function getEditorSite_(siteId) {
-  const site = EDITOR_CONFIG.SITES[String(siteId || '')];
-  if (!site) throw new Error('Unknown website.');
-  return site;
+  const id = String(siteId || '').trim();
+  if (!id) throw new Error('Unknown website.');
+  const sheet = SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID).getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
+  if (!sheet) throw new Error('HospoLP client registry is not configured.');
+  const values = sheet.getDataRange().getValues();
+  if (values.length < 2) throw new Error('Unknown website.');
+  const headers = values[0].map(String);
+  for (let r = 1; r < values.length; r++) {
+    const row = {};
+    headers.forEach((h, i) => row[h] = values[r][i]);
+    if (String(row.site_id).trim() === id && truthy_(row.active)) {
+      row._row = r + 1;
+      return row;
+    }
+  }
+  throw new Error('Unknown or inactive website.');
+}
+
+function updateRegistryCredentials_(rowNumber, salt, hash) {
+  const sheet = SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID).getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
+  const headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
+  const saltCol = headers.indexOf('password_salt') + 1;
+  const hashCol = headers.indexOf('password_hash') + 1;
+  if (!saltCol || !hashCol) throw new Error('Password columns are missing from the client registry.');
+  sheet.getRange(rowNumber, saltCol).setValue(salt);
+  sheet.getRange(rowNumber, hashCol).setValue(hash);
+}
+
+function getEditorSchema_(site) {
+  const path = site.schema_path || 'editor.schema.json';
+  return JSON.parse(githubReadText_(site, path));
+}
+
+function getEditorData_(siteId) {
+  const site = getEditorSite_(siteId);
+  const root = site.content_root || 'content';
+  const data = {};
+  EDITOR_CONFIG.STANDARD_CONTENT_FILES.forEach(name => {
+    try { data[name] = JSON.parse(githubReadText_(site, `${root}/${name}.json`)); } catch (err) { /* optional content file */ }
+  });
+  return data;
 }
 
 function requireEditorSession_(siteId, token) {
   const value = CacheService.getScriptCache().get(`editor-session:${String(token || '')}`);
   if (!value) throw new Error('Your editor session has expired. Please sign in again.');
   const session = JSON.parse(value);
-  if (session.siteId !== siteId) throw new Error('This session cannot edit that website.');
+  if (session.siteId !== String(siteId)) throw new Error('This session cannot edit that website.');
   return session;
 }
 
-function getEditorData_(siteId) {
-  const site = getEditorSite_(siteId);
-  const folder = getEditorSiteFolder_(siteId);
-  const files = folder.getFilesByName('site-data.json');
-  if (files.hasNext()) return JSON.parse(files.next().getBlob().getDataAsString());
-  const data = {};
-  site.files.forEach(name => {
-    const response = UrlFetchApp.fetch(`${site.rawBase}${name}.json`, {muteHttpExceptions:true});
-    if (response.getResponseCode() === 200) data[name] = JSON.parse(response.getContentText());
-  });
-  writeEditorData_(siteId, data);
-  return data;
+function githubToken_() {
+  const token = PropertiesService.getScriptProperties().getProperty('HOSPOLP_GITHUB_TOKEN');
+  if (!token) throw new Error('HospoLP publishing has not been connected to GitHub yet.');
+  return token;
 }
 
-function writeEditorData_(siteId, data) {
-  const folder = getEditorSiteFolder_(siteId);
-  const files = folder.getFilesByName('site-data.json');
-  if (files.hasNext()) files.next().setContent(JSON.stringify(data, null, 2));
-  else folder.createFile('site-data.json', JSON.stringify(data, null, 2), MimeType.PLAIN_TEXT);
+function githubRequest_(site, path, method, payload) {
+  const url = `${EDITOR_CONFIG.GITHUB_API}/repos/${site.repo_full_name}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
+  const options = {
+    method: method || 'get',
+    muteHttpExceptions: true,
+    headers: {
+      Authorization: `Bearer ${githubToken_()}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'HospoLP-Editor'
+    }
+  };
+  if (payload) {
+    options.contentType = 'application/json';
+    options.payload = JSON.stringify(payload);
+  }
+  const response = UrlFetchApp.fetch(url, options);
+  const code = response.getResponseCode();
+  const text = response.getContentText();
+  if (code < 200 || code >= 300) throw new Error(`GitHub publishing error (${code}). ${safeGithubError_(text)}`);
+  return text ? JSON.parse(text) : {};
 }
 
-function getEditorSiteFolder_(siteId) {
-  const parent = DriveApp.getFolderById(EDITOR_CONFIG.DATA_PARENT_FOLDER_ID);
-  const editorRoot = getOrCreateFolder_(parent, 'Website Editor Data');
-  return getOrCreateFolder_(editorRoot, siteId);
+function githubReadText_(site, path) {
+  const result = githubRequest_(site, path, 'get');
+  if (!result.content) throw new Error(`Could not read ${path}.`);
+  return Utilities.newBlob(Utilities.base64Decode(String(result.content).replace(/\s/g,''))).getDataAsString();
 }
 
-function getOrCreateFolder_(parent, name) {
-  const matches = parent.getFoldersByName(name);
-  return matches.hasNext() ? matches.next() : parent.createFolder(name);
+function githubWriteText_(site, path, text, message) {
+  const b64 = Utilities.base64Encode(Utilities.newBlob(text, 'text/plain').getBytes());
+  return githubWriteBase64_(site, path, b64, message);
 }
 
-function sanitiseEditorPayload_(siteId, p) {
-  const current = getEditorData_(siteId);
-  const text = v => String(v == null ? '' : v).slice(0, 5000);
+function githubWriteBase64_(site, path, base64, message) {
+  let sha = null;
+  try { sha = githubRequest_(site, path, 'get').sha; } catch (err) { if (!String(err.message).includes('(404)')) throw err; }
+  const payload = {message:message,content:String(base64).replace(/\s/g,''),branch:'main'};
+  if (sha) payload.sha = sha;
+  return githubRequest_(site, path, 'put', payload);
+}
+
+function safeGithubError_(text) {
+  try { return JSON.parse(text).message || 'Unknown error'; } catch (e) { return String(text || '').slice(0,200); }
+}
+
+function hashPassword_(password, salt) {
+  const bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, String(salt) + String(password), Utilities.Charset.UTF_8);
+  return bytes.map(b => (b < 0 ? b + 256 : b).toString(16).padStart(2,'0')).join('');
+}
+
+function verifyPassword_(password, salt, expected) {
+  if (!salt || !expected) return false;
+  return hashPassword_(password, salt) === String(expected).toLowerCase();
+}
+
+function validatePassword_(password) {
+  const p = String(password || '');
+  if (p.length < 8) throw new Error('Your new password must be at least 8 characters long.');
+}
+
+function truthy_(value) {
+  return value === true || ['true','yes','1','active'].includes(String(value || '').trim().toLowerCase());
+}
+
+function imageExtension_(name, mime) {
+  const byMime = {'image/jpeg':'jpg','image/png':'png','image/webp':'webp','image/gif':'gif','image/avif':'avif'};
+  if (byMime[mime]) return byMime[mime];
+  const ext = String(name || '').split('.').pop().toLowerCase().replace(/[^a-z0-9]/g,'');
+  return ext || 'jpg';
+}
+
+function sanitiseAssetName_(value) {
+  return String(value || '').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,70);
+}
+
+function sanitiseEditorPayload_(payload) {
+  const text = v => String(v == null ? '' : v).slice(0,5000);
   const bool = v => !!v;
   const arr = v => Array.isArray(v) ? v : [];
-  const out = JSON.parse(JSON.stringify(current));
-
+  const p = JSON.parse(JSON.stringify(payload || {}));
+  const out = {};
   if (p.site) {
-    out.site = out.site || {};
-    ['strapline','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in p.site) out.site[k] = text(p.site[k]); });
-    if (Array.isArray(p.site.facts)) out.site.facts = p.site.facts.slice(0,20).map(text);
-    if (p.site.notice) out.site.notice = {enabled:bool(p.site.notice.enabled),title:text(p.site.notice.title),text:text(p.site.notice.text)};
+    out.site = p.site;
+    ['name','locationLine','heroEyebrow','strapline','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','mapsUrl','seoTitle','seoDescription','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in out.site) out.site[k] = text(out.site[k]); });
+    if (Array.isArray(out.site.facts)) out.site.facts = out.site.facts.slice(0,30).map(text);
+    if (out.site.notice) out.site.notice = {enabled:bool(out.site.notice.enabled),title:text(out.site.notice.title),text:text(out.site.notice.text)};
   }
-  if (p.hours) {
-    out.hours = out.hours || {};
-    out.hours.note = text(p.hours.note);
-    const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-    out.hours.hours = days.map((day,i) => { const x = arr(p.hours.hours)[i] || {}; return {day,display:text(x.display),opens:text(x.opens).slice(0,5),closes:text(x.closes).slice(0,5),closed:bool(x.closed)}; });
-  }
-  if (p.menu) {
-    out.menu = out.menu || {};
-    out.menu.enabled = bool(p.menu.enabled);
-    out.menu.heading = text(p.menu.heading);
-    out.menu.intro = text(p.menu.intro);
-    out.menu.sections = arr(p.menu.sections).slice(0,20).map(s => ({name:text(s.name),items:arr(s.items).slice(0,100).map(i => ({name:text(i.name),description:text(i.description),price:text(i.price).slice(0,40),available:bool(i.available)}))}));
-  }
-  if (p.events) out.events = {intro:text(p.events.intro),items:arr(p.events.items).slice(0,50).map(i => ({enabled:bool(i.enabled),title:text(i.title),when:text(i.when),description:text(i.description)}))};
-  if (p.features) out.features = {items:arr(p.features.items).slice(0,50).map(i => ({label:text(i.label),enabled:bool(i.enabled)}))};
-  if (p.gallery) out.gallery = {enabled:bool(p.gallery.enabled),items:arr(p.gallery.items).slice(0,24).map(i => ({image:text(i.image),alt:text(i.alt)}))};
+  if (p.hours) out.hours = p.hours;
+  if (p.menu) out.menu = p.menu;
+  if (p.events) out.events = p.events;
+  if (p.features) out.features = p.features;
+  if (p.gallery) out.gallery = p.gallery;
+  if (p.drinks) out.drinks = p.drinks;
+  if (p.theme) out.theme = p.theme;
   return out;
 }
