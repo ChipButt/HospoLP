@@ -1,32 +1,23 @@
-# HospoLP — sellable hospitality website package
+# The Lantern Yard — HospoLP second-client test
 
-HospoLP is one complete website for one hospitality business/location. The current reference implementation is The Bulls Head, Bidford-on-Avon.
+This branch is a deliberate second-client conversion of the HospoLP reference package.
 
-## Product model
-The customer buys a prebuilt, tailored website. The agency manages GitHub, deployment, design and technical changes. The customer receives the live site plus a basic editor for routine content updates.
+The business is fictional. Its purpose is to prove that the package can be duplicated and substantially restyled without rebuilding deployment, editor configuration, validation or content architecture.
 
-## Customer can edit
-Opening hours, homepage/about wording, contact details, announcement banner, drinks, food/menu prices and availability, events, facilities and gallery images.
+## What changed from the reference client
+- Entire visual direction and colour palette
+- Hero/header treatment
+- Section order and headings
+- Food enabled and promoted ahead of drinks
+- New hours, menu, drinks, events, facilities and business copy
+- Gallery disabled until approved photography exists
 
-## Customer does not edit
-HTML, CSS, JavaScript, theme/layout, navigation architecture, deployment, GitHub settings, domain/DNS or editor configuration.
-
-## One customer = one repository
-To create another business website, duplicate this repository into a new repo and then change the branding, content, imagery, layout and components as required. The product/package is repeatable; the public design does not have to be.
-
-## Included
-- Responsive public website
-- Mobile Call / Directions / Hours actions
-- Opening-now status
-- Optional food section
-- Drinks, events, facilities and gallery
-- Announcement banner
-- Map/contact section
-- Pages CMS restricted content configuration
-- `/edit/` shortcut to the editor
-- GitHub Actions validation
+## What did not need rebuilding
+- Pages CMS content editor structure
 - GitHub Pages deployment workflow
-- Launch, handover and new-client documentation
-
-## Setup documents
-See `docs/NEW-CLIENT.md`, `docs/EDITOR.md`, `docs/DOMAIN-AND-DEPLOYMENT.md`, `docs/LAUNCH-CHECKLIST.md` and `docs/HANDOVER.md`.
+- JSON validation workflow
+- Content-loading/rendering engine
+- Mobile navigation behaviour
+- Opening-status logic
+- Structured-data logic
+- Customer handover/deployment documentation
