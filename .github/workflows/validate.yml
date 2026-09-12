@@ -18,9 +18,15 @@ jobs:
       - name: Validate JSON content
         run: |
           node -e "const fs=require('fs'); for(const f of fs.readdirSync('content').filter(f=>f.endsWith('.json'))){JSON.parse(fs.readFileSync('content/'+f,'utf8')); console.log('OK',f)}"
-      - name: Check required files
+      - name: Check standard multi-page structure
         run: |
           test -f index.html
+          test -f about/index.html
+          test -f food/index.html
+          test -f drinks/index.html
+          test -f hours/index.html
+          test -f whats-on/index.html
+          test -f visit/index.html
           test -f .pages.yml
           test -f assets/styles.css
           test -f assets/app.js
