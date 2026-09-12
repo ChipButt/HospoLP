@@ -9,13 +9,6 @@ const EDITOR_CONFIG = {
       publicUrl: 'https://chipbutt.github.io/MimsFlans/',
       rawBase: 'https://raw.githubusercontent.com/ChipButt/MimsFlans/main/content/',
       files: ['site','hours','drinks','menu','events','features','gallery','theme']
-    },
-    'lantern-yard': {
-      name: 'The Lantern Yard',
-      allowedEmails: ['jameschipbutt@hotmail.com'],
-      publicUrl: 'https://chipbutt.github.io/HospoLP/',
-      rawBase: 'https://raw.githubusercontent.com/ChipButt/HospoLP/main/content/',
-      files: ['site','hours','drinks','menu','events','features','gallery','theme']
     }
   }
 };
@@ -24,7 +17,7 @@ function renderEditor_(e) {
   const siteId = String((e && e.parameter && e.parameter.site) || '').trim();
   const site = EDITOR_CONFIG.SITES[siteId];
   if (!site) return HtmlService.createHtmlOutput('Unknown website.');
-  const t = HtmlService.createTemplateFromFile('Editor');
+  const t = HtmlService.createTemplateFromFile('EditorUI');
   t.siteId = siteId;
   t.siteName = site.name;
   t.publicUrl = site.publicUrl;
@@ -46,17 +39,10 @@ function serveEditorContent_(e) {
 function requestEditorCode(siteId, email) {
   const site = getEditorSite_(siteId);
   const cleanEmail = String(email || '').trim().toLowerCase();
-  if (!site.allowedEmails.map(x => x.toLowerCase()).includes(cleanEmail)) {
-    Utilities.sleep(350);
-    return {success:true};
-  }
+  if (!site.allowedEmails.map(x => x.toLowerCase()).includes(cleanEmail)) { Utilities.sleep(350); return {success:true}; }
   const code = String(Math.floor(100000 + Math.random() * 900000));
   CacheService.getScriptCache().put(`editor-code:${siteId}:${cleanEmail}`, code, EDITOR_CONFIG.CODE_SECONDS);
-  MailApp.sendEmail({
-    to: cleanEmail,
-    subject: `${site.name} website editor sign-in code`,
-    htmlBody: `<p>Your ${site.name} website editor code is:</p><p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p><p>This code expires in 10 minutes.</p>`
-  });
+  MailApp.sendEmail({to:cleanEmail,subject:`${site.name} website editor sign-in code`,htmlBody:`<p>Your ${site.name} website editor code is:</p><p style="font-size:28px;font-weight:bold;letter-spacing:6px">${code}</p><p>This code expires in 10 minutes.</p>`});
   return {success:true};
 }
 
@@ -71,20 +57,20 @@ function verifyEditorCode(siteId, email, code) {
   cache.remove(key);
   const token = Utilities.getUuid() + Utilities.getUuid();
   cache.put(`editor-session:${token}`, JSON.stringify({siteId,email:cleanEmail}), EDITOR_CONFIG.SESSION_SECONDS);
-  return {token, siteName:site.name, publicUrl:site.publicUrl, data:getEditorData_(siteId)};
+  return {token,siteName:site.name,publicUrl:site.publicUrl,data:getEditorData_(siteId)};
 }
 
 function resumeEditorSession(siteId, token) {
   requireEditorSession_(siteId, token);
   const site = getEditorSite_(siteId);
-  return {siteName:site.name, publicUrl:site.publicUrl, data:getEditorData_(siteId)};
+  return {siteName:site.name,publicUrl:site.publicUrl,data:getEditorData_(siteId)};
 }
 
 function publishEditorData(siteId, token, payload) {
   requireEditorSession_(siteId, token);
   const cleaned = sanitiseEditorPayload_(siteId, payload || {});
   writeEditorData_(siteId, cleaned);
-  return {success:true, publishedAt:new Date().toISOString(), data:cleaned};
+  return {success:true,publishedAt:new Date().toISOString(),data:cleaned};
 }
 
 function uploadEditorImage(siteId, token, asset) {
@@ -98,7 +84,7 @@ function uploadEditorImage(siteId, token, asset) {
   const imageFolder = getOrCreateFolder_(folder, 'Images');
   const file = imageFolder.createFile(Utilities.newBlob(bytes, mime, sanitiseFileName_(asset.name)));
   try { file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW); } catch (err) { console.warn(err); }
-  return {url:`https://drive.google.com/uc?export=view&id=${file.getId()}`, name:file.getName()};
+  return {url:`https://drive.google.com/uc?export=view&id=${file.getId()}`,name:file.getName()};
 }
 
 function getEditorSite_(siteId) {
@@ -156,7 +142,7 @@ function sanitiseEditorPayload_(siteId, p) {
 
   if (p.site) {
     out.site = out.site || {};
-    ['strapline','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','reviewQuote','reviewCredit','footerNote'].forEach(k => { if (k in p.site) out.site[k] = text(p.site[k]); });
+    ['strapline','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in p.site) out.site[k] = text(p.site[k]); });
     if (Array.isArray(p.site.facts)) out.site.facts = p.site.facts.slice(0,20).map(text);
     if (p.site.notice) out.site.notice = {enabled:bool(p.site.notice.enabled),title:text(p.site.notice.title),text:text(p.site.notice.text)};
   }
@@ -164,10 +150,7 @@ function sanitiseEditorPayload_(siteId, p) {
     out.hours = out.hours || {};
     out.hours.note = text(p.hours.note);
     const days = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
-    out.hours.hours = days.map((day,i) => {
-      const x = arr(p.hours.hours)[i] || {};
-      return {day,display:text(x.display),opens:text(x.opens).slice(0,5),closes:text(x.closes).slice(0,5),closed:bool(x.closed)};
-    });
+    out.hours.hours = days.map((day,i) => { const x = arr(p.hours.hours)[i] || {}; return {day,display:text(x.display),opens:text(x.opens).slice(0,5),closes:text(x.closes).slice(0,5),closed:bool(x.closed)}; });
   }
   if (p.menu) {
     out.menu = out.menu || {};
