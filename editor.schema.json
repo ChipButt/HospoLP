@@ -1,19 +1,38 @@
 {
-  "version": 1,
+  "version": 2,
   "pages": [
     {"id":"home","label":"Home","url":"","groups":[
-      {"label":"Homepage","fields":[
-        {"label":"Main strapline","type":"text","path":"site.strapline"},
-        {"label":"Welcome text","type":"textarea","path":"site.shortWelcome"},
-        {"label":"Main message","type":"text","path":"site.primaryMessage"},
-        {"label":"Logo","type":"image","path":"site.logoImage"},
-        {"label":"Hero image","type":"image","path":"site.heroImage"}
-      ]}
+      {"label":"Homepage text","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.heroEyebrow"},{"label":"Main heading","type":"text","path":"site.heroTitle"},{"label":"Second heading line","type":"text","path":"site.heroSubtitle"},{"label":"Main strapline","type":"text","path":"site.strapline"},{"label":"Main message","type":"text","path":"site.primaryMessage"},{"label":"Supporting note","type":"textarea","path":"site.heroNote"}
+      ]},
+      {"label":"Images","fields":[{"label":"Logo","type":"image","path":"site.logoImage"},{"label":"Main banner / hero image","type":"image","path":"site.heroImage"},{"label":"Hero image description","type":"text","path":"site.heroImageAlt"}]},
+      {"label":"Announcement","fields":[{"label":"Show announcement","type":"boolean","path":"site.notice.enabled"},{"label":"Heading","type":"text","path":"site.notice.title"},{"label":"Message","type":"textarea","path":"site.notice.text"}]}
     ]},
-    {"id":"about","label":"About","url":"about/","groups":[{"label":"About","fields":[{"label":"Heading","type":"text","path":"site.aboutHeading"},{"label":"Introduction","type":"textarea","path":"site.aboutLead"},{"label":"Main text","type":"textarea","path":"site.aboutBody"}]}]},
-    {"id":"food","label":"Food","url":"food/","groups":[{"label":"Menu","fields":[{"label":"Menu heading","type":"text","path":"menu.heading"},{"label":"Introduction","type":"textarea","path":"menu.intro"},{"label":"Menu sections","type":"menu","path":"menu.sections"}]}]},
-    {"id":"hours","label":"Hours","url":"hours/","groups":[{"label":"Opening Hours","fields":[{"label":"Hours note","type":"textarea","path":"hours.note"},{"label":"Weekly hours","type":"hours","path":"hours.hours"}]}]},
-    {"id":"events","label":"What's On","url":"whats-on/","groups":[{"label":"Events","fields":[{"label":"Introduction","type":"textarea","path":"events.intro"},{"label":"Events","type":"events","path":"events.items"}]}]},
-    {"id":"visit","label":"Visit","url":"visit/","groups":[{"label":"Contact","fields":[{"label":"Address","type":"textarea","path":"site.address"},{"label":"Phone","type":"text","path":"site.phone"},{"label":"Email","type":"text","path":"site.email"}]},{"label":"Facilities","fields":[{"label":"Facilities","type":"features","path":"features.items"}]},{"label":"Gallery","fields":[{"label":"Show gallery","type":"boolean","path":"gallery.enabled"},{"label":"Photos","type":"gallery","path":"gallery.items"}]}]}
+    {"id":"about","label":"About","url":"about/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.aboutEyebrow"},{"label":"Banner heading","type":"text","path":"site.aboutTitle"},{"label":"Banner introduction","type":"textarea","path":"site.aboutLead"}]},
+      {"label":"About content","fields":[{"label":"Section heading","type":"text","path":"site.aboutHeading"},{"label":"Main text","type":"textarea","path":"site.aboutBody"}]}
+    ]},
+    {"id":"food","label":"Food","url":"food/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.foodEyebrow"},{"label":"Banner heading","type":"text","path":"site.foodTitle"},{"label":"Banner introduction","type":"textarea","path":"site.foodLead"}]},
+      {"label":"Menu","fields":[{"label":"Menu heading","type":"text","path":"menu.heading"},{"label":"Introduction","type":"textarea","path":"menu.intro"},{"label":"Menu sections","type":"menu","path":"menu.sections"}]}
+    ]},
+    {"id":"drinks","label":"Drinks","url":"drinks/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.drinksEyebrow"},{"label":"Banner heading","type":"text","path":"site.drinksTitle"},{"label":"Banner introduction","type":"textarea","path":"site.drinksLead"}]},
+      {"label":"Drinks","fields":[{"label":"Show drinks","type":"boolean","path":"drinks.enabled"},{"label":"Drinks heading","type":"text","path":"drinks.heading"},{"label":"Introduction","type":"textarea","path":"drinks.intro"}]}
+    ]},
+    {"id":"hours","label":"Hours","url":"hours/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.hoursEyebrow"},{"label":"Banner heading","type":"text","path":"site.hoursTitle"},{"label":"Hours note","type":"textarea","path":"hours.note"}]},
+      {"label":"Opening Hours","fields":[{"label":"Weekly hours","type":"hours","path":"hours.hours"}]}
+    ]},
+    {"id":"events","label":"What's On","url":"whats-on/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.eventsEyebrow"},{"label":"Banner heading","type":"text","path":"site.eventsTitle"},{"label":"Introduction","type":"textarea","path":"events.intro"}]},
+      {"label":"Events","fields":[{"label":"Events","type":"events","path":"events.items"}]}
+    ]},
+    {"id":"visit","label":"Visit","url":"visit/","groups":[
+      {"label":"Page banner","fields":[{"label":"Eyebrow text","type":"text","path":"site.visitEyebrow"},{"label":"Banner heading","type":"text","path":"site.visitTitle"},{"label":"Banner introduction","type":"textarea","path":"site.visitLead"}]},
+      {"label":"Contact","fields":[{"label":"Address","type":"textarea","path":"site.address"},{"label":"Phone","type":"text","path":"site.phone"},{"label":"Email","type":"text","path":"site.email"}]},
+      {"label":"Facilities","fields":[{"label":"Facilities","type":"features","path":"features.items"}]},
+      {"label":"Gallery","fields":[{"label":"Show gallery","type":"boolean","path":"gallery.enabled"},{"label":"Photos","type":"gallery","path":"gallery.items"}]}
+    ]}
   ]
 }
