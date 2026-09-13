@@ -239,7 +239,7 @@ function sanitiseEditorPayload_(payload) {
   const out = {};
   if (p.site) {
     out.site = p.site;
-    ['name','locationLine','heroEyebrow','heroTitle','heroSubtitle','strapline','heroNote','shortWelcome','primaryMessage','aboutHeading','aboutLead','aboutBody','address','phone','email','mapsUrl','seoTitle','seoDescription','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in out.site) out.site[k] = text(out.site[k]); });
+    ['name','locationLine','heroEyebrow','heroTitle','heroSubtitle','strapline','heroNote','shortWelcome','primaryMessage','aboutBannerEyebrow','aboutBannerTitle','aboutBannerLead','menuBannerEyebrow','menuBannerTitle','menuBannerLead','hoursBannerEyebrow','hoursBannerTitle','eventsBannerEyebrow','eventsBannerTitle','visitBannerEyebrow','visitBannerTitle','visitBannerLead','aboutHeading','aboutLead','aboutBody','address','phone','email','mapsUrl','seoTitle','seoDescription','reviewQuote','reviewCredit','footerNote','logoImage','heroImage','heroImageAlt'].forEach(k => { if (k in out.site) out.site[k] = text(out.site[k]); });
     if (Array.isArray(out.site.facts)) out.site.facts = out.site.facts.slice(0,30).map(text);
     if (out.site.notice) out.site.notice = {enabled:bool(out.site.notice.enabled),title:text(out.site.notice.title),text:text(out.site.notice.text)};
   }
