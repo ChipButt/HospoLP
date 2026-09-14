@@ -3,7 +3,8 @@ const EDITOR_CONFIG = {
   REGISTRY_SHEET: 'Clients',
   SESSION_SECONDS: 21600,
   GITHUB_API: 'https://api.github.com',
-  STANDARD_CONTENT_FILES: ['site','hours','menu','events','features','gallery','drinks','theme']
+  STANDARD_CONTENT_FILES: ['site','hours','menu','events','features','gallery','drinks','theme'],
+  DRAFT_FOLDER_NAME: 'HospoLP Editor Drafts'
 };
 
 function renderEditor_(e) {
@@ -60,13 +61,31 @@ function changeEditorPassword(siteId, token, currentPassword, newPassword) {
 }
 
 function editorBootstrap_(site, token) {
+  const savedDraft = getEditorDraft_(site.site_id);
   return {
     token: token,
     siteName: site.business_name,
     publicUrl: site.public_url,
     data: getEditorData_(site.site_id),
+    draft: savedDraft ? savedDraft.data : null,
+    draftSavedAt: savedDraft ? savedDraft.savedAt : null,
     schema: getEditorSchema_(site)
   };
+}
+
+function saveEditorDraft(siteId, token, payload) {
+  requireEditorSession_(siteId, token);
+  getEditorSite_(siteId);
+  const cleaned = sanitiseEditorPayload_(payload || {});
+  const savedAt = new Date().toISOString();
+  writeEditorDraft_(siteId, {siteId:siteId,savedAt:savedAt,data:cleaned});
+  return {success:true,savedAt:savedAt};
+}
+
+function discardEditorDraft(siteId, token) {
+  requireEditorSession_(siteId, token);
+  deleteEditorDraft_(siteId);
+  return {success:true};
 }
 
 function publishEditorData(siteId, token, payload) {
@@ -78,6 +97,7 @@ function publishEditorData(siteId, token, payload) {
     if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
     githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from HospoLP editor`);
   });
+  deleteEditorDraft_(siteId);
   return {success:true,publishedAt:new Date().toISOString(),data:getEditorData_(siteId)};
 }
 
@@ -96,6 +116,54 @@ function uploadEditorImage(siteId, token, asset) {
   const path = `${mediaRoot}/${filename}`;
   githubWriteBase64_(site, path, asset.data, `Upload ${filename} from HospoLP editor`);
   return {path:path,name:filename};
+}
+
+function getEditorDraft_(siteId) {
+  const file = findEditorDraftFile_(siteId);
+  if (!file) return null;
+  try {
+    const parsed = JSON.parse(file.getBlob().getDataAsString());
+    if (!parsed || parsed.siteId !== String(siteId) || !parsed.data) return null;
+    return parsed;
+  } catch (err) {
+    return null;
+  }
+}
+
+function writeEditorDraft_(siteId, value) {
+  const folder = getEditorDraftFolder_();
+  const filename = `${sanitiseAssetName_(siteId) || 'site'}.json`;
+  const content = JSON.stringify(value);
+  const files = folder.getFilesByName(filename);
+  if (files.hasNext()) {
+    files.next().setContent(content);
+  } else {
+    folder.createFile(filename, content, MimeType.PLAIN_TEXT);
+  }
+}
+
+function deleteEditorDraft_(siteId) {
+  const file = findEditorDraftFile_(siteId);
+  if (file) file.setTrashed(true);
+}
+
+function findEditorDraftFile_(siteId) {
+  const folder = getEditorDraftFolder_();
+  const filename = `${sanitiseAssetName_(siteId) || 'site'}.json`;
+  const files = folder.getFilesByName(filename);
+  return files.hasNext() ? files.next() : null;
+}
+
+function getEditorDraftFolder_() {
+  const props = PropertiesService.getScriptProperties();
+  const savedId = props.getProperty('HOSPOLP_DRAFT_FOLDER_ID');
+  if (savedId) {
+    try { return DriveApp.getFolderById(savedId); } catch (err) { /* recreate below */ }
+  }
+  const folders = DriveApp.getFoldersByName(EDITOR_CONFIG.DRAFT_FOLDER_NAME);
+  const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(EDITOR_CONFIG.DRAFT_FOLDER_NAME);
+  props.setProperty('HOSPOLP_DRAFT_FOLDER_ID', folder.getId());
+  return folder;
 }
 
 function getEditorSite_(siteId) {
