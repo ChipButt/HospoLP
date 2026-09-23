@@ -1,43 +1,29 @@
-# HospoLP — Hospitality Website Demo
+# HospoLP — Hospitality Website Demo & Showcase
 
-This repository is the public demo implementation of the HospoLP hospitality website package.
+This repository is the public Chip In showcase and reference implementation for the HospoLP hospitality website package.
 
-The current demo business is **The Lantern Yard**, a fictional contemporary café/bar used to demonstrate how the same underlying package can be redesigned for a different hospitality business.
+## Showcase routes
+- `/` — HospoLP showcase hub
+- `/demo/` — The Lantern Yard standard website demo
+- `/demo-editor/` — safe customer-editor demonstration using demo access code `12345`
+- `/edit/` — the real HospoLP editor entry point for the Lantern Yard site
+
+The root showcase also links to the separate sample website repositories for SAB’s, The Craft Cafe, Mim’s Flans, Slither & Slice and The Bulls Head Bidford.
+
+## Demo editor safety
+The demo editor is intentionally isolated from the real Apps Script editor. It loads the normal HospoLP repository content, drives the real live-preview messaging already supported by `assets/app.js`, and stores any demonstration “published” changes only in that browser's local storage. It cannot alter real customer data.
 
 ## Purpose
 - Demonstrate the finished customer-facing website package
+- Demonstrate the client editing experience
 - Show that branding, layout and content can vary by business
 - Keep the reusable deployment, visual editor and validation plumbing proven
 - Act as the base/reference repo for creating new client-specific repositories
 
 ## Standard site structure
-HospoLP websites are **multi-page by default**. The homepage should introduce the business and direct visitors to dedicated pages rather than acting as one long landing page with anchor links.
+HospoLP websites are multi-page by default. Typical pages are Home, About / Our Place, Food / Menu, Drinks, Opening Hours, What's On / Events and Visit / Contact / Facilities. Not every client needs every page.
 
-Typical pages are:
-- Home
-- About / Our Place
-- Food / Menu
-- Drinks
-- Opening Hours
-- What's On / Events
-- Visit / Contact / Facilities
-
-Not every client needs every page. Remove or rename pages where the business brief calls for it, but keep separate pages as the default pattern for major sections.
-
-## Standard client editor
-HospoLP clients do **not** use GitHub or Pages CMS.
-
-Each client gets a branded `/edit/` address that opens the HospoLP visual editor. After email-code sign-in, the client sees only their own website:
-
-- editable controls on the left
-- a live preview of the selected webpage on the right
-- a clear **Publish changes** button
-
-The client can update routine business information such as wording, opening hours, menus, prices, events, facilities and gallery photos. Design, layouts, navigation, code and deployment remain developer-only.
-
-GitHub Pages continues to host the public website. Google Apps Script handles client authentication/editor sessions, and Google Drive stores the client-published editable content. Repository JSON remains the fallback/default content source.
-
-## Client workflow
-For a real customer, duplicate this repository into a new repo, customise the business content and design, adapt the page set to the brief, add the site/client email to the central HospoLP editor registry, connect the repo to the customer's domain, test `/edit/`, then hand over the website and editor addresses.
+## Real client editor
+Real clients do not use GitHub. Each client gets a branded `/edit/` address backed by the HospoLP Apps Script editor service. The client authenticates, sees only their own website, edits approved content fields, previews changes live and publishes when ready.
 
 See `docs/VISUAL-EDITOR.md` for the editor architecture and setup.
