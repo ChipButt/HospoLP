@@ -1,0 +1,47 @@
+{
+  "enabled": true,
+  "heading": "Current wine selection.",
+  "intro": "A selection of bottles currently featured at SAB’s. Availability may change, so ask about the latest bottle prices and recommendations.",
+  "sections": [
+    {
+      "name": "Wine by the bottle",
+      "items": [
+        {
+          "available": true,
+          "name": "Chateau Malescasse ‘Le Moulin Rose’",
+          "description": "2020 · Haut-Médoc, Bordeaux",
+          "price": "",
+          "image": "04%20Other/IMG_6401.png"
+        },
+        {
+          "available": true,
+          "name": "Hospices de Beaujeu Bourgogne Gamay",
+          "description": "2023/24 · Burgundy",
+          "price": "",
+          "image": "04%20Other/IMG_6402.png"
+        },
+        {
+          "available": true,
+          "name": "Abbotts & Delaunay ‘Les Fleurs Sauvages’ Malbec",
+          "description": "2022/23 · Languedoc",
+          "price": "",
+          "image": "04%20Other/IMG_6403.png"
+        },
+        {
+          "available": true,
+          "name": "M. Chapoutier ‘Belleruche’ Côtes du Rhône",
+          "description": "2023/24 · Rhône",
+          "price": "",
+          "image": "04%20Other/IMG_6404.png"
+        },
+        {
+          "available": true,
+          "name": "Vieux Remparts Lussac St-Émilion",
+          "description": "2021/22 · Bordeaux",
+          "price": "",
+          "image": "04%20Other/IMG_6405.png"
+        }
+      ]
+    }
+  ]
+}

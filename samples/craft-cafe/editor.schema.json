@@ -1,0 +1,50 @@
+{
+  "siteId":"the-craft-cafe",
+  "businessName":"The Craft Cafe",
+  "pages":[
+    {"id":"home","label":"Home","url":"index.html","groups":[
+      {"label":"Homepage","fields":[
+        {"key":"site.heroEyebrow","label":"Small heading","type":"text"},
+        {"key":"site.heroTitle","label":"Main heading","type":"text"},
+        {"key":"site.heroSubtitle","label":"Introduction","type":"textarea"},
+        {"key":"site.primaryAction","label":"Main button text","type":"text"},
+        {"key":"site.primaryMessage","label":"Welcome heading","type":"text"},
+        {"key":"site.shortWelcome","label":"Welcome text","type":"textarea"},
+        {"key":"site.importantMessage","label":"Booking message","type":"textarea"},
+        {"key":"site.heroImage","label":"Hero image","type":"image"}
+      ]},
+      {"label":"Homepage cards","fields":[
+        {"key":"site.homeCard1Title","label":"Card 1 title","type":"text"},{"key":"site.homeCard1Text","label":"Card 1 text","type":"textarea"},
+        {"key":"site.homeCard2Title","label":"Card 2 title","type":"text"},{"key":"site.homeCard2Text","label":"Card 2 text","type":"textarea"},
+        {"key":"site.homeCard3Title","label":"Card 3 title","type":"text"},{"key":"site.homeCard3Text","label":"Card 3 text","type":"textarea"}
+      ]},
+      {"label":"Gallery","fields":[{"key":"gallery","label":"Gallery photos","type":"gallery"}]}
+    ]},
+    {"id":"about","label":"About","url":"about.html","groups":[
+      {"label":"Page banner","fields":[{"key":"site.aboutBannerEyebrow","label":"Small heading","type":"text"},{"key":"site.aboutBannerTitle","label":"Title","type":"text"},{"key":"site.aboutBannerLead","label":"Introduction","type":"textarea"}]},
+      {"label":"About","fields":[{"key":"site.aboutHeading","label":"Heading","type":"text"},{"key":"site.aboutBody","label":"About text","type":"textarea"},{"key":"site.aboutFacts","label":"Key facts","type":"textarea"}]}
+    ]},
+    {"id":"sessions","label":"Sessions","url":"sessions.html","groups":[
+      {"label":"Page banner","fields":[{"key":"site.sessionsBannerEyebrow","label":"Small heading","type":"text"},{"key":"site.sessionsBannerTitle","label":"Title","type":"text"},{"key":"site.sessionsBannerLead","label":"Introduction","type":"textarea"}]},
+      {"label":"Booking","fields":[{"key":"site.bookingNote","label":"Booking message","type":"textarea"}]},
+      {"label":"Craft sessions","fields":[{"key":"events","label":"Sessions","type":"events"}]}
+    ]},
+    {"id":"cafe","label":"Cake & Cups","url":"cafe.html","groups":[
+      {"label":"Page banner","fields":[{"key":"site.foodBannerEyebrow","label":"Small heading","type":"text"},{"key":"site.foodBannerTitle","label":"Title","type":"text"},{"key":"site.foodBannerLead","label":"Introduction","type":"textarea"}]},
+      {"label":"Food & drinks","fields":[
+        {"key":"site.cafeCard1Title","label":"Card 1 title","type":"text"},{"key":"site.cafeCard1Text","label":"Card 1 text","type":"textarea"},
+        {"key":"site.cafeCard2Title","label":"Card 2 title","type":"text"},{"key":"site.cafeCard2Text","label":"Card 2 text","type":"textarea"},
+        {"key":"site.cafeCard3Title","label":"Card 3 title","type":"text"},{"key":"site.cafeCard3Text","label":"Card 3 text","type":"textarea"},
+        {"key":"site.foodNote","label":"Dietary note","type":"textarea"}
+      ]}
+    ]},
+    {"id":"hours","label":"Times","url":"hours.html","groups":[
+      {"label":"Page banner","fields":[{"key":"site.hoursBannerEyebrow","label":"Small heading","type":"text"},{"key":"site.hoursBannerTitle","label":"Title","type":"text"}]},
+      {"label":"Session times","fields":[{"key":"hours","label":"Opening/session times","type":"hours"}]}
+    ]},
+    {"id":"visit","label":"Visit","url":"visit.html","groups":[
+      {"label":"Page banner","fields":[{"key":"site.visitBannerEyebrow","label":"Small heading","type":"text"},{"key":"site.visitBannerTitle","label":"Title","type":"text"},{"key":"site.visitBannerLead","label":"Introduction","type":"textarea"}]},
+      {"label":"Contact","fields":[{"key":"site.address","label":"Address","type":"textarea"},{"key":"site.phone","label":"Phone","type":"text"},{"key":"site.email","label":"Email","type":"text"},{"key":"site.instagram","label":"Instagram","type":"text"},{"key":"site.bookingNote","label":"Booking message","type":"textarea"},{"key":"site.walkInNote","label":"Walk-in note","type":"textarea"}]}
+    ]}
+  ]
+}

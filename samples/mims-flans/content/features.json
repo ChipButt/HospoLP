@@ -1,0 +1,20 @@
+{
+  "items": [
+    {
+      "enabled": true,
+      "label": "Dog friendly"
+    },
+    {
+      "enabled": true,
+      "label": "Bicycle parking"
+    },
+    {
+      "enabled": true,
+      "label": "Friendly & relaxed"
+    },
+    {
+      "enabled": true,
+      "label": "Spontaneous dancing welcome"
+    }
+  ]
+}

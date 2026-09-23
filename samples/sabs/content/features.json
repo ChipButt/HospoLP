@@ -1,0 +1,8 @@
+{
+  "items": [
+    {"label":"Bookings available","enabled":true},
+    {"label":"Live music","enabled":true},
+    {"label":"Tapas served 7–10pm","enabled":true},
+    {"label":"Spanish wine selection","enabled":true}
+  ]
+}

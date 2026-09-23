@@ -1,0 +1,54 @@
+{
+  "hours": [
+    {
+      "closed": false,
+      "closes": "04:00",
+      "display": "11pm–4am",
+      "opens": "23:00",
+      "day": "Monday"
+    },
+    {
+      "day": "Tuesday",
+      "opens": "23:00",
+      "closes": "04:00",
+      "closed": false,
+      "display": "11pm–4am"
+    },
+    {
+      "closes": "",
+      "closed": true,
+      "display": "Closed for flan baking",
+      "opens": "",
+      "day": "Wednesday"
+    },
+    {
+      "opens": "06:30",
+      "day": "Thursday",
+      "display": "6:30am–7am",
+      "closes": "07:00",
+      "closed": false
+    },
+    {
+      "display": "7am–9:30am",
+      "closed": false,
+      "closes": "09:30",
+      "day": "Friday",
+      "opens": "07:00"
+    },
+    {
+      "display": "11am–1am",
+      "day": "Saturday",
+      "opens": "11:00",
+      "closes": "01:00",
+      "closed": false
+    },
+    {
+      "opens": "16:00",
+      "closed": false,
+      "closes": "16:05",
+      "display": "4pm–4:05pm",
+      "day": "Sunday"
+    }
+  ],
+  "note": "Mim likes to keep things interesting. Check the day before setting off."
+}

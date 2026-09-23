@@ -1,0 +1,18 @@
+{
+  "sections": [
+    {
+      "items": [
+        {
+          "description": "Classic caramel flan, made with love and eggs.",
+          "price": "£16.34",
+          "available": true,
+          "name": "Flan"
+        }
+      ],
+      "name": "Dessert"
+    }
+  ],
+  "intro": "There is flan. It costs £16.34. That is the menu.",
+  "heading": "Mim’s Flan",
+  "enabled": true
+}

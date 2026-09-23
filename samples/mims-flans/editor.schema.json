@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "pages": [
+    {"id":"home","label":"Home","url":"","groups":[
+      {"label":"Homepage text","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.heroEyebrow"},
+        {"label":"Main heading","type":"text","path":"site.heroTitle"},
+        {"label":"Second heading line","type":"text","path":"site.heroSubtitle"},
+        {"label":"Main strapline","type":"text","path":"site.strapline"},
+        {"label":"Main message","type":"text","path":"site.primaryMessage"},
+        {"label":"Supporting note","type":"text","path":"site.heroNote"}
+      ]},
+      {"label":"Images","fields":[
+        {"label":"Logo","type":"image","path":"site.logoImage"},
+        {"label":"Main banner / hero image","type":"image","path":"site.heroImage"},
+        {"label":"Hero image description","type":"text","path":"site.heroImageAlt"}
+      ]},
+      {"label":"Announcement","fields":[
+        {"label":"Show announcement","type":"boolean","path":"site.notice.enabled"},
+        {"label":"Heading","type":"text","path":"site.notice.title"},
+        {"label":"Message","type":"textarea","path":"site.notice.text"}
+      ]}
+    ]},
+    {"id":"about","label":"About","url":"about.html","groups":[
+      {"label":"Page banner","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.aboutBannerEyebrow"},
+        {"label":"Banner heading","type":"text","path":"site.aboutBannerTitle"},
+        {"label":"Banner introduction","type":"textarea","path":"site.aboutBannerLead"}
+      ]},
+      {"label":"About","fields":[
+        {"label":"Heading","type":"text","path":"site.aboutHeading"},
+        {"label":"Introduction","type":"textarea","path":"site.aboutLead"},
+        {"label":"Main text","type":"textarea","path":"site.aboutBody"}
+      ]}
+    ]},
+    {"id":"menu","label":"Flan","url":"menu.html","groups":[
+      {"label":"Page banner","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.menuBannerEyebrow"},
+        {"label":"Banner heading","type":"text","path":"site.menuBannerTitle"},
+        {"label":"Banner introduction","type":"textarea","path":"site.menuBannerLead"}
+      ]},
+      {"label":"Menu","fields":[
+        {"label":"Menu heading","type":"text","path":"menu.heading"},
+        {"label":"Introduction","type":"textarea","path":"menu.intro"},
+        {"label":"Menu sections","type":"menu","path":"menu.sections"}
+      ]}
+    ]},
+    {"id":"hours","label":"Hours","url":"hours.html","groups":[
+      {"label":"Page banner","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.hoursBannerEyebrow"},
+        {"label":"Banner heading","type":"text","path":"site.hoursBannerTitle"}
+      ]},
+      {"label":"Opening Hours","fields":[
+        {"label":"Hours note","type":"textarea","path":"hours.note"},
+        {"label":"Weekly hours","type":"hours","path":"hours.hours"}
+      ]}
+    ]},
+    {"id":"events","label":"What's On","url":"whats-on.html","groups":[
+      {"label":"Page banner","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.eventsBannerEyebrow"},
+        {"label":"Banner heading","type":"text","path":"site.eventsBannerTitle"}
+      ]},
+      {"label":"Events","fields":[
+        {"label":"Introduction","type":"textarea","path":"events.intro"},
+        {"label":"Events","type":"events","path":"events.items"}
+      ]}
+    ]},
+    {"id":"visit","label":"Visit","url":"visit.html","groups":[
+      {"label":"Page banner","fields":[
+        {"label":"Eyebrow text","type":"text","path":"site.visitBannerEyebrow"},
+        {"label":"Banner heading","type":"text","path":"site.visitBannerTitle"},
+        {"label":"Banner introduction","type":"textarea","path":"site.visitBannerLead"}
+      ]},
+      {"label":"Contact","fields":[
+        {"label":"Address","type":"textarea","path":"site.address"},
+        {"label":"Phone","type":"text","path":"site.phone"},
+        {"label":"Email","type":"text","path":"site.email"}
+      ]},
+      {"label":"Facilities","fields":[{"label":"Facilities","type":"features","path":"features.items"}]},
+      {"label":"Gallery","fields":[
+        {"label":"Show gallery","type":"boolean","path":"gallery.enabled"},
+        {"label":"Photos","type":"gallery","path":"gallery.items"}
+      ]}
+    ]}
+  ]
+}

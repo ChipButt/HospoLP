@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "items": [
+    {"image": "assets/party.svg", "alt": "Children enjoying a reptile party"},
+    {"image": "assets/animals.svg", "alt": "A reptile ready to meet the party guests"},
+    {"image": "assets/pizza.svg", "alt": "Fresh pizza for the party lunch"}
+  ]
+}

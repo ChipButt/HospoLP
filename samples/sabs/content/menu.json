@@ -1,0 +1,8 @@
+{
+  "enabled": true,
+  "heading": "Fresh tapas, made for sharing.",
+  "intro": "The kitchen serves authentic Spanish tapas from 7pm to 10pm, Tuesday to Saturday. The current printed menu is shown alongside this page; individual dishes can be added here through the editor.",
+  "sections": [
+    {"name":"Tapas","items":[]}
+  ]
+}

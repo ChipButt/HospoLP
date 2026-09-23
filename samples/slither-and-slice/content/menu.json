@@ -1,0 +1,30 @@
+{
+  "enabled": true,
+  "heading": "Choose your party package",
+  "intro": "Every package includes a supervised reptile encounter and freshly made pizza for the children.",
+  "sections": [
+    {
+      "name": "Party packages",
+      "items": [
+        {
+          "name": "Hatchling Party",
+          "description": "Up to 8 children · around 60 minutes · 3-4 reptiles to meet · cheese and pepperoni pizzas · water or squash included",
+          "price": "£165",
+          "available": true
+        },
+        {
+          "name": "Reptile Ranger",
+          "description": "Up to 12 children · around 90 minutes · 5-6 reptiles · more handling time · pizza with a choice of toppings · mini reptile quiz",
+          "price": "£225",
+          "available": true
+        },
+        {
+          "name": "Ultimate Slither",
+          "description": "Up to 16 children · around 2 hours · 6-8 reptiles · extended handling session · pizza lunch · birthday child keepsake certificate",
+          "price": "£295",
+          "available": true
+        }
+      ]
+    }
+  ]
+}

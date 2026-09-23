@@ -1,0 +1,12 @@
+{
+  "paper": "#f7f4e8",
+  "ink": "#26311e",
+  "primary": "#3c6f2c",
+  "primaryDark": "#234719",
+  "accent": "#f0a13e",
+  "alert": "#dd5a2a",
+  "line": "#d7cfb5",
+  "paperDeep": "#ece5cf",
+  "surface": "#fffdf6",
+  "muted": "#68705f"
+}

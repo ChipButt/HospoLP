@@ -1,0 +1,9 @@
+{
+  "note": "Weekend and school-holiday slots are the most popular. Other times may be available by arrangement.",
+  "hours": [
+    {"day": "Monday-Thursday", "closed": false, "display": "School holidays by arrangement", "opens": "10:00", "closes": "17:30"},
+    {"day": "Friday", "closed": false, "display": "4:00pm party slot", "opens": "16:00", "closes": "18:00"},
+    {"day": "Saturday", "closed": false, "display": "10:00am · 12:30pm · 3:00pm · 5:30pm", "opens": "10:00", "closes": "19:30"},
+    {"day": "Sunday", "closed": false, "display": "10:00am · 12:30pm · 3:00pm", "opens": "10:00", "closes": "17:00"}
+  ]
+}

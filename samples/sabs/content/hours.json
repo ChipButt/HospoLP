@@ -1,0 +1,12 @@
+{
+  "note": "Open Tuesday to Saturday evenings. Tapas is served from 7pm to 10pm.",
+  "hours": [
+    {"day":"Monday","closed":true,"display":"Closed","opens":"","closes":""},
+    {"day":"Tuesday","closed":false,"display":"7pm – 11pm","opens":"19:00","closes":"23:00"},
+    {"day":"Wednesday","closed":false,"display":"7pm – 11pm","opens":"19:00","closes":"23:00"},
+    {"day":"Thursday","closed":false,"display":"7pm – 11pm","opens":"19:00","closes":"23:00"},
+    {"day":"Friday","closed":false,"display":"7pm – 11pm","opens":"19:00","closes":"23:00"},
+    {"day":"Saturday","closed":false,"display":"7pm – 11pm","opens":"19:00","closes":"23:00"},
+    {"day":"Sunday","closed":true,"display":"Closed","opens":"","closes":""}
+  ]
+}

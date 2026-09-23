@@ -1,0 +1,10 @@
+{
+  "items": [
+    {"label": "Hands-on supervised encounter", "enabled": true},
+    {"label": "Friendly educational presentation", "enabled": true},
+    {"label": "Fresh pizza cooked for the party", "enabled": true},
+    {"label": "We come to your chosen venue", "enabled": true},
+    {"label": "Recommended for ages 5+", "enabled": true},
+    {"label": "Dietary requirements discussed in advance", "enabled": true}
+  ]
+}

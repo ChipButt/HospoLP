@@ -1,0 +1,23 @@
+{
+  "intro": "The exact line-up changes depending on animal welfare, temperament and availability.",
+  "items": [
+    {
+      "enabled": true,
+      "title": "Snakes",
+      "when": "Usually included",
+      "description": "A calm, handleable snake is often the star guest, with plenty of time for questions and supervised touching."
+    },
+    {
+      "enabled": true,
+      "title": "Lizards",
+      "when": "Regular visitors",
+      "description": "Friendly lizards such as bearded dragons or geckos bring a completely different texture, movement and personality."
+    },
+    {
+      "enabled": true,
+      "title": "Tortoises & other reptiles",
+      "when": "Selected parties",
+      "description": "Where suitable, the line-up may also include a tortoise or another reptile chosen for a safe, relaxed encounter."
+    }
+  ]
+}

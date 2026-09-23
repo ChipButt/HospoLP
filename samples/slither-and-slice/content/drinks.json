@@ -1,0 +1,36 @@
+{
+  "enabled": true,
+  "heading": "Fresh homemade pizza",
+  "intro": "Pizzas are made for the party and cooked fresh on site. Keep the menu simple or choose a couple of favourites for the group.",
+  "sections": [
+    {
+      "name": "Included favourites",
+      "items": [
+        {
+          "name": "Margherita",
+          "description": "Tomato, mozzarella and herbs",
+          "price": "Included",
+          "available": true
+        },
+        {
+          "name": "Pepperoni",
+          "description": "Tomato, mozzarella and pepperoni",
+          "price": "Included",
+          "available": true
+        },
+        {
+          "name": "Veggie Garden",
+          "description": "Peppers, sweetcorn, mushrooms and mozzarella",
+          "price": "Included",
+          "available": true
+        },
+        {
+          "name": "Build Your Own",
+          "description": "Choose up to three toppings for the group",
+          "price": "Ranger / Ultimate",
+          "available": true
+        }
+      ]
+    }
+  ]
+}

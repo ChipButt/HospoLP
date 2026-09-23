@@ -1,0 +1,6 @@
+{
+  "intro": "The stage comes alive every night from 9pm.",
+  "items": [
+    {"enabled":true,"title":"Live flamenco","when":"Every open night · from 9pm","description":"Live flamenco performance in the bar. Arrive earlier for tapas and wine, then stay for the show."}
+  ]
+}
