@@ -56,16 +56,45 @@ function changeEditorPassword(siteId, token, currentPassword, newPassword) {
   validatePassword_(newPassword);
   const salt = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
   const hash = hashPassword_(newPassword, salt);
-  updateRegistryCredentials_(site._row, salt, hash);
+  updateRegistryCredentials_(site._row, salt, hash, false);
   return {success:true};
 }
 
+function completeInitialPasswordChange(siteId, token, newPassword) {
+  requireEditorSession_(siteId, token);
+  const site = getEditorSite_(siteId);
+  if (!isTemporaryPassword_(site)) return editorBootstrap_(site, token);
+  validatePassword_(newPassword);
+  const salt = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  const hash = hashPassword_(newPassword, salt);
+  updateRegistryCredentials_(site._row, salt, hash, false);
+  return editorBootstrap_(getEditorSite_(siteId), token);
+}
+
+function setInitialEditorPassword(siteId, newPassword) {
+  const site = getEditorSite_(siteId);
+  validatePassword_(newPassword);
+  const salt = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
+  const hash = hashPassword_(newPassword, salt);
+  updateRegistryCredentials_(site._row, salt, hash, true);
+  return {success:true,siteId:site.site_id};
+}
+
 function editorBootstrap_(site, token) {
+  if (isTemporaryPassword_(site)) {
+    return {
+      token: token,
+      siteName: site.business_name,
+      publicUrl: site.public_url,
+      mustChangePassword: true
+    };
+  }
   const savedDraft = getEditorDraft_(site.site_id);
   return {
     token: token,
     siteName: site.business_name,
     publicUrl: site.public_url,
+    mustChangePassword: false,
     data: getEditorData_(site.site_id),
     draft: savedDraft ? savedDraft.data : null,
     draftSavedAt: savedDraft ? savedDraft.savedAt : null,
@@ -185,14 +214,35 @@ function getEditorSite_(siteId) {
   throw new Error('Unknown or inactive website.');
 }
 
-function updateRegistryCredentials_(rowNumber, salt, hash) {
+function updateRegistryCredentials_(rowNumber, salt, hash, isTemporary) {
   const sheet = SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID).getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
   const headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
   const saltCol = headers.indexOf('password_salt') + 1;
   const hashCol = headers.indexOf('password_hash') + 1;
   if (!saltCol || !hashCol) throw new Error('Password columns are missing from the client registry.');
+  const tempCol = ensureRegistryColumn_(sheet, 'password_is_temporary');
   sheet.getRange(rowNumber, saltCol).setValue(salt);
   sheet.getRange(rowNumber, hashCol).setValue(hash);
+  sheet.getRange(rowNumber, tempCol).setValue(isTemporary === true);
+}
+
+function ensureRegistryColumn_(sheet, name) {
+  const headers = sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
+  const existing = headers.indexOf(name) + 1;
+  if (existing) return existing;
+  const col = sheet.getLastColumn() + 1;
+  sheet.getRange(1,col).setValue(name);
+  return col;
+}
+
+function isTemporaryPassword_(site) {
+  if (Object.prototype.hasOwnProperty.call(site, 'password_is_temporary')) {
+    const value = String(site.password_is_temporary == null ? '' : site.password_is_temporary).trim();
+    if (value !== '') return truthy_(site.password_is_temporary);
+  }
+  // Secure default for legacy rows: the existing admin-set password is treated as temporary
+  // until the customer replaces it once.
+  return true;
 }
 
 function getEditorSchema_(site) {
