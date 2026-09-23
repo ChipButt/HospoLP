@@ -1,0 +1,69 @@
+name: Vendor sample websites into HospoLP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/vendor-samples.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  vendor:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout HospoLP
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Copy sample websites into this repository
+        shell: bash
+        run: |
+          set -euo pipefail
+          work="$RUNNER_TEMP/hospolp-sources"
+          rm -rf "$work"
+          mkdir -p "$work" samples
+
+          copy_site() {
+            repo="$1"
+            dest="$2"
+            git clone --depth 1 "https://github.com/ChipButt/$repo.git" "$work/$repo"
+            mkdir -p "samples/$dest"
+            rsync -a --delete \
+              --exclude '.git' \
+              --exclude '.github' \
+              --exclude 'edit' \
+              --exclude '.pages.yml' \
+              --exclude 'CNAME' \
+              --exclude 'CNAME.example' \
+              "$work/$repo/" "samples/$dest/"
+          }
+
+          copy_site "SABs" "sabs"
+          copy_site "TheCraftCafe" "craft-cafe"
+          copy_site "MimsFlans" "mims-flans"
+          copy_site "SlitherandSlice" "slither-and-slice"
+          copy_site "TheBullsHeadBidford" "bulls-head-bidford"
+
+      - name: Commit vendored samples
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add samples/sabs samples/craft-cafe samples/mims-flans samples/slither-and-slice samples/bulls-head-bidford
+          if git diff --cached --quiet; then
+            echo "Sample copies are already current."
+          else
+            git commit -m "Vendor sample websites into HospoLP"
+            git push origin HEAD:main
+          fi
+
+      - name: Deploy final main branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run deploy-pages.yml --ref main
