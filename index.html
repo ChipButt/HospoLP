@@ -9,7 +9,7 @@
 <style>
 :root{--navy:#153d63;--blue:#25689a;--gold:#a77b28;--paper:#f6f3ec;--ink:#18232d;--muted:#65727d;--line:#dce2e7;--white:#fff}
 *{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:48px 0 64px}.masthead{text-align:center;margin-bottom:42px}.chipin{display:inline-flex;align-items:center;gap:9px;font-weight:900;letter-spacing:.08em;color:var(--navy);font-size:1rem;text-transform:uppercase}.chipin i{width:10px;height:28px;background:var(--gold);border-radius:8px;display:inline-block}.masthead h1{margin:10px 0 8px;font-size:clamp(2.5rem,7vw,5rem);line-height:.95;letter-spacing:-.055em}.masthead p{margin:0 auto;max-width:650px;color:var(--muted);font-size:1.05rem}
+main{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:48px 0 64px}.masthead{text-align:center;margin-bottom:42px}.chipin-logo{display:block;width:min(260px,68vw);height:auto;margin:0 auto 18px}.masthead h1{margin:10px 0 8px;font-size:clamp(2.5rem,7vw,5rem);line-height:.95;letter-spacing:-.055em}.masthead p{margin:0 auto;max-width:650px;color:var(--muted);font-size:1.05rem}
 section+section{margin-top:48px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}.section-head h2{margin:0;font-size:1.45rem}.section-head p{margin:0;color:var(--muted);font-size:.94rem}
 .primary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.sample-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 .card{position:relative;display:flex;flex-direction:column;min-height:190px;padding:24px;border-radius:22px;background:var(--white);border:1px solid var(--line);text-decoration:none;color:inherit;box-shadow:0 12px 34px rgba(24,35,45,.06);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.card:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(24,35,45,.11);border-color:#b8c9d7}.card.primary{min-height:240px;padding:30px;background:linear-gradient(145deg,#fff 0%,#f7fbff 100%)}.card.editor{background:linear-gradient(145deg,#fff 0%,#fff9ec 100%)}.eyebrow{display:inline-flex;align-self:flex-start;padding:6px 10px;border-radius:999px;background:#eaf3fa;color:var(--blue);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em}.editor .eyebrow{background:#f7ecd3;color:#805c16}.card h3{margin:20px 0 7px;font-size:1.55rem;line-height:1.1}.card.primary h3{font-size:2rem}.card p{margin:0;color:var(--muted);line-height:1.5}.open{margin-top:auto;padding-top:24px;font-weight:850;color:var(--blue)}.editor .open{color:var(--gold)}.sample-grid .card{min-height:175px}.sample-grid .card h3{font-size:1.3rem;margin-top:8px}
@@ -20,7 +20,7 @@ footer{text-align:center;padding-top:42px;color:var(--muted);font-size:.85rem}
 <body>
 <main>
 <header class="masthead">
-<div class="chipin">CHIP <i aria-hidden="true"></i> IN</div>
+<img class="chipin-logo" src="chip_in_logo.png" alt="Chip In">
 <h1>HospoLP</h1>
 <p>Hospitality website demos, client editor demonstration and sample builds.</p>
 </header>
