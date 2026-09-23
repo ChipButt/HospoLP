@@ -7,13 +7,14 @@ HospoLP client websites do **not** use Pages CMS as the customer-facing editor.
 Each website has an `/edit/` address. The client:
 
 1. Opens their website editor.
-2. Enters their authorised email address.
-3. Receives a six-digit sign-in code.
-4. Sees only their own website editor.
-5. Chooses a page from the left-hand controls.
-6. Edits text, hours, menus, events, facilities or photos on the left.
-7. Sees the website update immediately in the live preview on the right.
-8. Clicks **Publish changes** when happy.
+2. Enters their authorised email address and the temporary password set by Chip In.
+3. On their first successful login, is required to choose and confirm a new password.
+4. Uses that new password for all subsequent logins.
+5. Sees only their own website editor.
+6. Chooses a page from the left-hand controls.
+7. Edits text, hours, menus, events, facilities or photos on the left.
+8. Sees the website update immediately in the live preview on the right.
+9. Clicks **Publish changes** when happy.
 
 Clients never see GitHub, repositories, JSON files, deployments or other customers.
 
@@ -24,6 +25,8 @@ Clients never see GitHub, repositories, JSON files, deployments or other custome
 - Google Drive stores the client-published editable content.
 - The public site loads its latest published content from the Apps Script service using JSONP, with the repository JSON as a fallback.
 - Each client email is mapped server-side to a specific site ID.
+- Passwords are stored as salted SHA-256 hashes in the client registry, never as plaintext.
+- An admin-set initial password is marked as temporary. The editor blocks access until the customer replaces it on first login.
 - The browser cannot choose or change the underlying repository/site mapping.
 
 ## Adding a client
@@ -63,3 +66,14 @@ The public deployment URL remains the single backend used by all HospoLP client 
 ## Security rule
 
 Never put a GitHub token, GitHub credentials or repository write credentials in a client website. The client only authenticates against the HospoLP editor service and can only modify the approved content fields for the site assigned to their email address.
+
+
+## Initial client password
+
+Set a customer's initial password from Apps Script with:
+
+```js
+setInitialEditorPassword('client-site-id', 'temporary-password-here');
+```
+
+This stores the hashed password and marks it as temporary. After the customer signs in successfully, the editor requires a new password before exposing the website editor. Changing the password clears the temporary flag. For legacy registry rows without the `password_is_temporary` column/value, the secure default is to require a one-time password change.
