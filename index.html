@@ -4,47 +4,382 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>HospoLP | Chip In Website Showcase</title>
-<meta name="description" content="Chip In HospoLP hospitality website demos and sample websites.">
+<meta name="theme-color" content="#eef3f8">
+<title>HospoLP | Chip In</title>
+<meta name="description" content="HospoLP website demos and sample builds by Chip In.">
 <style>
-:root{--navy:#153d63;--blue:#25689a;--gold:#a77b28;--paper:#f6f3ec;--ink:#18232d;--muted:#65727d;--line:#dce2e7;--white:#fff}
-*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-main{width:min(1120px,calc(100% - 32px));margin:0 auto;padding:48px 0 64px}.masthead{text-align:center;margin-bottom:42px}.chipin-logo{display:block;width:min(260px,68vw);height:auto;margin:0 auto 18px}.masthead h1{margin:10px 0 8px;font-size:clamp(2.5rem,7vw,5rem);line-height:.95;letter-spacing:-.055em}.masthead p{margin:0 auto;max-width:650px;color:var(--muted);font-size:1.05rem}
-section+section{margin-top:48px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:16px}.section-head h2{margin:0;font-size:1.45rem}.section-head p{margin:0;color:var(--muted);font-size:.94rem}
-.primary-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.sample-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-.card{position:relative;display:flex;flex-direction:column;min-height:190px;padding:24px;border-radius:22px;background:var(--white);border:1px solid var(--line);text-decoration:none;color:inherit;box-shadow:0 12px 34px rgba(24,35,45,.06);transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}.card:hover{transform:translateY(-3px);box-shadow:0 18px 44px rgba(24,35,45,.11);border-color:#b8c9d7}.card.primary{min-height:240px;padding:30px;background:linear-gradient(145deg,#fff 0%,#f7fbff 100%)}.card.editor{background:linear-gradient(145deg,#fff 0%,#fff9ec 100%)}.eyebrow{display:inline-flex;align-self:flex-start;padding:6px 10px;border-radius:999px;background:#eaf3fa;color:var(--blue);font-size:.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em}.editor .eyebrow{background:#f7ecd3;color:#805c16}.card h3{margin:20px 0 7px;font-size:1.55rem;line-height:1.1}.card.primary h3{font-size:2rem}.card p{margin:0;color:var(--muted);line-height:1.5}.open{margin-top:auto;padding-top:24px;font-weight:850;color:var(--blue)}.editor .open{color:var(--gold)}.sample-grid .card{min-height:175px}.sample-grid .card h3{font-size:1.3rem;margin-top:8px}
-footer{text-align:center;padding-top:42px;color:var(--muted);font-size:.85rem}
-@media(max-width:780px){main{padding-top:30px}.primary-grid,.sample-grid{grid-template-columns:1fr}.section-head{align-items:flex-start;flex-direction:column}.card.primary{min-height:210px}.masthead{margin-bottom:32px}}
+:root{
+  --navy-950:#07192a;
+  --navy-900:#0b2742;
+  --navy-800:#113a61;
+  --blue-600:#1d6ea5;
+  --blue-500:#3187bd;
+  --gold-500:#e3ad13;
+  --gold-400:#f4c531;
+  --ink:#132333;
+  --muted:#667789;
+  --surface:#ffffff;
+  --surface-soft:#f7f9fc;
+  --line:rgba(18,49,77,.11);
+  --shadow-soft:0 18px 50px rgba(16,42,66,.10);
+  --shadow-hard:0 2px 0 rgba(8,32,53,.08),0 10px 24px rgba(16,42,66,.08);
+  --radius-xl:30px;
+  --radius-lg:22px;
+  --radius-md:16px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  min-height:100vh;
+  color:var(--ink);
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 14% 0%,rgba(244,197,49,.13),transparent 28rem),
+    radial-gradient(circle at 90% 8%,rgba(49,135,189,.13),transparent 30rem),
+    linear-gradient(180deg,#f7f9fb 0%,#edf3f8 100%);
+}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  opacity:.32;
+  background-image:
+    linear-gradient(rgba(11,39,66,.035) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(11,39,66,.035) 1px,transparent 1px);
+  background-size:32px 32px;
+  mask-image:linear-gradient(to bottom,black,transparent 78%);
+}
+a{color:inherit}
+.shell{
+  width:min(1160px,calc(100% - 32px));
+  margin:0 auto;
+  padding:34px 0 48px;
+  position:relative;
+}
+.hero{
+  position:relative;
+  overflow:hidden;
+  min-height:290px;
+  display:grid;
+  place-items:center;
+  padding:44px 24px 40px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:var(--radius-xl);
+  background:
+    radial-gradient(circle at 50% -20%,rgba(244,197,49,.17),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.97),rgba(245,249,253,.94));
+  box-shadow:
+    0 1px 0 #fff inset,
+    0 -1px 0 rgba(16,42,66,.04) inset,
+    var(--shadow-soft);
+}
+.hero::after{
+  content:"";
+  position:absolute;
+  width:460px;
+  height:460px;
+  right:-220px;
+  top:-250px;
+  border-radius:50%;
+  border:70px solid rgba(49,135,189,.045);
+  box-shadow:0 0 0 55px rgba(227,173,19,.025);
+}
+.hero-content{position:relative;z-index:1}
+.logo{
+  display:block;
+  width:min(245px,65vw);
+  height:auto;
+  margin:0 auto 22px;
+  filter:drop-shadow(0 10px 15px rgba(7,25,42,.08));
+}
+.hero h1{
+  margin:0;
+  font-size:clamp(2.7rem,7vw,5.5rem);
+  line-height:.9;
+  letter-spacing:-.065em;
+  font-weight:900;
+  color:var(--navy-950);
+}
+.hero .mark{
+  display:inline-block;
+  margin-left:.08em;
+  color:var(--gold-500);
+}
+.hero-kicker{
+  margin:14px 0 0;
+  font-size:.76rem;
+  font-weight:850;
+  letter-spacing:.18em;
+  text-transform:uppercase;
+  color:var(--blue-600);
+}
+.panel{
+  margin-top:24px;
+  padding:26px;
+  border-radius:var(--radius-xl);
+  background:rgba(255,255,255,.72);
+  border:1px solid rgba(255,255,255,.9);
+  box-shadow:var(--shadow-hard);
+  backdrop-filter:blur(18px);
+}
+.section-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+  margin:0 2px 16px;
+}
+.section-head h2{
+  margin:0;
+  font-size:1.05rem;
+  line-height:1;
+  letter-spacing:.01em;
+  font-weight:900;
+  color:var(--navy-900);
+}
+.section-head::after{
+  content:"";
+  flex:1;
+  height:1px;
+  margin-left:10px;
+  background:linear-gradient(90deg,var(--line),transparent);
+}
+.demo-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:16px;
+}
+.demo-card,
+.sample-card{
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  text-decoration:none;
+  border:1px solid var(--line);
+  background:linear-gradient(145deg,#fff,#f8fbfd);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.9) inset,
+    0 -1px 0 rgba(11,39,66,.035) inset,
+    0 9px 20px rgba(16,42,66,.07);
+  transition:
+    transform .24s cubic-bezier(.2,.8,.2,1),
+    box-shadow .24s ease,
+    border-color .24s ease;
+}
+.demo-card::before,
+.sample-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:-1;
+  opacity:0;
+  background:linear-gradient(130deg,rgba(49,135,189,.08),transparent 58%);
+  transition:opacity .24s ease;
+}
+.demo-card:hover,
+.sample-card:hover{
+  transform:translateY(-4px);
+  border-color:rgba(29,110,165,.26);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,1) inset,
+    0 18px 36px rgba(16,42,66,.13);
+}
+.demo-card:hover::before,
+.sample-card:hover::before{opacity:1}
+.demo-card:active,
+.sample-card:active{transform:translateY(-1px) scale(.995)}
+.demo-card:focus-visible,
+.sample-card:focus-visible{
+  outline:3px solid rgba(49,135,189,.28);
+  outline-offset:3px;
+}
+.demo-card{
+  min-height:170px;
+  padding:24px;
+  border-radius:var(--radius-lg);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.demo-card.editor{
+  background:
+    radial-gradient(circle at 90% 15%,rgba(244,197,49,.14),transparent 34%),
+    linear-gradient(145deg,#fffdf7,#fff);
+}
+.card-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:12px;
+}
+.card-icon{
+  width:46px;
+  height:46px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:linear-gradient(145deg,var(--navy-800),var(--navy-950));
+  color:#fff;
+  box-shadow:0 9px 18px rgba(11,39,66,.18),0 1px 0 rgba(255,255,255,.14) inset;
+}
+.editor .card-icon{
+  background:linear-gradient(145deg,var(--gold-400),var(--gold-500));
+  color:var(--navy-950);
+  box-shadow:0 9px 18px rgba(227,173,19,.22),0 1px 0 rgba(255,255,255,.35) inset;
+}
+.card-icon svg{width:22px;height:22px;stroke:currentColor}
+.demo-card h3{
+  margin:22px 0 0;
+  font-size:1.65rem;
+  letter-spacing:-.035em;
+  color:var(--navy-950);
+}
+.action{
+  display:inline-flex;
+  align-items:center;
+  gap:9px;
+  font-size:.78rem;
+  font-weight:900;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--blue-600);
+}
+.editor .action{color:#997000}
+.arrow{
+  width:28px;
+  height:28px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:rgba(29,110,165,.08);
+  transition:transform .22s ease,background .22s ease;
+}
+.editor .arrow{background:rgba(227,173,19,.12)}
+.demo-card:hover .arrow,
+.sample-card:hover .arrow{transform:translateX(3px)}
+.demo-note{
+  align-self:flex-start;
+  margin-top:8px;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:.68rem;
+  font-weight:850;
+  color:#7d5b09;
+  background:rgba(244,197,49,.15);
+  border:1px solid rgba(227,173,19,.14);
+}
+.samples{margin-top:24px}
+.sample-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+.sample-card{
+  min-height:126px;
+  padding:19px 20px;
+  border-radius:var(--radius-md);
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
+}
+.sample-card h3{
+  margin:0;
+  max-width:85%;
+  font-size:1.08rem;
+  line-height:1.15;
+  letter-spacing:-.02em;
+  color:var(--navy-900);
+}
+.sample-card .arrow{
+  align-self:flex-end;
+  color:var(--blue-600);
+}
+.sample-card:nth-child(2n){background:linear-gradient(145deg,#fff,#f9fbfd)}
+.sample-card:nth-child(3n){background:linear-gradient(145deg,#fff,#fbfaf5)}
+footer{
+  padding:24px 0 4px;
+  text-align:center;
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:rgba(19,35,51,.42);
+}
+@media (prefers-reduced-motion:no-preference){
+  .hero{animation:rise .55s cubic-bezier(.2,.8,.2,1) both}
+  .panel{animation:rise .55s .07s cubic-bezier(.2,.8,.2,1) both}
+  .samples{animation:rise .55s .13s cubic-bezier(.2,.8,.2,1) both}
+  @keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+}
+@media(max-width:760px){
+  .shell{width:min(100% - 20px,1160px);padding-top:12px}
+  .hero{min-height:245px;padding:34px 18px;border-radius:24px}
+  .panel{padding:18px;border-radius:24px}
+  .demo-grid{grid-template-columns:1fr}
+  .sample-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .demo-card{min-height:150px}
+}
+@media(max-width:470px){
+  .sample-grid{grid-template-columns:1fr}
+  .sample-card{min-height:104px}
+  .hero h1{font-size:3.2rem}
+}
 </style>
 </head>
 <body>
-<main>
-<header class="masthead">
-<img class="chipin-logo" src="chip_in_logo.png" alt="Chip In">
-<h1>HospoLP</h1>
-<p>Hospitality website demos, client editor demonstration and sample builds.</p>
-</header>
+<main class="shell">
+  <header class="hero">
+    <div class="hero-content">
+      <img class="logo" src="chip_in_logo.png" alt="Chip In">
+      <h1>HospoLP<span class="mark">.</span></h1>
+      <p class="hero-kicker">Hospitality Websites</p>
+    </div>
+  </header>
 
-<section aria-labelledby="demo-title">
-<div class="section-head"><div><h2 id="demo-title">Demo</h2></div><p>Explore the standard HospoLP package and the customer editing experience.</p></div>
-<div class="primary-grid">
-<a class="card primary" href="demo/"><span class="eyebrow">Website Demo</span><h3>HospoLP Demo</h3><p>Open the Lantern Yard demonstration website and explore the standard customer-facing site.</p><span class="open">Open Demo →</span></a>
-<a class="card primary editor" href="demo-editor/"><span class="eyebrow">Customer Experience</span><h3>Demo Editor</h3><p>Try the website editing workflow. Demo access code: <strong>12345</strong>.</p><span class="open">Open Demo Editor →</span></a>
-</div>
-</section>
+  <section class="panel" aria-labelledby="demo-title">
+    <div class="section-head"><h2 id="demo-title">Demo</h2></div>
+    <div class="demo-grid">
+      <a class="demo-card" href="demo/">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><rect x="3" y="4" width="18" height="15" rx="2"/><path d="M3 8h18"/><path d="M7 6h.01M10 6h.01"/></svg>
+          </span>
+          <span class="action">Open <span class="arrow">→</span></span>
+        </div>
+        <h3>Website Demo</h3>
+      </a>
 
-<section aria-labelledby="samples-title">
-<div class="section-head"><div><h2 id="samples-title">Sample Websites</h2></div><p>Different hospitality businesses built from the same HospoLP principle.</p></div>
-<div class="sample-grid">
-<a class="card" href="samples/sabs/"><h3>SAB’s</h3><p>Spanish wine, tapas and live flamenco.</p><span class="open">View Website →</span></a>
-<a class="card" href="samples/craft-cafe/"><h3>The Craft Cafe</h3><p>Craft sessions, homemade bakes and drinks.</p><span class="open">View Website →</span></a>
-<a class="card" href="samples/mims-flans/"><h3>Mim’s Flans</h3><p>A character-led hospitality site focused on one very specific thing: flan.</p><span class="open">View Website →</span></a>
-<a class="card" href="samples/slither-and-slice/"><h3>Slither &amp; Slice</h3><p>Reptile encounters and pizza party packages.</p><span class="open">View Website →</span></a>
-<a class="card" href="samples/bulls-head-bidford/"><h3>The Bulls Head</h3><p>Village pub website for Bidford-on-Avon.</p><span class="open">View Website →</span></a>
-<a class="card" href="samples/angels-and-demons/"><h3>Angels &amp; Demons</h3><p>Piercing studio website for Redditch, presented as a standalone sample build.</p><span class="open">View Website →</span></a>
-</div>
-</section>
-<footer>Chip In · HospoLP Showcase</footer>
+      <a class="demo-card editor" href="demo-editor/">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.8"><path d="M4 20h4l11-11a2.8 2.8 0 0 0-4-4L4 16v4Z"/><path d="m13.5 6.5 4 4"/></svg>
+          </span>
+          <span class="action">Open <span class="arrow">→</span></span>
+        </div>
+        <div>
+          <h3>Demo Editor</h3>
+          <span class="demo-note">Password 12345</span>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <section class="panel samples" aria-labelledby="samples-title">
+    <div class="section-head"><h2 id="samples-title">Sample Websites</h2></div>
+    <div class="sample-grid">
+      <a class="sample-card" href="samples/sabs/"><h3>SAB’s</h3><span class="arrow">→</span></a>
+      <a class="sample-card" href="samples/craft-cafe/"><h3>The Craft Cafe</h3><span class="arrow">→</span></a>
+      <a class="sample-card" href="samples/mims-flans/"><h3>Mim’s Flans</h3><span class="arrow">→</span></a>
+      <a class="sample-card" href="samples/slither-and-slice/"><h3>Slither &amp; Slice</h3><span class="arrow">→</span></a>
+      <a class="sample-card" href="samples/bulls-head-bidford/"><h3>The Bulls Head</h3><span class="arrow">→</span></a>
+      <a class="sample-card" href="samples/angels-and-demons/"><h3>Angels &amp; Demons</h3><span class="arrow">→</span></a>
+    </div>
+  </section>
+
+  <footer>Chip In · HospoLP</footer>
 </main>
 </body>
 </html>
