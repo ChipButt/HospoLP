@@ -28,11 +28,11 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 </div>
 <div id="codeStep" class="hidden">
 <h1>Choose your password</h1>
-<p>A real customer logs in initially using their email address and the temporary password set for them. On their first login, they are required to replace it with a password of their own for future logins.</p>
+<p>A real customer logs in initially using their email address and the temporary password set for them. On their first login, they are required to replace it with a password of their own for future logins. In this demo, you can skip this step.</p>
 <div class="field"><label for="demoCode">New password</label><input id="demoCode" type="password" autocomplete="new-password"></div>
 <div class="field"><label for="demoConfirm">Confirm new password</label><input id="demoConfirm" type="password" autocomplete="new-password"></div>
-<div class="error hidden" id="codeError">The passwords do not match.</div>
-<button class="button" id="signIn">Save Password &amp; Continue</button>
+<div class="error hidden" id="codeError"></div>
+<button class="button" id="signIn">Skip this part for Demo</button>
 </div>
 </div>
 </section>
@@ -90,7 +90,7 @@ function sendPreview(){const frame=$('#preview');try{frame.contentWindow.postMes
 function changePage(){const p=$('#pageSelect').value;$('#preview').src=paths[p];renderFields()}
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.add('hidden'),2400)}
 $('#sendCode').addEventListener('click',()=>{if($('#demoPassword').value!=='12345')return;$('#emailStep').classList.add('hidden');$('#codeStep').classList.remove('hidden');$('#demoCode').focus()});
-$('#signIn').addEventListener('click',async()=>{if(!$('#demoCode').value||$('#demoCode').value!==$('#demoConfirm').value){$('#codeError').classList.remove('hidden');return}$('#codeError').classList.add('hidden');await loadDefaults();$('#auth').classList.add('hidden');$('#editor').classList.remove('hidden');renderFields();sendPreview()});
+$('#signIn').addEventListener('click',async()=>{$('#codeError').classList.add('hidden');await loadDefaults();$('#auth').classList.add('hidden');$('#editor').classList.remove('hidden');renderFields();sendPreview()});
 $('#demoConfirm').addEventListener('keydown',e=>{if(e.key==='Enter')$('#signIn').click()});
 $('#pageSelect').addEventListener('change',changePage);
 $('#preview').addEventListener('load',()=>setTimeout(sendPreview,120));
