@@ -22,15 +22,17 @@ button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:
 <h1>Website Editor Demo</h1>
 <p>This mirrors the simple sign-in journey a HospoLP customer uses before reaching their website editor.</p>
 <div class="field"><label for="demoEmail">Email address</label><input id="demoEmail" type="email" value="demo@hospolp.co.uk" autocomplete="email"></div>
-<button class="button" id="sendCode">Send Login Code</button>
+<div class="field"><label for="demoPassword">Temporary password</label><input id="demoPassword" type="password" value="12345" autocomplete="current-password"></div>
+<div class="demo-note">For this demonstration, use temporary password: <strong>12345</strong></div>
+<button class="button" id="sendCode">Log In</button>
 </div>
 <div id="codeStep" class="hidden">
-<h1>Check your email</h1>
-<p>A real customer would receive a private sign-in code. For this demonstration, use the code below.</p>
-<div class="demo-note">Demo access code: <strong>12345</strong></div>
-<div class="field"><label for="demoCode">5-digit login code</label><input id="demoCode" inputmode="numeric" maxlength="5" autocomplete="one-time-code"></div>
-<div class="error hidden" id="codeError">That code is not correct. Use 12345 for this demo.</div>
-<button class="button" id="signIn">Sign In</button>
+<h1>Choose your password</h1>
+<p>A real customer logs in initially using their email address and the temporary password set for them. On their first login, they are required to replace it with a password of their own for future logins.</p>
+<div class="field"><label for="demoCode">New password</label><input id="demoCode" type="password" autocomplete="new-password"></div>
+<div class="field"><label for="demoConfirm">Confirm new password</label><input id="demoConfirm" type="password" autocomplete="new-password"></div>
+<div class="error hidden" id="codeError">The passwords do not match.</div>
+<button class="button" id="signIn">Save Password &amp; Continue</button>
 </div>
 </div>
 </section>
@@ -87,9 +89,9 @@ function renderFields(){
 function sendPreview(){const frame=$('#preview');try{frame.contentWindow.postMessage({type:'hospolp-preview',data:state},'*')}catch(e){}}
 function changePage(){const p=$('#pageSelect').value;$('#preview').src=paths[p];renderFields()}
 function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.remove('hidden');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.add('hidden'),2400)}
-$('#sendCode').addEventListener('click',()=>{$('#emailStep').classList.add('hidden');$('#codeStep').classList.remove('hidden');$('#demoCode').focus()});
-$('#signIn').addEventListener('click',async()=>{if($('#demoCode').value.trim()!=='12345'){$('#codeError').classList.remove('hidden');return}$('#codeError').classList.add('hidden');await loadDefaults();$('#auth').classList.add('hidden');$('#editor').classList.remove('hidden');renderFields();sendPreview()});
-$('#demoCode').addEventListener('keydown',e=>{if(e.key==='Enter')$('#signIn').click()});
+$('#sendCode').addEventListener('click',()=>{if($('#demoPassword').value!=='12345')return;$('#emailStep').classList.add('hidden');$('#codeStep').classList.remove('hidden');$('#demoCode').focus()});
+$('#signIn').addEventListener('click',async()=>{if(!$('#demoCode').value||$('#demoCode').value!==$('#demoConfirm').value){$('#codeError').classList.remove('hidden');return}$('#codeError').classList.add('hidden');await loadDefaults();$('#auth').classList.add('hidden');$('#editor').classList.remove('hidden');renderFields();sendPreview()});
+$('#demoConfirm').addEventListener('keydown',e=>{if(e.key==='Enter')$('#signIn').click()});
 $('#pageSelect').addEventListener('change',changePage);
 $('#preview').addEventListener('load',()=>setTimeout(sendPreview,120));
 $('#publishDemo').addEventListener('click',()=>{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));toast('Demo changes published in this browser')});
