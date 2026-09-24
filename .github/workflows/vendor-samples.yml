@@ -1,4 +1,4 @@
-name: Vendor sample websites into HospoLP
+name: Vendor sample websites into Chip In Websites
 
 on:
   push:
@@ -15,7 +15,7 @@ jobs:
   vendor:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout HospoLP
+      - name: Checkout Chip In Websites
         uses: actions/checkout@v6
         with:
           fetch-depth: 0
@@ -59,7 +59,7 @@ jobs:
           if git diff --cached --quiet; then
             echo "Sample copies are already current."
           else
-            git commit -m "Vendor sample websites into HospoLP"
+            git commit -m "Vendor sample websites into Chip In Websites"
             git push origin HEAD:main
           fi
 
