@@ -1,6 +1,6 @@
 # Customer editor setup
 
-HospoLP uses Pages CMS as the V1 editing layer. `.pages.yml` exposes only routine business content; CSS, JavaScript, theme settings, deployment and repository controls are not exposed.
+Chip In Websites uses Pages CMS as the V1 editing layer. `.pages.yml` exposes only routine business content; CSS, JavaScript, theme settings, deployment and repository controls are not exposed.
 
 ## Agency setup
 1. Install/connect the Pages CMS GitHub App to the customer repository.
