@@ -124,7 +124,7 @@ function publishEditorData(siteId, token, payload) {
   const root = site.content_root || 'content';
   Object.keys(cleaned).forEach(name => {
     if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
-    githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from HospoLP editor`);
+    githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from Chip In Websites editor`);
   });
   deleteEditorDraft_(siteId);
   return {success:true,publishedAt:new Date().toISOString(),data:getEditorData_(siteId)};
@@ -143,7 +143,7 @@ function uploadEditorImage(siteId, token, asset) {
   const filename = `${Date.now()}-${stem}.${ext}`;
   const mediaRoot = site.media_root || 'media/editor';
   const path = `${mediaRoot}/${filename}`;
-  githubWriteBase64_(site, path, asset.data, `Upload ${filename} from HospoLP editor`);
+  githubWriteBase64_(site, path, asset.data, `Upload ${filename} from Chip In Websites editor`);
   return {path:path,name:filename};
 }
 
@@ -199,7 +199,7 @@ function getEditorSite_(siteId) {
   const id = String(siteId || '').trim();
   if (!id) throw new Error('Unknown website.');
   const sheet = SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID).getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
-  if (!sheet) throw new Error('HospoLP client registry is not configured.');
+  if (!sheet) throw new Error('Chip In Websites client registry is not configured.');
   const values = sheet.getDataRange().getValues();
   if (values.length < 2) throw new Error('Unknown website.');
   const headers = values[0].map(String);
@@ -270,7 +270,7 @@ function requireEditorSession_(siteId, token) {
 
 function githubToken_() {
   const token = PropertiesService.getScriptProperties().getProperty('HOSPOLP_GITHUB_TOKEN');
-  if (!token) throw new Error('HospoLP publishing has not been connected to GitHub yet.');
+  if (!token) throw new Error('Chip In Websites publishing has not been connected to GitHub yet.');
   return token;
 }
 
@@ -283,7 +283,7 @@ function githubRequest_(site, path, method, payload) {
       Authorization: `Bearer ${githubToken_()}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
-      'User-Agent': 'HospoLP-Editor'
+      'User-Agent': 'Chip-In-Websites-Editor'
     }
   };
   if (payload) {
