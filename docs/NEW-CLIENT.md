@@ -44,7 +44,7 @@ Registry spreadsheet ID: `12otLULjhJZ8dln9jPWa_DByUQ750NRHkhhciuCZimlY`.
 
 ## Permanent backend setup
 
-The Apps Script project uses `apps-script/Editor.gs` and `apps-script/EditorUI.html` from this repository. The Script Property `HOSPOLP_GITHUB_TOKEN` is configured once with GitHub Contents read/write access for client repositories. Do not create a separate Apps Script deployment for a customer.
+The Apps Script project uses `apps-script/Editor.gs` and `apps-script/EditorUI.html` from this repository. The Script Property `CHIP_IN_WEBSITES_GITHUB_TOKEN` is configured once with GitHub Contents read/write access for client repositories. Do not create a separate Apps Script deployment for a customer.
 
 ## Standard editor rule
 
