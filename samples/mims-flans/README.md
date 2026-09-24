@@ -1,6 +1,6 @@
 # Mim's Flans
 
-Client-specific HospoLP website for Mim's Flans.
+Client-specific Chip In Websites website for Mim's Flans.
 
 ## Included
 - Responsive public website
