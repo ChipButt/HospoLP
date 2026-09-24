@@ -11,4 +11,4 @@ Client-specific website repository for The Bulls Head, Bidford-on-Avon.
 - `/edit/` shortcut to the customer editor
 
 ## Commercial use
-This is the real-client copy of the HospoLP website package. It can be connected to The Bulls Head's own domain when approved for sale/launch. Before commercial launch, replace prototype third-party imagery with business-owned/approved photography and reconfirm all business details with current management.
+This is the real-client copy of the Chip In Websites website package. It can be connected to The Bulls Head's own domain when approved for sale/launch. Before commercial launch, replace prototype third-party imagery with business-owned/approved photography and reconfirm all business details with current management.
