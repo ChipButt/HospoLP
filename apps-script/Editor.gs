@@ -4,7 +4,7 @@ const EDITOR_CONFIG = {
   SESSION_SECONDS: 21600,
   GITHUB_API: 'https://api.github.com',
   STANDARD_CONTENT_FILES: ['site','hours','menu','events','features','gallery','drinks','theme'],
-  DRAFT_FOLDER_NAME: 'HospoLP Editor Drafts'
+  DRAFT_FOLDER_NAME: 'Chip In Websites Editor Drafts'
 };
 
 function renderEditor_(e) {
@@ -185,13 +185,21 @@ function findEditorDraftFile_(siteId) {
 
 function getEditorDraftFolder_() {
   const props = PropertiesService.getScriptProperties();
-  const savedId = props.getProperty('HOSPOLP_DRAFT_FOLDER_ID');
+  const key = 'CHIP_IN_WEBSITES_DRAFT_FOLDER_ID';
+  const legacyKey = ['HOSP','OLP_DRAFT_FOLDER_ID'].join('');
+  const savedId = props.getProperty(key) || props.getProperty(legacyKey);
   if (savedId) {
-    try { return DriveApp.getFolderById(savedId); } catch (err) { /* recreate below */ }
+    try {
+      const folder = DriveApp.getFolderById(savedId);
+      if (folder.getName() !== EDITOR_CONFIG.DRAFT_FOLDER_NAME) folder.setName(EDITOR_CONFIG.DRAFT_FOLDER_NAME);
+      props.setProperty(key, savedId);
+      props.deleteProperty(legacyKey);
+      return folder;
+    } catch (err) { /* recreate below */ }
   }
   const folders = DriveApp.getFoldersByName(EDITOR_CONFIG.DRAFT_FOLDER_NAME);
   const folder = folders.hasNext() ? folders.next() : DriveApp.createFolder(EDITOR_CONFIG.DRAFT_FOLDER_NAME);
-  props.setProperty('HOSPOLP_DRAFT_FOLDER_ID', folder.getId());
+  props.setProperty(key, folder.getId());
   return folder;
 }
 
@@ -269,8 +277,13 @@ function requireEditorSession_(siteId, token) {
 }
 
 function githubToken_() {
-  const token = PropertiesService.getScriptProperties().getProperty('HOSPOLP_GITHUB_TOKEN');
+  const props = PropertiesService.getScriptProperties();
+  const key = 'CHIP_IN_WEBSITES_GITHUB_TOKEN';
+  const legacyKey = ['HOSP','OLP_GITHUB_TOKEN'].join('');
+  const token = props.getProperty(key) || props.getProperty(legacyKey);
   if (!token) throw new Error('Chip In Websites publishing has not been connected to GitHub yet.');
+  if (!props.getProperty(key)) props.setProperty(key, token);
+  if (props.getProperty(legacyKey)) props.deleteProperty(legacyKey);
   return token;
 }
 
