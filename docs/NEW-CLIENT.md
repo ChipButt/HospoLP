@@ -1,19 +1,19 @@
 # Create a new customer website
 
-HospoLP uses one permanent editor backend and one private client registry. **Do not edit or redeploy Apps Script for each new customer.** One business/location = one repository.
+Chip In Websites uses one permanent editor backend and one private client registry. **Do not edit or redeploy Apps Script for each new customer.** One business/location = one repository.
 
 ## Normal new-client workflow
 
-1. Client completes the HospoLP brief and uploads assets. The intake system stores the submission in Google Drive.
+1. Client completes the Chip In Websites brief and uploads assets. The intake system stores the submission in Google Drive.
 2. Create one GitHub repository for that business and upload the supplied brand/photo/menu assets.
-3. Build an original site from the HospoLP architecture and the submitted brief. The visual design may be completely bespoke. Use separate pages for the business's main areas rather than one long landing page.
+3. Build an original site from the Chip In Websites architecture and the submitted brief. The visual design may be completely bespoke. Use separate pages for the business's main areas rather than one long landing page.
 4. Keep routine customer-editable information in `content/*.json` and create `editor.schema.json` for that exact site.
 5. **Every piece of routine visible content must be checked against the editor.** Page-banner eyebrow text, headings, introductions, body copy, notices, hours, menus, events, facilities, contact information and customer-managed images must not be left hard-coded if a customer could reasonably need to change them.
 6. Keep the standard preview bridge in the site JavaScript. Draft changes must update the preview immediately; hovering either side must highlight its partner.
 7. Preview navigation and editor navigation are two-way linked. If the customer clicks a link/button in the website preview and lands on another editable page, the left editor must automatically switch to that page's controls.
 8. Image fields use upload/replace/remove controls. Never make the customer edit an image URL.
-9. Add `/edit/index.html`, pointing to the permanent HospoLP Apps Script editor with this site's `site_id`.
-10. Add one row to the private **HospoLP Client Registry** Google Sheet. No per-client Apps Script code change or deployment is required.
+9. Add `/edit/index.html`, pointing to the permanent Chip In Websites Apps Script editor with this site's `site_id`.
+10. Add one row to the private **Chip In Websites Client Registry** Google Sheet. No per-client Apps Script code change or deployment is required.
 11. Generate a temporary password. Store only its salt and SHA-256 hash in the registry. Put the plain temporary password only in the client handover document.
 12. Enable GitHub Pages and test the public preview URL and editor URL.
 13. Produce the client handover document with preview URL, editor URL, approved email, temporary password and simple editing instructions.
