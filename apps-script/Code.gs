@@ -19,7 +19,7 @@ function doGet(e) {
   if (mode === 'content') return serveEditorContent_(e);
   return HtmlService.createTemplateFromFile('Index')
     .evaluate()
-    .setTitle('HospoLP Website Brief')
+    .setTitle('Chip In Websites Brief')
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -109,7 +109,7 @@ function finishSubmission(submissionId, uploadedFiles) {
   if (ownerEmail) {
     MailApp.sendEmail({
       to: ownerEmail,
-      subject: `New HospoLP website brief: ${record.businessName}`,
+      subject: `New Chip In Websites brief: ${record.businessName}`,
       htmlBody: [
         `<p><strong>${escapeHtml_(record.businessName)}</strong> has submitted a website brief.</p>`,
         `<p>Contact: ${escapeHtml_(record.contactEmail)}</p>`,
@@ -169,7 +169,7 @@ function buildReadableBrief_(p) {
   const arr = v => Array.isArray(v) ? v.join(', ') : (v || '');
   const section = (title, lines) => `\n\n=== ${title.toUpperCase()} ===\n${lines.filter(Boolean).join('\n')}`;
   return [
-    'HOSPOLP WEBSITE BRIEF',
+    'CHIP IN WEBSITES BRIEF',
     `Submitted: ${new Date().toLocaleString('en-GB')}`,
     section('Business', [
       `Business name: ${p.businessName || ''}`,
