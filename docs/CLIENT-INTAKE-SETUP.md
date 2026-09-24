@@ -1,10 +1,10 @@
-# HospoLP Client Intake — One-Time Setup
+# Chip In Websites Client Intake — One-Time Setup
 
 The intake form is designed to collect a complete initial website brief plus original client assets and place them in Google Drive.
 
 ## Already configured
 
-- Parent Drive folder: `HospoLP / Client Submissions`
+- Parent Drive folder: `Chip In Websites / Client Submissions`
 - Parent folder ID used by the backend: `1RnkfWjPN5hs187svzjuVzVXpdDPlbhto`
 - Backend source: `apps-script/Code.gs`
 - Client form source: `apps-script/Index.html`
@@ -30,9 +30,9 @@ The owner also receives an email notification and the client receives a receipt 
 
 Google Drive cannot accept anonymous website uploads directly. The backend therefore runs as a Google Apps Script web app under the Drive owner's Google account.
 
-1. Go to https://script.google.com/ while signed into the Google account that owns the HospoLP Drive folder.
+1. Go to https://script.google.com/ while signed into the Google account that owns the Chip In Websites Drive folder.
 2. Click **New project**.
-3. Name the project `HospoLP Client Intake`.
+3. Name the project `Chip In Websites Client Intake`.
 4. Replace the default `Code.gs` contents with the contents of this repo's `apps-script/Code.gs`.
 5. Add an HTML file named exactly `Index`.
 6. Paste the contents of this repo's `apps-script/Index.html` into that file.
@@ -80,7 +80,7 @@ Use a fake venue and submit:
 
 Then verify:
 
-- A new folder appears under `HospoLP / Client Submissions`
+- A new folder appears under `Chip In Websites / Client Submissions`
 - Both brief files are present
 - Assets are in the correct subfolders
 - `upload-manifest.json` exists
