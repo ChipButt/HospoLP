@@ -24,7 +24,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          work="$RUNNER_TEMP/hospolp-sources"
+          work="$RUNNER_TEMP/chip-in-websites-sources"
           rm -rf "$work"
           mkdir -p "$work" samples
 
