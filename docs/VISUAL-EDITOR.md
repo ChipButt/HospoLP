@@ -1,6 +1,6 @@
-# HospoLP Visual Editor — Standard
+# Chip In Websites Visual Editor — Standard
 
-HospoLP client websites do **not** use Pages CMS as the customer-facing editor.
+Chip In Websites client websites do **not** use Pages CMS as the customer-facing editor.
 
 ## Customer experience
 
@@ -47,7 +47,7 @@ Then set the client repo's `/edit/` page and `assets/app.js` to use that site ID
 
 ## Apps Script deployment
 
-The existing **HospoLP Client Intake** Apps Script project is also the central HospoLP editor service.
+The existing **Chip In Websites Client Intake** Apps Script project is also the central Chip In Websites editor service.
 
 The deployed project must contain:
 
@@ -61,11 +61,11 @@ After changing any of these files, create a **new version** of the existing Web 
 - Execute as: **Me**
 - Who has access: **Anyone**
 
-The public deployment URL remains the single backend used by all HospoLP client websites.
+The public deployment URL remains the single backend used by all Chip In Websites client websites.
 
 ## Security rule
 
-Never put a GitHub token, GitHub credentials or repository write credentials in a client website. The client only authenticates against the HospoLP editor service and can only modify the approved content fields for the site assigned to their email address.
+Never put a GitHub token, GitHub credentials or repository write credentials in a client website. The client only authenticates against the Chip In Websites editor service and can only modify the approved content fields for the site assigned to their email address.
 
 
 ## Initial client password
