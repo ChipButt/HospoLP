@@ -368,7 +368,7 @@ footer{
 
   <section class="panel samples" aria-labelledby="samples-title">
     <div class="section-head"><h2 id="samples-title">Sample Websites</h2></div>
-    <div class="sample-grid">
+    <div class="sample-grid" id="sampleGrid">
       <a class="sample-card" href="samples/sabs/"><h3>SAB’s</h3><span class="arrow">→</span></a>
       <a class="sample-card" href="samples/craft-cafe/"><h3>The Craft Cafe</h3><span class="arrow">→</span></a>
       <a class="sample-card" href="samples/mims-flans/"><h3>Mim’s Flans</h3><span class="arrow">→</span></a>
@@ -376,6 +376,19 @@ footer{
       <a class="sample-card" href="samples/bulls-head-bidford/"><h3>The Bulls Head</h3><span class="arrow">→</span></a>
       <a class="sample-card" href="samples/angels-and-demons/"><h3>Angels &amp; Demons</h3><span class="arrow">→</span></a>
     </div>
+    <script>
+    (async()=>{
+      const host=document.getElementById('sampleGrid');
+      try{
+        const r=await fetch('samples/manifest.json',{cache:'no-store'});
+        if(!r.ok)throw new Error('manifest');
+        const data=await r.json();
+        const items=(data.samples||[]).filter(x=>x&&x.slug&&x.name&&x.visible!==false);
+        if(!items.length)return;
+        host.innerHTML=items.map(x=>'<a class="sample-card" href="samples/'+encodeURIComponent(x.slug)+'/"><h3>'+String(x.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</h3><span class="arrow">→</span></a>').join('');
+      }catch(e){console.warn('Sample manifest unavailable; using built-in showcase list.',e)}
+    })();
+    </script>
   </section>
 
   <footer>Chip In · Websites</footer>
