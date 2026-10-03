@@ -54,6 +54,18 @@
       "name": "Billy Shears",
       "type": "prospect-demo",
       "visible": true
+    },
+    {
+      "slug": "georges-cafe-bidford",
+      "name": "George's Cafe",
+      "type": "prospect-demo",
+      "visible": true
+    },
+    {
+      "slug": "lillys-dog-grooming",
+      "name": "Lilly's Dog Grooming",
+      "type": "prospect-demo",
+      "visible": true
     }
   ]
 }
