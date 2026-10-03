@@ -1,0 +1,321 @@
+{
+  "name": "Finishing Touch",
+  "address": "82 High St, Bidford-on-Avon, Alcester B50 4AD",
+  "phone": "01789 773828",
+  "email": "finishingtouchsalon@hotmail.co.uk",
+  "brand": {
+    "accent": "#a66a78",
+    "dark": "#35262b",
+    "soft": "#f5ecee"
+  },
+  "hero": {
+    "eyebrow": "HAIR · BEAUTY · NAILS · TANNING",
+    "title": "Finishing Touch",
+    "strapline": "Hair, beauty and self-care in the heart of Bidford-on-Avon.",
+    "image": {
+      "url": "https://images.pexels.com/photos/7750099/pexels-photo-7750099.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Modern hair and beauty salon interior"
+    }
+  },
+  "about": {
+    "eyebrow": "ABOUT THE SALON",
+    "heading": "A local salon for hair, beauty and a little time for yourself.",
+    "lead": "Finishing Touch brings hair, beauty, nail and tanning services together on Bidford High Street.",
+    "summary": "Whether you're booking a fresh cut, a beauty treatment, a nail appointment or a tanning session, the salon offers an easy local place to get ready and feel your best.",
+    "paragraphs": [
+      "Based at 82 High Street in Bidford-on-Avon, Finishing Touch is a local hair and beauty salon offering a broad mix of personal-care services.",
+      "The salon combines hairdressing, beauty treatments, nail services and tanning under one roof, making it easy to arrange more than one part of your routine in the same local setting.",
+      "For current availability or to discuss the right appointment, call the salon directly."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Stylist working in a modern salon"
+    },
+    "facts": [
+      {
+        "label": "Location",
+        "value": "Bidford High Street"
+      },
+      {
+        "label": "Services",
+        "value": "Hair, beauty, nails & tanning"
+      },
+      {
+        "label": "Contact",
+        "value": "01789 773828"
+      }
+    ]
+  },
+  "servicesHeading": "SALON SERVICES",
+  "servicesSubheading": "Choose what you’re coming in for",
+  "services": [
+    {
+      "slug": "hair",
+      "name": "Hair",
+      "shortSummary": "Cuts, styling and colour-led salon appointments for everyday upkeep or a fresh new look.",
+      "pageHeading": "Hair at Finishing Touch",
+      "lead": "From regular maintenance to a complete refresh, book time in the chair for hair that feels finished.",
+      "heading": "Hair appointments shaped around you.",
+      "detailParagraphs": [
+        "Finishing Touch offers salon hair services for clients looking for regular cuts, styling and colour-led appointments.",
+        "This concept service menu shows the sort of structure the finished site can carry while the salon confirms its exact current treatment list and pricing."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3992874/pexels-photo-3992874.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Hair stylist working on a client's hair"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/3993465/pexels-photo-3993465.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Professional salon hair styling"
+      },
+      "items": [
+        {
+          "name": "Cut & Finish",
+          "description": "A salon cut finished with professional styling.",
+          "price": "From £35"
+        },
+        {
+          "name": "Blow Dry",
+          "description": "Wash, blow dry and finish for a polished everyday look.",
+          "price": "From £25"
+        },
+        {
+          "name": "Root Colour",
+          "description": "Colour refresh focused on root regrowth.",
+          "price": "From £45"
+        },
+        {
+          "name": "Full Colour",
+          "description": "All-over colour service with professional finish.",
+          "price": "From £60"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Booking",
+          "value": "By appointment"
+        },
+        {
+          "label": "Salon",
+          "value": "82 High Street"
+        }
+      ],
+      "ctaTitle": "Ready for a hair appointment?",
+      "ctaText": "Call Finishing Touch to check availability and discuss the right appointment.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "beauty",
+      "name": "Beauty",
+      "shortSummary": "A selection of beauty treatments for regular maintenance, getting ready or simply taking some time out.",
+      "pageHeading": "Beauty Treatments",
+      "lead": "Make time for a treatment and leave feeling refreshed.",
+      "heading": "Beauty appointments without travelling out of town.",
+      "detailParagraphs": [
+        "Beauty services are part of the salon's current offering, giving local clients another reason to keep appointments close to home.",
+        "The example treatment menu below shows how a finished site can present the salon's confirmed beauty menu clearly once supplied."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3738349/pexels-photo-3738349.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Beauty therapist carrying out a facial treatment"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/3992855/pexels-photo-3992855.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Beauty treatment in a salon"
+      },
+      "items": [
+        {
+          "name": "Express Facial",
+          "description": "A quick refresh for the skin when time is limited.",
+          "price": "From £30"
+        },
+        {
+          "name": "Classic Facial",
+          "description": "A longer facial treatment focused on cleanse, care and relaxation.",
+          "price": "From £45"
+        },
+        {
+          "name": "Brow Shape",
+          "description": "Tidy and shape the brows for a cleaner finish.",
+          "price": "From £12"
+        },
+        {
+          "name": "Lash & Brow Tint",
+          "description": "Tinting to define lashes and brows.",
+          "price": "From £22"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Appointments",
+          "value": "Call to book"
+        },
+        {
+          "label": "Location",
+          "value": "Bidford-on-Avon"
+        }
+      ],
+      "ctaTitle": "Book some time for yourself",
+      "ctaText": "Call the salon to ask about current beauty treatments and availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "nails",
+      "name": "Nails",
+      "shortSummary": "Nail appointments for a tidy everyday finish or something a little more polished.",
+      "pageHeading": "Nail Services",
+      "lead": "Fresh nails, finished properly.",
+      "heading": "A simple local stop for nail care.",
+      "detailParagraphs": [
+        "Nail services are part of the current Finishing Touch offering alongside hair and beauty.",
+        "This concept menu demonstrates how the finished website can present the salon's nail options cleanly once the live treatment list is confirmed."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3997379/pexels-photo-3997379.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Professional manicure in progress"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/939836/pexels-photo-939836.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Freshly manicured nails"
+      },
+      "items": [
+        {
+          "name": "Classic Manicure",
+          "description": "Shape, tidy and polish for a neat everyday finish.",
+          "price": "From £22"
+        },
+        {
+          "name": "Gel Manicure",
+          "description": "Longer-lasting gel colour with nail preparation.",
+          "price": "From £30"
+        },
+        {
+          "name": "Gel Removal & Refresh",
+          "description": "Removal followed by preparation and fresh gel colour.",
+          "price": "From £36"
+        },
+        {
+          "name": "Nail Tidy",
+          "description": "Shape and tidy without colour.",
+          "price": "From £15"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Finish",
+          "value": "Classic or gel"
+        },
+        {
+          "label": "Booking",
+          "value": "By appointment"
+        }
+      ],
+      "ctaTitle": "Fresh set?",
+      "ctaText": "Call Finishing Touch to ask about current nail appointments.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "tanning",
+      "name": "Tanning",
+      "shortSummary": "Tanning is available as part of the salon's wider beauty and self-care offering.",
+      "pageHeading": "Tanning",
+      "lead": "A convenient tanning option right on Bidford High Street.",
+      "heading": "Add tanning to your salon routine.",
+      "detailParagraphs": [
+        "Finishing Touch currently lists tanning among its salon services.",
+        "The live salon can confirm the current equipment, session lengths, suitability guidance and pricing directly before booking."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3757942/pexels-photo-3757942.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Relaxed beauty and tanning themed salon setting"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/3764014/pexels-photo-3764014.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Beauty salon self-care setting"
+      },
+      "items": [
+        {
+          "name": "Single Session",
+          "description": "A one-off tanning session.",
+          "price": "From £5"
+        },
+        {
+          "name": "5 Session Package",
+          "description": "A small package for regular use.",
+          "price": "From £22"
+        },
+        {
+          "name": "10 Session Package",
+          "description": "A larger package for clients tanning more regularly.",
+          "price": "From £40"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Availability",
+          "value": "Call to confirm"
+        },
+        {
+          "label": "Location",
+          "value": "82 High Street"
+        }
+      ],
+      "ctaTitle": "Ask about tanning",
+      "ctaText": "Call the salon for current session options and availability.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "Closed"
+    },
+    {
+      "day": "Tuesday",
+      "display": "09:30 – 17:30"
+    },
+    {
+      "day": "Wednesday",
+      "display": "09:30 – 17:30"
+    },
+    {
+      "day": "Thursday",
+      "display": "10:00 – 19:00"
+    },
+    {
+      "day": "Friday",
+      "display": "09:30 – 17:30"
+    },
+    {
+      "day": "Saturday",
+      "display": "10:00 – 15:00"
+    },
+    {
+      "day": "Sunday",
+      "display": "Closed"
+    }
+  ],
+  "galleryHeading": "Inside the Finishing Touch look",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/14564860/pexels-photo-14564860.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Modern salon work area",
+      "caption": "Salon style · prototype image"
+    },
+    {
+      "url": "https://images.pexels.com/photos/7750115/pexels-photo-7750115.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Beauty salon styling area",
+      "caption": "Hair & beauty · prototype image"
+    },
+    {
+      "url": "https://images.pexels.com/photos/3997386/pexels-photo-3997386.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Manicure treatment",
+      "caption": "Nails · prototype image"
+    },
+    {
+      "url": "https://images.pexels.com/photos/3997983/pexels-photo-3997983.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Beauty treatment room",
+      "caption": "Beauty · prototype image"
+    }
+  ]
+}
