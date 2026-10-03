@@ -1,0 +1,288 @@
+{
+  "name": "Lilly's Dog Grooming",
+  "address": "Unit 1, 2 Bidford Rd, Broom, Alcester B50 4HF",
+  "phone": "07947 785381",
+  "email": "lillysdoggrooming@myyahoo.com",
+  "brand": {
+    "accent": "#78aeb1",
+    "dark": "#24383a",
+    "soft": "#edf5f3"
+  },
+  "hero": {
+    "eyebrow": "ONE-TO-ONE DOG GROOMING",
+    "title": "Lilly's Dog Grooming",
+    "strapline": "Calm, individual grooming with your dog's comfort at the centre.",
+    "image": {
+      "url": "https://images.pexels.com/photos/6568501/pexels-photo-6568501.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Dog receiving professional grooming"
+    }
+  },
+  "about": {
+    "eyebrow": "BROOM · ALCESTER",
+    "heading": "A calmer way to groom.",
+    "lead": "One-to-one dog grooming in Broom for dogs of different breeds, sizes and temperaments.",
+    "summary": "From puppy introductions and nail clipping to full grooms, Lilly’s offers individual grooming in a calm setting.",
+    "paragraphs": [
+      "Lilly’s Dog Grooming is based at Unit 1, 2 Bidford Road in Broom.",
+      "Current business information lists one-to-one grooming, hydro-bath services, full grooms, puppy grooms and nail clipping.",
+      "Current business information also describes City & Guilds and ICMG qualifications and a particular welcome for anxious dogs."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/6131008/pexels-photo-6131008.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Dog being carefully groomed"
+    },
+    "facts": [
+      {
+        "label": "Approach",
+        "value": "One-to-one grooming"
+      },
+      {
+        "label": "Phone",
+        "value": "07947 785381"
+      },
+      {
+        "label": "Location",
+        "value": "Broom"
+      }
+    ]
+  },
+  "servicesHeading": "GROOMING SERVICES",
+  "servicesSubheading": "Care from nose to tail",
+  "services": [
+    {
+      "slug": "full-groom",
+      "name": "Full Groom",
+      "shortSummary": "A complete groom tailored to coat, breed and individual needs.",
+      "pageHeading": "Full Groom",
+      "lead": "A complete groom tailored to coat, breed and individual needs.",
+      "heading": "Full Groom with Lilly",
+      "detailParagraphs": [
+        "A complete groom tailored to coat, breed and individual needs.",
+        "Exact pricing depends on the dog, coat and time required; the prices below are illustrative starting points for this website concept."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/6816859/pexels-photo-6816859.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Full Groom"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/4587998/pexels-photo-4587998.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Full Groom detail"
+      },
+      "items": [
+        {
+          "name": "Small Dog Full Groom",
+          "description": "Full groom for a smaller dog.",
+          "price": "From £38"
+        },
+        {
+          "name": "Medium Dog Full Groom",
+          "description": "Tailored to coat and size.",
+          "price": "From £45"
+        },
+        {
+          "name": "Large Dog Full Groom",
+          "description": "Longer appointment for larger dogs.",
+          "price": "From £55"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Approach",
+          "value": "One-to-one grooming"
+        },
+        {
+          "label": "Booking",
+          "value": "07947 785381"
+        }
+      ],
+      "ctaTitle": "Ask about full groom",
+      "ctaText": "Contact Lilly to discuss your dog and appointment availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "puppy-groom",
+      "name": "Puppy Groom",
+      "shortSummary": "A gentle introduction to grooming for younger dogs.",
+      "pageHeading": "Puppy Groom",
+      "lead": "A gentle introduction to grooming for younger dogs.",
+      "heading": "Puppy Groom with Lilly",
+      "detailParagraphs": [
+        "A gentle introduction to grooming for younger dogs.",
+        "Exact pricing depends on the dog, coat and time required; the prices below are illustrative starting points for this website concept."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1108099/pexels-photo-1108099.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Puppy Groom"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1458916/pexels-photo-1458916.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Puppy Groom detail"
+      },
+      "items": [
+        {
+          "name": "Puppy Introduction",
+          "description": "Gentle first grooming experience.",
+          "price": "From £25"
+        },
+        {
+          "name": "Puppy Tidy",
+          "description": "Light tidy where appropriate.",
+          "price": "From £30"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Approach",
+          "value": "One-to-one grooming"
+        },
+        {
+          "label": "Booking",
+          "value": "07947 785381"
+        }
+      ],
+      "ctaTitle": "Ask about puppy groom",
+      "ctaText": "Contact Lilly to discuss your dog and appointment availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "bath-brush",
+      "name": "Bath & Brush",
+      "shortSummary": "Hydro-bath care, drying and brushing between fuller grooms.",
+      "pageHeading": "Bath & Brush",
+      "lead": "Hydro-bath care, drying and brushing between fuller grooms.",
+      "heading": "Bath & Brush with Lilly",
+      "detailParagraphs": [
+        "Hydro-bath care, drying and brushing between fuller grooms.",
+        "Exact pricing depends on the dog, coat and time required; the prices below are illustrative starting points for this website concept."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/6131157/pexels-photo-6131157.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Bath & Brush"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/5731866/pexels-photo-5731866.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Bath & Brush detail"
+      },
+      "items": [
+        {
+          "name": "Bath & Brush",
+          "description": "Bath, dry and thorough brush.",
+          "price": "From £28"
+        },
+        {
+          "name": "De-shed Session",
+          "description": "Extra coat work for shedding breeds.",
+          "price": "From £35"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Approach",
+          "value": "One-to-one grooming"
+        },
+        {
+          "label": "Booking",
+          "value": "07947 785381"
+        }
+      ],
+      "ctaTitle": "Ask about bath & brush",
+      "ctaText": "Contact Lilly to discuss your dog and appointment availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "nails",
+      "name": "Nail Clipping",
+      "shortSummary": "Standalone nail care as well as part of wider grooming.",
+      "pageHeading": "Nail Clipping",
+      "lead": "Standalone nail care as well as part of wider grooming.",
+      "heading": "Nail Clipping with Lilly",
+      "detailParagraphs": [
+        "Standalone nail care as well as part of wider grooming.",
+        "Exact pricing depends on the dog, coat and time required; the prices below are illustrative starting points for this website concept."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/6568950/pexels-photo-6568950.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Nail Clipping"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/7210754/pexels-photo-7210754.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Nail Clipping detail"
+      },
+      "items": [
+        {
+          "name": "Nail Clip",
+          "description": "Standalone nail trim.",
+          "price": "From £12"
+        },
+        {
+          "name": "Nail Clip with Groom",
+          "description": "Add nail care to a wider appointment.",
+          "price": "Included where appropriate"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Approach",
+          "value": "One-to-one grooming"
+        },
+        {
+          "label": "Booking",
+          "value": "07947 785381"
+        }
+      ],
+      "ctaTitle": "Ask about nail clipping",
+      "ctaText": "Contact Lilly to discuss your dog and appointment availability.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Tuesday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Wednesday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Thursday",
+      "display": "09:00 – 18:00"
+    },
+    {
+      "day": "Friday",
+      "display": "09:00 – 18:00"
+    },
+    {
+      "day": "Saturday",
+      "display": "10:00 – 17:00"
+    },
+    {
+      "day": "Sunday",
+      "display": "Closed"
+    }
+  ],
+  "galleryHeading": "Happy dogs, calm grooming",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/1254140/pexels-photo-1254140.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Happy dog portrait"
+    },
+    {
+      "url": "https://images.pexels.com/photos/4587971/pexels-photo-4587971.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Well-groomed dog"
+    },
+    {
+      "url": "https://images.pexels.com/photos/1805164/pexels-photo-1805164.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Dog with clean coat"
+    },
+    {
+      "url": "https://images.pexels.com/photos/2023384/pexels-photo-2023384.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Relaxed dog"
+    }
+  ],
+  "contentMode": "illustrative"
+}
