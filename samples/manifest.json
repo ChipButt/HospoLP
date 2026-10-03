@@ -1,0 +1,41 @@
+{
+  "version": 1,
+  "samples": [
+    {
+      "slug": "sabs",
+      "name": "SAB’s",
+      "type": "client-sample",
+      "visible": true
+    },
+    {
+      "slug": "craft-cafe",
+      "name": "The Craft Cafe",
+      "type": "client-sample",
+      "visible": true
+    },
+    {
+      "slug": "mims-flans",
+      "name": "Mim’s Flans",
+      "type": "client-sample",
+      "visible": true
+    },
+    {
+      "slug": "slither-and-slice",
+      "name": "Slither & Slice",
+      "type": "client-sample",
+      "visible": true
+    },
+    {
+      "slug": "bulls-head-bidford",
+      "name": "The Bulls Head",
+      "type": "prospect-demo",
+      "visible": true
+    },
+    {
+      "slug": "angels-and-demons",
+      "name": "Angels & Demons",
+      "type": "client-sample",
+      "visible": true
+    }
+  ]
+}
