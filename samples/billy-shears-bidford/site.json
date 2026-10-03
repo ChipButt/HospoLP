@@ -1,0 +1,249 @@
+{
+  "name": "Billy Shears",
+  "address": "86-88 High St, Bidford-on-Avon, Alcester B50 4AD",
+  "phone": "01789 778434",
+  "email": "",
+  "brand": {
+    "accent": "#c69650",
+    "dark": "#172026",
+    "soft": "#eee9df"
+  },
+  "hero": {
+    "eyebrow": "HAIRDRESSING · BARBERING · BEAUTY",
+    "title": "Billy Shears",
+    "strapline": "Hair, barbering and beauty on Bidford High Street.",
+    "image": {
+      "url": "https://images.pexels.com/photos/1813272/pexels-photo-1813272.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Barber cutting a client's hair"
+    }
+  },
+  "about": {
+    "eyebrow": "BIDFORD HIGH STREET",
+    "heading": "Your local stop for hair and grooming.",
+    "lead": "An established Bidford salon offering hairdressing, barber and beauty services.",
+    "summary": "Cuts, grooming and beauty services in a convenient High Street location.",
+    "paragraphs": [
+      "Billy Shears is based at 86–88 High Street in Bidford-on-Avon.",
+      "Current public business information identifies hairdressing, barbering and beauty among its services.",
+      "Call directly to confirm current treatments, prices and appointment availability."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/3998414/pexels-photo-3998414.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Hairdresser styling hair"
+    },
+    "facts": [
+      {
+        "label": "Phone",
+        "value": "01789 778434"
+      },
+      {
+        "label": "Services",
+        "value": "Hair, barbering & beauty"
+      }
+    ]
+  },
+  "servicesHeading": "SERVICES",
+  "servicesSubheading": "Cuts, grooming and beauty",
+  "services": [
+    {
+      "slug": "hairdressing",
+      "name": "Hairdressing",
+      "shortSummary": "Cuts, styling and colour-led appointments.",
+      "pageHeading": "Hairdressing",
+      "lead": "Cuts, styling and colour-led appointments.",
+      "heading": "Hairdressing at Billy Shears",
+      "detailParagraphs": [
+        "Cuts, styling and colour-led appointments.",
+        "The example options below are illustrative until the salon confirms its current service list and prices."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3992874/pexels-photo-3992874.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Hairdressing appointment"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/3993465/pexels-photo-3993465.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Hairdressing service detail"
+      },
+      "items": [
+        {
+          "name": "Cut & Finish",
+          "description": "Cut and styled finish.",
+          "price": "From £35"
+        },
+        {
+          "name": "Blow Dry",
+          "description": "Wash and professional blow dry.",
+          "price": "From £25"
+        },
+        {
+          "name": "Colour Refresh",
+          "description": "Colour-led appointment.",
+          "price": "From £50"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Booking",
+          "value": "Call 01789 778434"
+        },
+        {
+          "label": "Location",
+          "value": "86–88 High Street"
+        }
+      ],
+      "ctaTitle": "Book hairdressing",
+      "ctaText": "Call the salon to check current availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "barbering",
+      "name": "Barbering",
+      "shortSummary": "Classic barber cuts and tidy-ups.",
+      "pageHeading": "Barbering",
+      "lead": "Classic barber cuts and tidy-ups.",
+      "heading": "Barbering at Billy Shears",
+      "detailParagraphs": [
+        "Classic barber cuts and tidy-ups.",
+        "The example options below are illustrative until the salon confirms its current service list and prices."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1805600/pexels-photo-1805600.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Barbering appointment"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1570807/pexels-photo-1570807.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Barbering service detail"
+      },
+      "items": [
+        {
+          "name": "Barber Cut",
+          "description": "Classic cut and finish.",
+          "price": "From £18"
+        },
+        {
+          "name": "Clipper Cut",
+          "description": "Short clipper-led cut.",
+          "price": "From £14"
+        },
+        {
+          "name": "Beard Tidy",
+          "description": "Shape and tidy.",
+          "price": "From £10"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Booking",
+          "value": "Call 01789 778434"
+        },
+        {
+          "label": "Location",
+          "value": "86–88 High Street"
+        }
+      ],
+      "ctaTitle": "Book barbering",
+      "ctaText": "Call the salon to check current availability.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "beauty",
+      "name": "Beauty",
+      "shortSummary": "Beauty appointments alongside hair and barbering.",
+      "pageHeading": "Beauty",
+      "lead": "Beauty appointments alongside hair and barbering.",
+      "heading": "Beauty at Billy Shears",
+      "detailParagraphs": [
+        "Beauty appointments alongside hair and barbering.",
+        "The example options below are illustrative until the salon confirms its current service list and prices."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/3738349/pexels-photo-3738349.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Beauty appointment"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/3997983/pexels-photo-3997983.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Beauty service detail"
+      },
+      "items": [
+        {
+          "name": "Express Facial",
+          "description": "A quick skin refresh.",
+          "price": "From £30"
+        },
+        {
+          "name": "Brow Shape",
+          "description": "Shape and tidy.",
+          "price": "From £12"
+        },
+        {
+          "name": "Lash & Brow Tint",
+          "description": "Tinting for definition.",
+          "price": "From £22"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Booking",
+          "value": "Call 01789 778434"
+        },
+        {
+          "label": "Location",
+          "value": "86–88 High Street"
+        }
+      ],
+      "ctaTitle": "Book beauty",
+      "ctaText": "Call the salon to check current availability.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Tuesday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Wednesday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Thursday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Friday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Saturday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Sunday",
+      "display": "Contact to confirm"
+    }
+  ],
+  "galleryHeading": "Hair, grooming and style",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/2061820/pexels-photo-2061820.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Barber tools"
+    },
+    {
+      "url": "https://images.pexels.com/photos/1319460/pexels-photo-1319460.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Barber chair"
+    },
+    {
+      "url": "https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Hair styling"
+    },
+    {
+      "url": "https://images.pexels.com/photos/3993324/pexels-photo-3993324.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Salon appointment"
+    }
+  ],
+  "contentMode": "illustrative"
+}
