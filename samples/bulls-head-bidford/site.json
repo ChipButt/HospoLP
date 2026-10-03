@@ -1,0 +1,279 @@
+{
+  "name": "The Bulls Head",
+  "address": "36 High St, Bidford-on-Avon, Alcester B50 4AA",
+  "phone": "01789 772242",
+  "email": "thebullshead36@yahoo.com",
+  "brand": {
+    "accent": "#c59a55",
+    "dark": "#25211c",
+    "soft": "#f3eee4"
+  },
+  "hero": {
+    "eyebrow": "PUB · FOOD · LIVE ENTERTAINMENT",
+    "title": "The Bulls Head",
+    "strapline": "A Bidford High Street pub for food, drinks, sport and live entertainment.",
+    "image": {
+      "url": "https://images.pexels.com/photos/1267696/pexels-photo-1267696.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Welcoming pub bar"
+    }
+  },
+  "about": {
+    "eyebrow": "YOUR LOCAL",
+    "heading": "Meet, eat, drink and stay a while.",
+    "lead": "A High Street pub with food, drinks, live performances, sport and a beer garden.",
+    "summary": "The familiar parts of a local pub together in the centre of Bidford-on-Avon.",
+    "paragraphs": [
+      "The Bulls Head is at 36 High Street in Bidford-on-Avon.",
+      "Current local-business information identifies food and tapas, drinks, live music and performances, sport and a beer garden among its features.",
+      "Call or email to check current menus, events and bookings."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/63633/bar-local-cong-ireland-63633.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Traditional pub interior"
+    },
+    "facts": [
+      {
+        "label": "Phone",
+        "value": "01789 772242"
+      },
+      {
+        "label": "Features",
+        "value": "Food · music · sport · garden"
+      }
+    ]
+  },
+  "servicesHeading": "AT THE BULLS HEAD",
+  "servicesSubheading": "Good reasons to call in",
+  "services": [
+    {
+      "slug": "food",
+      "name": "Food & Tapas",
+      "shortSummary": "Pub food and tapas-style plates for a relaxed meal.",
+      "pageHeading": "Food & Tapas",
+      "lead": "Pub food and tapas-style plates for a relaxed meal.",
+      "heading": "Food & Tapas at The Bulls Head",
+      "detailParagraphs": [
+        "Pub food and tapas-style plates for a relaxed meal.",
+        "The example options shown here are illustrative where the pub's current detailed menu or schedule is not publicly confirmed."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1640772/pexels-photo-1640772.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Food & Tapas"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/958545/pexels-photo-958545.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Food & Tapas detail"
+      },
+      "items": [
+        {
+          "name": "Tapas Selection",
+          "description": "Small plates for sharing.",
+          "price": "From £6"
+        },
+        {
+          "name": "Pub Classic",
+          "description": "A hearty main.",
+          "price": "From £13"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Location",
+          "value": "36 High Street"
+        },
+        {
+          "label": "Contact",
+          "value": "01789 772242"
+        }
+      ],
+      "ctaTitle": "Enjoy food & tapas",
+      "ctaText": "Contact The Bulls Head for current details.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "drinks",
+      "name": "Drinks",
+      "shortSummary": "A local pub stop for a pint, wine or something softer.",
+      "pageHeading": "Drinks",
+      "lead": "A local pub stop for a pint, wine or something softer.",
+      "heading": "Drinks at The Bulls Head",
+      "detailParagraphs": [
+        "A local pub stop for a pint, wine or something softer.",
+        "The example options shown here are illustrative where the pub's current detailed menu or schedule is not publicly confirmed."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1552630/pexels-photo-1552630.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Drinks"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1283219/pexels-photo-1283219.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Drinks detail"
+      },
+      "items": [
+        {
+          "name": "Draught Pint",
+          "description": "Ask for the current taps.",
+          "price": "From £4.50"
+        },
+        {
+          "name": "Wine by the Glass",
+          "description": "Ask about the current selection.",
+          "price": "From £5.50"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Location",
+          "value": "36 High Street"
+        },
+        {
+          "label": "Contact",
+          "value": "01789 772242"
+        }
+      ],
+      "ctaTitle": "Enjoy drinks",
+      "ctaText": "Contact The Bulls Head for current details.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "live-entertainment",
+      "name": "Live Entertainment",
+      "shortSummary": "Live music and performances add extra atmosphere.",
+      "pageHeading": "Live Entertainment",
+      "lead": "Live music and performances add extra atmosphere.",
+      "heading": "Live Entertainment at The Bulls Head",
+      "detailParagraphs": [
+        "Live music and performances add extra atmosphere.",
+        "The example options shown here are illustrative where the pub's current detailed menu or schedule is not publicly confirmed."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Live Entertainment"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/167491/pexels-photo-167491.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Live Entertainment detail"
+      },
+      "items": [
+        {
+          "name": "Live Music",
+          "description": "Check upcoming dates.",
+          "price": "See what's on"
+        },
+        {
+          "name": "Special Events",
+          "description": "Occasional entertainment.",
+          "price": "Ask at the bar"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Location",
+          "value": "36 High Street"
+        },
+        {
+          "label": "Contact",
+          "value": "01789 772242"
+        }
+      ],
+      "ctaTitle": "Enjoy live entertainment",
+      "ctaText": "Contact The Bulls Head for current details.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "sport-garden",
+      "name": "Sport & Beer Garden",
+      "shortSummary": "Watch sport or make the most of the beer garden.",
+      "pageHeading": "Sport & Beer Garden",
+      "lead": "Watch sport or make the most of the beer garden.",
+      "heading": "Sport & Beer Garden at The Bulls Head",
+      "detailParagraphs": [
+        "Watch sport or make the most of the beer garden.",
+        "The example options shown here are illustrative where the pub's current detailed menu or schedule is not publicly confirmed."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/274506/pexels-photo-274506.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Sport & Beer Garden"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/260922/pexels-photo-260922.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Sport & Beer Garden detail"
+      },
+      "items": [
+        {
+          "name": "Live Sport",
+          "description": "Ask which fixtures are shown.",
+          "price": "Selected fixtures"
+        },
+        {
+          "name": "Beer Garden",
+          "description": "Outdoor pub space.",
+          "price": "Pull up a seat"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Location",
+          "value": "36 High Street"
+        },
+        {
+          "label": "Contact",
+          "value": "01789 772242"
+        }
+      ],
+      "ctaTitle": "Enjoy sport & beer garden",
+      "ctaText": "Contact The Bulls Head for current details.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "13:00 – 21:00"
+    },
+    {
+      "day": "Tuesday",
+      "display": "15:00 – 21:00"
+    },
+    {
+      "day": "Wednesday",
+      "display": "15:00 – 21:00"
+    },
+    {
+      "day": "Thursday",
+      "display": "15:00 – 21:00"
+    },
+    {
+      "day": "Friday",
+      "display": "13:00 – 22:00"
+    },
+    {
+      "day": "Saturday",
+      "display": "13:00 – 22:00"
+    },
+    {
+      "day": "Sunday",
+      "display": "12:00 – 20:00"
+    }
+  ],
+  "galleryHeading": "Pub life in Bidford",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/5530264/pexels-photo-5530264.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Pub table with drinks"
+    },
+    {
+      "url": "https://images.pexels.com/photos/1269025/pexels-photo-1269025.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Live music"
+    },
+    {
+      "url": "https://images.pexels.com/photos/1058277/pexels-photo-1058277.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Food and drinks"
+    },
+    {
+      "url": "https://images.pexels.com/photos/2619967/pexels-photo-2619967.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Outdoor pub seating"
+    }
+  ],
+  "contentMode": "illustrative"
+}
