@@ -1,0 +1,278 @@
+{
+  "name": "Cienna of Riverside Florist",
+  "address": "64 Grafton Ln, Bidford-on-Avon, Alcester B50 4AF",
+  "phone": "",
+  "email": "",
+  "brand": {
+    "accent": "#b56f78",
+    "dark": "#20372e",
+    "soft": "#f5efe9"
+  },
+  "hero": {
+    "eyebrow": "FLORIST · GIFTS · WEDDINGS",
+    "title": "Cienna of Riverside Florist",
+    "strapline": "Thoughtful flowers and gifts for everyday moments and special occasions.",
+    "image": {
+      "url": "https://images.pexels.com/photos/931176/pexels-photo-931176.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Fresh seasonal flower bouquet"
+    }
+  },
+  "about": {
+    "eyebrow": "LOCAL FLORIST",
+    "heading": "Flowers made for giving.",
+    "lead": "A local Bidford florist and gift shop for bouquets, celebrations, weddings and seasonal flowers.",
+    "summary": "From a simple bouquet to flowers for a bigger occasion, Cienna brings a personal local florist service to Bidford-on-Avon.",
+    "paragraphs": [
+      "Based on Grafton Lane, Cienna is listed locally as a florist and gift shop.",
+      "Visit the shop to discuss current flowers, colours and availability."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/2111192/pexels-photo-2111192.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Florist arranging fresh flowers"
+    },
+    "facts": [
+      {
+        "label": "Location",
+        "value": "Grafton Lane"
+      },
+      {
+        "label": "Hours",
+        "value": "Mon–Sat 09:00–17:00"
+      }
+    ]
+  },
+  "servicesHeading": "FLOWERS & GIFTS",
+  "servicesSubheading": "For giving, celebrating and remembering",
+  "services": [
+    {
+      "slug": "bouquets",
+      "name": "Bouquets",
+      "shortSummary": "Fresh flower arrangements for gifts, celebrations and thoughtful surprises.",
+      "pageHeading": "Bouquets",
+      "lead": "Choose flowers for the moment.",
+      "heading": "Fresh flowers, thoughtfully arranged.",
+      "detailParagraphs": [
+        "Fresh flower arrangements for gifts, celebrations and thoughtful surprises.",
+        "The options below are illustrative concept content until the business confirms its current range and pricing."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1070850/pexels-photo-1070850.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Bouquets service"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1301856/pexels-photo-1301856.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Bouquets detail"
+      },
+      "items": [
+        {
+          "name": "Seasonal Hand-Tied",
+          "description": "A florist-selected mix of seasonal stems.",
+          "price": "From £30"
+        },
+        {
+          "name": "Statement Bouquet",
+          "description": "A fuller arrangement for a special occasion.",
+          "price": "From £45"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Availability",
+          "value": "Ask in store"
+        },
+        {
+          "label": "Location",
+          "value": "Bidford-on-Avon"
+        }
+      ],
+      "ctaTitle": "Ask about bouquets",
+      "ctaText": "Visit the florist to discuss current options.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "gifts",
+      "name": "Gifts",
+      "shortSummary": "Thoughtful extras alongside fresh flowers.",
+      "pageHeading": "Gifts",
+      "lead": "Make the gift complete.",
+      "heading": "A little something extra.",
+      "detailParagraphs": [
+        "Thoughtful extras alongside fresh flowers.",
+        "The options below are illustrative concept content until the business confirms its current range and pricing."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1666065/pexels-photo-1666065.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Gifts service"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/264787/pexels-photo-264787.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Gifts detail"
+      },
+      "items": [
+        {
+          "name": "Flowers & Gift Pairing",
+          "description": "Bouquet with a small gift.",
+          "price": "From £40"
+        },
+        {
+          "name": "Gift Wrap",
+          "description": "Gift-ready presentation.",
+          "price": "From £5"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Availability",
+          "value": "Ask in store"
+        },
+        {
+          "label": "Location",
+          "value": "Bidford-on-Avon"
+        }
+      ],
+      "ctaTitle": "Ask about gifts",
+      "ctaText": "Visit the florist to discuss current options.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "weddings",
+      "name": "Wedding Flowers",
+      "shortSummary": "Florals for ceremonies, tables and wedding-day details.",
+      "pageHeading": "Wedding Flowers",
+      "lead": "Bring the day together with flowers.",
+      "heading": "Flowers for the big day.",
+      "detailParagraphs": [
+        "Florals for ceremonies, tables and wedding-day details.",
+        "The options below are illustrative concept content until the business confirms its current range and pricing."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/169190/pexels-photo-169190.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Wedding Flowers service"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/2253842/pexels-photo-2253842.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Wedding Flowers detail"
+      },
+      "items": [
+        {
+          "name": "Bridal Bouquet",
+          "description": "Made around your palette.",
+          "price": "From £75"
+        },
+        {
+          "name": "Buttonholes",
+          "description": "Coordinating wedding-party flowers.",
+          "price": "From £10"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Availability",
+          "value": "Ask in store"
+        },
+        {
+          "label": "Location",
+          "value": "Bidford-on-Avon"
+        }
+      ],
+      "ctaTitle": "Ask about wedding flowers",
+      "ctaText": "Visit the florist to discuss current options.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "seasonal",
+      "name": "Seasonal Flowers",
+      "shortSummary": "Flowers for the moments that come around each year.",
+      "pageHeading": "Seasonal Flowers",
+      "lead": "Mark the season with flowers.",
+      "heading": "Seasonal colour, ready to give.",
+      "detailParagraphs": [
+        "Flowers for the moments that come around each year.",
+        "The options below are illustrative concept content until the business confirms its current range and pricing."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/931168/pexels-photo-931168.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Seasonal Flowers service"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1128797/pexels-photo-1128797.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Seasonal Flowers detail"
+      },
+      "items": [
+        {
+          "name": "Mother’s Day Flowers",
+          "description": "A seasonal bouquet for Mum.",
+          "price": "From £35"
+        },
+        {
+          "name": "Festive Arrangement",
+          "description": "Seasonal table or gift flowers.",
+          "price": "From £40"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Availability",
+          "value": "Ask in store"
+        },
+        {
+          "label": "Location",
+          "value": "Bidford-on-Avon"
+        }
+      ],
+      "ctaTitle": "Ask about seasonal flowers",
+      "ctaText": "Visit the florist to discuss current options.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Tuesday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Wednesday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Thursday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Friday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Saturday",
+      "display": "09:00 – 17:00"
+    },
+    {
+      "day": "Sunday",
+      "display": "Closed"
+    }
+  ],
+  "galleryHeading": "Fresh flowers, thoughtful details",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/1458694/pexels-photo-1458694.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Colourful florist display"
+    },
+    {
+      "url": "https://images.pexels.com/photos/5409751/pexels-photo-5409751.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Flowers wrapped by a florist"
+    },
+    {
+      "url": "https://images.pexels.com/photos/4467127/pexels-photo-4467127.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Pink floral arrangement"
+    },
+    {
+      "url": "https://images.pexels.com/photos/4273433/pexels-photo-4273433.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Florist working with stems"
+    }
+  ],
+  "contentMode": "illustrative"
+}
