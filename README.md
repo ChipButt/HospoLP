@@ -38,3 +38,6 @@ The hospitality samples are vendored into `/samples/` so visitors remain on the 
 - `/samples/slither-and-slice/`
 - `/samples/bulls-head-bidford/`
 - `/samples/angels-and-demons/`
+
+## Showcase sample manifest
+The root showcase loads its Sample Websites grid from `/samples/manifest.json`. A prospect demo is only considered published when its multi-page folder exists under `/samples/<slug>/` and its visible manifest entry has been added. Prospect-demo publishing should update the folder, manifest and Sales Assistant result together.
