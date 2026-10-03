@@ -1,0 +1,284 @@
+{
+  "name": "George's Cafe",
+  "address": "Wellington Rd, Bidford-on-Avon, Alcester B50 4JH",
+  "phone": "07971 720513",
+  "email": "",
+  "brand": {
+    "accent": "#d98d54",
+    "dark": "#28312b",
+    "soft": "#f5efe5"
+  },
+  "hero": {
+    "eyebrow": "LOCAL CAFE · BIDFORD-ON-AVON",
+    "title": "George's Cafe",
+    "strapline": "A friendly local stop for breakfast, lunch, hot drinks and something sweet.",
+    "image": {
+      "url": "https://images.pexels.com/photos/376464/pexels-photo-376464.jpeg?auto=compress&cs=tinysrgb&w=1600",
+      "alt": "Breakfast pancakes and fruit"
+    }
+  },
+  "about": {
+    "eyebrow": "LOCAL CAFE",
+    "heading": "Good food, a cuppa and an easy place to stop.",
+    "lead": "George’s Cafe is a locally verified cafe on Wellington Road in Bidford-on-Avon.",
+    "summary": "A straightforward neighbourhood cafe concept built around breakfast, lunch, drinks and cake.",
+    "paragraphs": [
+      "George’s Cafe is located on Wellington Road and is confirmed by current local/map and food-hygiene references.",
+      "A detailed current menu was not publicly available, so this concept uses an illustrative cafe menu.",
+      "Call to check today’s choices and opening times."
+    ],
+    "image": {
+      "url": "https://images.pexels.com/photos/302899/pexels-photo-302899.jpeg?auto=compress&cs=tinysrgb&w=1400",
+      "alt": "Coffee being served"
+    },
+    "facts": [
+      {
+        "label": "Location",
+        "value": "Wellington Road"
+      },
+      {
+        "label": "Phone",
+        "value": "07971 720513"
+      }
+    ]
+  },
+  "servicesHeading": "CAFE MENU",
+  "servicesSubheading": "From breakfast to a coffee break",
+  "services": [
+    {
+      "slug": "breakfast",
+      "name": "Breakfast",
+      "shortSummary": "A comforting cafe breakfast to start the day.",
+      "pageHeading": "Breakfast",
+      "lead": "A comforting cafe breakfast to start the day.",
+      "heading": "Breakfast at George's",
+      "detailParagraphs": [
+        "A comforting cafe breakfast to start the day.",
+        "A detailed current public menu was not available, so these choices and prices are illustrative concept content rather than claimed current dishes."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/70497/pexels-photo-70497.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Breakfast"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/566566/pexels-photo-566566.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Breakfast detail"
+      },
+      "items": [
+        {
+          "name": "Full Breakfast",
+          "description": "Classic cooked breakfast.",
+          "price": "From £9.50"
+        },
+        {
+          "name": "Breakfast Bap",
+          "description": "A quick hot breakfast.",
+          "price": "From £5.50"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Current choices",
+          "value": "Call to confirm"
+        },
+        {
+          "label": "Phone",
+          "value": "07971 720513"
+        }
+      ],
+      "ctaTitle": "Enjoy breakfast",
+      "ctaText": "Call George's Cafe to check today's choices.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "lunch",
+      "name": "Lunch",
+      "shortSummary": "Simple cafe lunches for a quick bite or catch-up.",
+      "pageHeading": "Lunch",
+      "lead": "Simple cafe lunches for a quick bite or catch-up.",
+      "heading": "Lunch at George's",
+      "detailParagraphs": [
+        "Simple cafe lunches for a quick bite or catch-up.",
+        "A detailed current public menu was not available, so these choices and prices are illustrative concept content rather than claimed current dishes."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/1600711/pexels-photo-1600711.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Lunch"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1095550/pexels-photo-1095550.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Lunch detail"
+      },
+      "items": [
+        {
+          "name": "Fresh Sandwich",
+          "description": "Choice of classic fillings.",
+          "price": "From £5.50"
+        },
+        {
+          "name": "Jacket Potato",
+          "description": "Hot potato with filling.",
+          "price": "From £7"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Current choices",
+          "value": "Call to confirm"
+        },
+        {
+          "label": "Phone",
+          "value": "07971 720513"
+        }
+      ],
+      "ctaTitle": "Enjoy lunch",
+      "ctaText": "Call George's Cafe to check today's choices.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "drinks",
+      "name": "Hot & Cold Drinks",
+      "shortSummary": "Coffee, tea and cold drinks for a cafe break.",
+      "pageHeading": "Hot & Cold Drinks",
+      "lead": "Coffee, tea and cold drinks for a cafe break.",
+      "heading": "Hot & Cold Drinks at George's",
+      "detailParagraphs": [
+        "Coffee, tea and cold drinks for a cafe break.",
+        "A detailed current public menu was not available, so these choices and prices are illustrative concept content rather than claimed current dishes."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/312418/pexels-photo-312418.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Hot & Cold Drinks"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/585750/pexels-photo-585750.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Hot & Cold Drinks detail"
+      },
+      "items": [
+        {
+          "name": "Americano",
+          "description": "Fresh black coffee.",
+          "price": "From £2.70"
+        },
+        {
+          "name": "Latte",
+          "description": "Espresso with steamed milk.",
+          "price": "From £3.20"
+        },
+        {
+          "name": "Tea",
+          "description": "Classic tea.",
+          "price": "From £2.40"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Current choices",
+          "value": "Call to confirm"
+        },
+        {
+          "label": "Phone",
+          "value": "07971 720513"
+        }
+      ],
+      "ctaTitle": "Enjoy hot & cold drinks",
+      "ctaText": "Call George's Cafe to check today's choices.",
+      "contentMode": "illustrative"
+    },
+    {
+      "slug": "cakes",
+      "name": "Cakes & Sweet Treats",
+      "shortSummary": "Something sweet alongside tea or coffee.",
+      "pageHeading": "Cakes & Sweet Treats",
+      "lead": "Something sweet alongside tea or coffee.",
+      "heading": "Cakes & Sweet Treats at George's",
+      "detailParagraphs": [
+        "Something sweet alongside tea or coffee.",
+        "A detailed current public menu was not available, so these choices and prices are illustrative concept content rather than claimed current dishes."
+      ],
+      "image": {
+        "url": "https://images.pexels.com/photos/291528/pexels-photo-291528.jpeg?auto=compress&cs=tinysrgb&w=1200",
+        "alt": "Cakes & Sweet Treats"
+      },
+      "detailImage": {
+        "url": "https://images.pexels.com/photos/1721932/pexels-photo-1721932.jpeg?auto=compress&cs=tinysrgb&w=1400",
+        "alt": "Cakes & Sweet Treats detail"
+      },
+      "items": [
+        {
+          "name": "Cake of the Day",
+          "description": "Ask what’s on the counter.",
+          "price": "From £3.50"
+        },
+        {
+          "name": "Traybake",
+          "description": "A simple sweet treat.",
+          "price": "From £3"
+        }
+      ],
+      "facts": [
+        {
+          "label": "Current choices",
+          "value": "Call to confirm"
+        },
+        {
+          "label": "Phone",
+          "value": "07971 720513"
+        }
+      ],
+      "ctaTitle": "Enjoy cakes & sweet treats",
+      "ctaText": "Call George's Cafe to check today's choices.",
+      "contentMode": "illustrative"
+    }
+  ],
+  "hours": [
+    {
+      "day": "Monday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Tuesday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Wednesday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Thursday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Friday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Saturday",
+      "display": "Contact to confirm"
+    },
+    {
+      "day": "Sunday",
+      "display": "Contact to confirm"
+    }
+  ],
+  "galleryHeading": "A proper cafe break",
+  "gallery": [
+    {
+      "url": "https://images.pexels.com/photos/62097/pexels-photo-62097.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Cafe breakfast"
+    },
+    {
+      "url": "https://images.pexels.com/photos/434213/pexels-photo-434213.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Coffee and cake"
+    },
+    {
+      "url": "https://images.pexels.com/photos/101533/pexels-photo-101533.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Coffee cup"
+    },
+    {
+      "url": "https://images.pexels.com/photos/2097090/pexels-photo-2097090.jpeg?auto=compress&cs=tinysrgb&w=1200",
+      "alt": "Fresh cafe lunch"
+    }
+  ],
+  "contentMode": "illustrative"
+}
