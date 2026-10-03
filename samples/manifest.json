@@ -36,6 +36,24 @@
       "name": "Angels & Demons",
       "type": "client-sample",
       "visible": true
+    },
+    {
+      "slug": "finishing-touch-bidford",
+      "name": "Finishing Touch",
+      "type": "prospect-demo",
+      "visible": true
+    },
+    {
+      "slug": "cienna-riverside-florist",
+      "name": "Cienna of Riverside Florist",
+      "type": "prospect-demo",
+      "visible": true
+    },
+    {
+      "slug": "billy-shears-bidford",
+      "name": "Billy Shears",
+      "type": "prospect-demo",
+      "visible": true
     }
   ]
 }
