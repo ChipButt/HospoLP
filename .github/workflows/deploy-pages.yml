@@ -25,6 +25,12 @@ jobs:
         uses: actions/checkout@v6
       - name: Configure Pages
         uses: actions/configure-pages@v5
+      - name: Expand supplied Base44 static samples
+        run: |
+          mkdir -p samples/base44-static
+          cat .base44-static/chunk-* > /tmp/base44-static.zip
+          unzip -q /tmp/base44-static.zip -d /tmp/base44-static
+          cp -a /tmp/base44-static/site/. samples/base44-static/
       - name: Upload site
         uses: actions/upload-pages-artifact@v4
         with:

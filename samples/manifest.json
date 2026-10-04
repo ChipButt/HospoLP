@@ -6,28 +6,28 @@
       "name": "HALO",
       "type": "base44-sample",
       "visible": true,
-      "url": "samples/base44/?preset=hairSalon"
+      "url": "samples/base44-static/hairSalon.html"
     },
     {
       "slug": "base44-scruff",
       "name": "SCRUFF & CO",
       "type": "base44-sample",
       "visible": true,
-      "url": "samples/base44/?preset=dogGrooming"
+      "url": "samples/base44-static/dogGrooming.html"
     },
     {
       "slug": "base44-hearth",
       "name": "HEARTH",
       "type": "base44-sample",
       "visible": true,
-      "url": "samples/base44/?preset=cafeBistro"
+      "url": "samples/base44-static/cafeBistro.html"
     },
     {
       "slug": "base44-true-level",
       "name": "TRUE LEVEL",
       "type": "base44-sample",
       "visible": true,
-      "url": "samples/base44/?preset=tradesperson"
+      "url": "samples/base44-static/tradesperson.html"
     },
     {
       "slug": "sabs",
