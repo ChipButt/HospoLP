@@ -29,7 +29,8 @@ jobs:
         run: |
           mkdir -p samples/base44-static
           cat $(find .base44-static -maxdepth 1 -type f -name 'chunk-*' | sort -V) > /tmp/base44-static.zip
-          unzip -q /tmp/base44-static.zip -d /tmp/base44-static
+          unzip -q /tmp/base44-static.zip -d /tmp/base44-static || true
+          test -d /tmp/base44-static/site
           cp -a /tmp/base44-static/site/. samples/base44-static/
       - name: Upload site
         uses: actions/upload-pages-artifact@v4
