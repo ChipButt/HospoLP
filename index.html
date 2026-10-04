@@ -385,7 +385,7 @@ footer{
         const data=await r.json();
         const items=(data.samples||[]).filter(x=>x&&x.slug&&x.name&&x.visible!==false);
         if(!items.length)return;
-        host.innerHTML=items.map(x=>'<a class="sample-card" href="samples/'+encodeURIComponent(x.slug)+'/"><h3>'+String(x.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</h3><span class="arrow">→</span></a>').join('');
+        host.innerHTML=items.map(x=>'<a class="sample-card" href="'+(x.url||('samples/'+encodeURIComponent(x.slug)+'/'))+'"><h3>'+String(x.name).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</h3><span class="arrow">→</span></a>').join('');
       }catch(e){console.warn('Sample manifest unavailable; using built-in showcase list.',e)}
     })();
     </script>

@@ -2,6 +2,34 @@
   "version": 1,
   "samples": [
     {
+      "slug": "base44-halo",
+      "name": "HALO",
+      "type": "base44-sample",
+      "visible": true,
+      "url": "samples/base44/?preset=hairSalon"
+    },
+    {
+      "slug": "base44-scruff",
+      "name": "SCRUFF & CO",
+      "type": "base44-sample",
+      "visible": true,
+      "url": "samples/base44/?preset=dogGrooming"
+    },
+    {
+      "slug": "base44-hearth",
+      "name": "HEARTH",
+      "type": "base44-sample",
+      "visible": true,
+      "url": "samples/base44/?preset=cafeBistro"
+    },
+    {
+      "slug": "base44-true-level",
+      "name": "TRUE LEVEL",
+      "type": "base44-sample",
+      "visible": true,
+      "url": "samples/base44/?preset=tradesperson"
+    },
+    {
       "slug": "sabs",
       "name": "SAB’s",
       "type": "client-sample",
