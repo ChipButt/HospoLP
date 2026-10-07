@@ -94,6 +94,12 @@
       "name": "Lilly's Dog Grooming",
       "type": "prospect-demo",
       "visible": true
+    },
+    {
+      "slug": "village-cafe-bidford",
+      "name": "The Village Cafe",
+      "type": "prospect-demo",
+      "visible": true
     }
   ]
 }
