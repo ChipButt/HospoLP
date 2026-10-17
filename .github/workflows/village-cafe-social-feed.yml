@@ -2,7 +2,7 @@ name: Village Cafe social feed
 
 on:
   schedule:
-    - cron: '23 */6 * * *'
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch:
 
 permissions:
