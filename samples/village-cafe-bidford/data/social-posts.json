@@ -8,7 +8,8 @@
       "published_at": null,
       "archive": true,
       "text": "The Village Cafe shared news of a Pizza48 pizza night, featuring handmade artisan pizzas.",
-      "image": null
+      "image": "assets/village-cafe/community-guests.avif",
+      "image_context": "archive_illustration"
     },
     {
       "source": "facebook",
@@ -16,7 +17,8 @@
       "published_at": null,
       "archive": true,
       "text": "The Village Cafe shared a photo about Frozzys frozen yoghurt treats for dogs.",
-      "image": null
+      "image": "assets/village-cafe/garden.avif",
+      "image_context": "archive_illustration"
     },
     {
       "source": "facebook",
@@ -24,7 +26,8 @@
       "published_at": null,
       "archive": true,
       "text": "A Village Cafe photo post highlighted the nearby riverside meadow as a place to enjoy a takeaway.",
-      "image": null
+      "image": "assets/village-cafe/home-story-exterior.avif",
+      "image_context": "archive_illustration"
     },
     {
       "source": "facebook",
@@ -32,7 +35,9 @@
       "published_at": null,
       "archive": true,
       "text": "The Village Cafe announced its original opening, offering fresh coffee, homemade cakes, sandwiches and pastries.",
-      "image": null
+      "image": "assets/village-cafe/original-shopfront.avif",
+      "image_context": "archive_illustration"
     }
-  ]
+  ],
+  "max_posts": 5
 }
