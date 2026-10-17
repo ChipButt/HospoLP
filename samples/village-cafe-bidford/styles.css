@@ -174,3 +174,7 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 .village-feed-image img{display:block;width:100%;height:auto;max-height:680px;object-fit:contain}
 .village-feed-empty{padding:3rem 0;color:var(--muted);font-size:1.08rem}
 @media(max-width:560px){.social-feed-intro{padding:45px 0}.village-feed-section{padding-top:35px}.village-feed-post{padding:1.8rem 0 2rem}.village-feed-caption{font-size:1.04rem}.village-feed-byline{margin-bottom:1rem}.village-feed-emblem{height:42px;width:42px}}
+
+/* Five-post social stream: photo attribution for historical café archive images. */
+.village-feed-image figcaption{padding:.55rem .8rem;font-size:.74rem;letter-spacing:.02em;color:var(--muted);background:var(--cream)}
+.village-feed-post .village-feed-image{box-shadow:0 9px 32px rgba(25,47,35,.07)}
