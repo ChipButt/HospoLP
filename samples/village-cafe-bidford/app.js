@@ -5,6 +5,6 @@ document.querySelectorAll('[data-year]').forEach(el=>el.textContent=String(new D
 // Local logo is the final fallback so failed third-party photos never leave blank spaces.
 document.querySelectorAll('img[data-photo-fallback]').forEach(img=>{
  const next=(img.dataset.photoFallback||'').split('|').map(s=>s.trim()).filter(Boolean);next.push('logo.svg');
- let index=0;const fail=()=>{if(index<next.length){img.src=next[index++];if(img.src.endsWith('/logo.svg'))img.classList.add('is-fallback')}else{img.removeEventListener('error',fail);img.alt='The Village Cafe'}};img.addEventListener('error',fail)
+ let index=0;const fail=()=>{if(index<next.length){img.src=next[index++];if(img.src.endsWith('/logo.svg'))img.classList.add('is-fallback')}else{img.removeEventListener('error',fail);img.alt='The Village Cafe'}};img.addEventListener('error',fail);if(img.complete && img.naturalWidth===0)fail()
 });
 })();
