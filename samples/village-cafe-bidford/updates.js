@@ -48,12 +48,14 @@
     const meta = document.createElement('div');
     meta.className = 'social-post-meta';
     let displayDate = '';
-    const date = new Date(post.published_at);
-    if (Number.isFinite(date.getTime())) {
-      displayDate = date.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+    if (typeof post.published_at === 'string' && post.published_at) {
+      const date = new Date(post.published_at);
+      if (Number.isFinite(date.getTime())) {
+        displayDate = date.toLocaleDateString('en-GB', {day:'numeric', month:'short', year:'numeric'});
+      }
     }
     meta.textContent = (post.source === 'facebook' ? 'Facebook' : 'Instagram') +
-      (displayDate ? ' · ' + displayDate : '');
+      (post.archive === true ? ' · From the archive' : displayDate ? ' · ' + displayDate : '');
     body.appendChild(meta);
     const caption = document.createElement('p');
     caption.className = 'social-post-text';
@@ -105,7 +107,13 @@
       }
       if (!postNodes.length) return;
       feed.hidden = false;
-      showcase.hidden = true;
+      const archiveOnly = valid.every(p => p.archive === true);
+      // Archived examples stay separate from the automatic dated feed.
+      showcase.hidden = !archiveOnly;
+      if (archiveOnly) {
+        const heading = document.getElementById('cafe-posts-heading');
+        if (heading) heading.textContent = 'From our Facebook archive';
+      }
       const sources = new Set(postNodes.map(p => p.source));
       filters.hidden = sources.size < 2;
       showFilter('all');
