@@ -149,3 +149,5 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 @media(max-width:960px){.social-photo-grid{grid-template-columns:repeat(2,1fr)}.social-photo-card-feature{grid-row:span 2}.social-posts-grid{grid-template-columns:repeat(2,1fr)}.social-bottom-inner{align-items:start;flex-direction:column}}
 @media(max-width:800px){.social-hero-inner{grid-template-columns:1fr}.social-hero{padding:48px 0 62px}.social-hero-image{order:-1;aspect-ratio:1.7}.social-hero h1{font-size:clamp(3.6rem,9vw,5.5rem)}}
 @media(max-width:560px){.social-hero{padding:24px 0 45px}.social-hero-image{aspect-ratio:4/3;border-radius:18px}.social-photo-grid,.social-posts-grid{grid-template-columns:1fr}.social-photo-card{min-height:290px}.social-photo-card-feature{grid-row:auto}.social-bottom-cta{padding:45px 0}.social-bottom-inner .actions{width:100%}.social-bottom-inner .button{flex:1}}
+
+.social-post-card[hidden],#cafe-photo-highlights[hidden],#cafe-post-feed[hidden],.social-feed-filters[hidden]{display:none!important}
