@@ -87,3 +87,10 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 .history-accolade small{display:block;font-size:.77rem;font-weight:800;letter-spacing:.08em;margin-top:.5rem;text-transform:uppercase}
 @media(max-width:860px){.history-entry{grid-template-columns:78px minmax(0,1fr);gap:1rem}.history-entry>.history-picture,.history-entry>.history-photos,.history-entry>.history-accolade{grid-column:2}.history-entry>.history-picture img{height:250px}.history-photos{height:250px}}
 @media(max-width:560px){.history-entry{display:grid;grid-template-columns:1fr;gap:.9rem}.history-entry>.history-picture,.history-entry>.history-photos,.history-entry>.history-accolade{grid-column:1}.history-year{padding-top:0}.history-photos{height:225px}.history-entry>.history-picture img{height:235px}}
+
+/* Authentic original branding from the café's photo archive (no redrawn logo). */
+.brand .authentic-brand{width:200px;height:auto;max-height:80px;object-fit:contain;object-position:left center;border:0;border-radius:5px;background:transparent;flex:none}
+@media(max-width:560px){.brand .authentic-brand{width:150px;max-height:60px}}
+/* Food & drink is two distinct equal-height photographs, not duplicated halves of one image. */
+.food-pair-tile .food-pair-half img,.food-pair-tile .food-pair-breakfast img{position:absolute;inset:0;left:0;right:auto;top:0;width:100%;height:100%;max-width:100%;object-fit:cover;transform:none;transition:transform .25s ease}
+.food-pair-tile:hover .food-pair-half img{transform:scale(1.04)}
