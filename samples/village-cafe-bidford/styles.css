@@ -110,3 +110,30 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 .cake-grid figure figcaption{font-weight:700;font-size:.77rem;color:var(--muted);padding:.5rem .15rem}
 .food-pair-tile .food-pair-media{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;height:100%;position:absolute;inset:0;overflow:hidden}
 .food-pair-tile .food-pair-media .food-pair-image{width:100%;height:100%;min-height:100%;min-width:0;object-fit:cover;position:relative;inset:auto;max-width:none}
+
+
+/* Village Cafe Latest Updates page: embeds public Facebook posts (managed by Meta). */
+.social-page-intro h1{font-size:clamp(3.3rem,6vw,6.3rem)}
+.social-page-intro .lead{margin:1.2rem 0 0;max-width:720px}
+.social-updates-section{background:var(--paper)}
+.social-updates-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:1.5rem;align-items:start}
+.social-update-card{border:1px solid var(--line);border-radius:25px;padding:clamp(1.25rem,2.5vw,2.1rem);background:var(--cream);min-width:0}
+.social-update-card h2{font-size:clamp(2.2rem,3vw,3.3rem);margin:.15rem 0 1rem}
+.social-update-card>p:not(.eyebrow){color:var(--muted);max-width:560px}
+.social-fb-embed{width:100%;max-width:500px;margin:1.3rem auto;min-height:760px;background:#edf1eb;overflow:hidden;border-radius:12px;display:flex;align-items:start;justify-content:center}
+.social-fb-embed iframe{display:block;width:100%;height:760px;max-width:500px;border:0}
+.social-fine-print{font-size:.81rem;line-height:1.5}
+.social-update-card>.button{margin-top:.4rem}
+.social-ig{background:var(--vanilla)}
+.social-type-art{display:flex;flex-direction:column;justify-content:center;gap:.7rem;border-radius:19px;margin:1.45rem 0;background:var(--forest);min-height:330px;padding:2rem}
+.social-type-art span{display:block;font:400 clamp(2rem,3.5vw,3.6rem)/1.09 "DM Serif Display",Georgia,serif;color:#fff6e9;letter-spacing:-.03em}
+.social-type-art span:nth-child(2){color:var(--sun);padding-left:10%}
+.social-type-art span:nth-child(3){color:#e8b19d;font-style:italic}
+.social-home-teaser{background:var(--forest);color:white;padding:55px 0}
+.social-home-teaser-row{display:flex;justify-content:space-between;align-items:center;gap:2rem}
+.social-home-teaser h2{margin:0 0 .6rem;font-size:clamp(2.3rem,4vw,3.8rem)}
+.social-home-teaser .eyebrow{color:var(--sun)}
+.social-home-teaser p:not(.eyebrow){margin:0;max-width:650px;color:#dae8db}
+@media(min-width:801px) and (max-width:1040px){.nav{gap:.75rem}.nav a{font-size:.81rem}.nav-wrap{gap:1rem}}
+@media(max-width:920px){.social-updates-grid{grid-template-columns:1fr}.social-home-teaser-row{flex-direction:column;align-items:start}.social-type-art{min-height:270px}}
+@media(max-width:560px){.social-update-card{padding:1rem}.social-fb-embed{min-height:680px}.social-fb-embed iframe{height:680px}.social-type-art{padding:1.4rem;min-height:240px}.social-type-art span{font-size:clamp(1.85rem,8vw,3rem)}.social-home-teaser{padding:48px 0}}
