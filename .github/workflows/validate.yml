@@ -20,6 +20,7 @@ jobs:
           node --check samples/village-cafe-bidford/updates.js
           node -e "const fs=require('fs');const d=JSON.parse(fs.readFileSync('samples/village-cafe-bidford/data/social-posts.json','utf8')); if(!Array.isArray(d.posts))process.exit(1)"
           python -m py_compile scripts/sync_village_cafe_social.py
+          node scripts/check_village_cafe_feed.mjs
       - name: Validate JSON content
         run: |
           node -e "const fs=require('fs'); for(const f of fs.readdirSync('content').filter(f=>f.endsWith('.json'))){JSON.parse(fs.readFileSync('content/'+f,'utf8')); console.log('OK',f)}"
