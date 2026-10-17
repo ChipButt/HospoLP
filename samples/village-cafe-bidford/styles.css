@@ -110,30 +110,42 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 .cake-grid figure figcaption{font-weight:700;font-size:.77rem;color:var(--muted);padding:.5rem .15rem}
 .food-pair-tile .food-pair-media{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;height:100%;position:absolute;inset:0;overflow:hidden}
 .food-pair-tile .food-pair-media .food-pair-image{width:100%;height:100%;min-height:100%;min-width:0;object-fit:cover;position:relative;inset:auto;max-width:none}
-
-
-/* Village Cafe Latest Updates page: embeds public Facebook posts (managed by Meta). */
-.social-page-intro h1{font-size:clamp(3.3rem,6vw,6.3rem)}
-.social-page-intro .lead{margin:1.2rem 0 0;max-width:720px}
-.social-updates-section{background:var(--paper)}
-.social-updates-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:1.5rem;align-items:start}
-.social-update-card{border:1px solid var(--line);border-radius:25px;padding:clamp(1.25rem,2.5vw,2.1rem);background:var(--cream);min-width:0}
-.social-update-card h2{font-size:clamp(2.2rem,3vw,3.3rem);margin:.15rem 0 1rem}
-.social-update-card>p:not(.eyebrow){color:var(--muted);max-width:560px}
-.social-fb-embed{width:100%;max-width:500px;margin:1.3rem auto;min-height:760px;background:#edf1eb;overflow:hidden;border-radius:12px;display:flex;align-items:start;justify-content:center}
-.social-fb-embed iframe{display:block;width:100%;height:760px;max-width:500px;border:0}
-.social-fine-print{font-size:.81rem;line-height:1.5}
-.social-update-card>.button{margin-top:.4rem}
-.social-ig{background:var(--vanilla)}
-.social-type-art{display:flex;flex-direction:column;justify-content:center;gap:.7rem;border-radius:19px;margin:1.45rem 0;background:var(--forest);min-height:330px;padding:2rem}
-.social-type-art span{display:block;font:400 clamp(2rem,3.5vw,3.6rem)/1.09 "DM Serif Display",Georgia,serif;color:#fff6e9;letter-spacing:-.03em}
-.social-type-art span:nth-child(2){color:var(--sun);padding-left:10%}
-.social-type-art span:nth-child(3){color:#e8b19d;font-style:italic}
-.social-home-teaser{background:var(--forest);color:white;padding:55px 0}
-.social-home-teaser-row{display:flex;justify-content:space-between;align-items:center;gap:2rem}
-.social-home-teaser h2{margin:0 0 .6rem;font-size:clamp(2.3rem,4vw,3.8rem)}
-.social-home-teaser .eyebrow{color:var(--sun)}
-.social-home-teaser p:not(.eyebrow){margin:0;max-width:650px;color:#dae8db}
-@media(min-width:801px) and (max-width:1040px){.nav{gap:.75rem}.nav a{font-size:.81rem}.nav-wrap{gap:1rem}}
-@media(max-width:920px){.social-updates-grid{grid-template-columns:1fr}.social-home-teaser-row{flex-direction:column;align-items:start}.social-type-art{min-height:270px}}
-@media(max-width:560px){.social-update-card{padding:1rem}.social-fb-embed{min-height:680px}.social-fb-embed iframe{height:680px}.social-type-art{padding:1.4rem;min-height:240px}.social-type-art span{font-size:clamp(1.85rem,8vw,3rem)}.social-home-teaser{padding:48px 0}}
+/* Village Café updates — visual social hub with progressive live-post feed */
+.social-hero{padding:75px 0 78px;background:var(--cream)}
+.social-hero-inner{display:grid;grid-template-columns:1.02fr .98fr;align-items:center;gap:5%}
+.social-hero h1{font-size:clamp(3.4rem,5.7vw,6.7rem);margin:0;line-height:.97;letter-spacing:-.05em}
+.social-hero h1 em{font-weight:400;color:var(--coral)}
+.social-hero .lead{margin:1.4rem 0 2rem}
+.social-hero-image{aspect-ratio:1.25;border-radius:26px;overflow:hidden;background:var(--sage);box-shadow:var(--shadow)}
+.social-hero-image img{width:100%;height:100%;object-fit:cover}
+.social-gallery-intro{display:flex;justify-content:space-between;align-items:end;gap:1.5rem;margin-bottom:2.3rem;flex-wrap:wrap}
+.social-gallery-intro h2{margin:0}
+.social-photo-grid{display:grid;grid-template-columns:1.25fr 1fr 1fr;gap:1.2rem}
+.social-photo-card{position:relative;min-height:390px;border-radius:23px;overflow:hidden;display:block;background:var(--sage);text-decoration:none;isolation:isolate}
+.social-photo-card:after{content:"";position:absolute;inset:0;background:linear-gradient(0deg,rgba(15,33,24,.86),transparent 68%);z-index:1}
+.social-photo-card img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;transition:transform .35s}
+.social-photo-card:hover img{transform:scale(1.04)}
+.social-photo-caption{position:absolute;bottom:25px;left:25px;right:15px;z-index:2;color:white}
+.social-photo-caption small{display:block;font-size:.68rem;font-weight:800;letter-spacing:.12em;color:var(--sun)}
+.social-photo-caption strong{display:block;font:400 clamp(1.9rem,3vw,2.65rem)/1.12 "DM Serif Display",serif;margin:.35rem 0}
+.social-photo-caption span{font-size:.85rem;font-weight:800}
+.social-bottom-cta{background:var(--forest);padding:63px 0;color:white}
+.social-bottom-inner{display:flex;align-items:center;justify-content:space-between;gap:2rem}
+.social-bottom-inner h2{font-size:clamp(2.4rem,4vw,4.3rem);margin:0}
+.social-bottom-inner .eyebrow{color:var(--sun)}
+.social-bottom-inner .actions{flex-shrink:0}
+.social-posts-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.3rem}
+.social-post-card{background:var(--cream);border:1px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.social-post-card>a.social-post-image{display:block;aspect-ratio:1.15;overflow:hidden;background:var(--sage)}
+.social-post-image img{width:100%;height:100%;object-fit:cover}
+.social-post-body{display:flex;flex-direction:column;gap:.65rem;padding:1.3rem;flex:1}
+.social-post-meta{font-size:.72rem;letter-spacing:.07em;font-weight:800;text-transform:uppercase;color:var(--coral)}
+.social-post-text{margin:0;font-size:.95rem;line-height:1.57;white-space:pre-line;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;overflow:hidden}
+.social-post-link{font-weight:800;text-decoration:none;margin-top:auto;padding-top:.55rem;color:var(--forest)}
+.social-post-link:hover{text-decoration:underline;text-underline-offset:4px}
+.social-feed-filters{display:flex;flex-wrap:wrap;gap:.45rem}
+.social-filter{border:1px solid var(--forest);padding:.57rem 1rem;border-radius:999px;background:transparent;color:var(--forest);font:700 .85rem "DM Sans",sans-serif;cursor:pointer}
+.social-filter.active,.social-filter[aria-pressed="true"]{background:var(--forest);color:white}
+@media(max-width:960px){.social-photo-grid{grid-template-columns:repeat(2,1fr)}.social-photo-card-feature{grid-row:span 2}.social-posts-grid{grid-template-columns:repeat(2,1fr)}.social-bottom-inner{align-items:start;flex-direction:column}}
+@media(max-width:800px){.social-hero-inner{grid-template-columns:1fr}.social-hero{padding:48px 0 62px}.social-hero-image{order:-1;aspect-ratio:1.7}.social-hero h1{font-size:clamp(3.6rem,9vw,5.5rem)}}
+@media(max-width:560px){.social-hero{padding:24px 0 45px}.social-hero-image{aspect-ratio:4/3;border-radius:18px}.social-photo-grid,.social-posts-grid{grid-template-columns:1fr}.social-photo-card{min-height:290px}.social-photo-card-feature{grid-row:auto}.social-bottom-cta{padding:45px 0}.social-bottom-inner .actions{width:100%}.social-bottom-inner .button{flex:1}}
