@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 320" role="img" aria-labelledby="title">
+  <title id="title">The Village Cafe — white cup and steam on dark green</title>
+  <rect width="320" height="320" rx="18" fill="#173b2e"/>
+  <g fill="#fff" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif">
+    <text x="160" y="61" font-size="37">The Village</text>
+    <text x="160" y="104" font-size="47">Cafe</text>
+  </g>
+  <g fill="none" stroke="#fff" stroke-linecap="round" stroke-width="5.5">
+    <path d="M149 155c-17-18 28-24 10-43"/>
+    <path d="M172 154c-17-17 25-25 7-42"/>
+    <path d="M193 158c-15-16 22-22 8-39"/>
+  </g>
+  <path d="M93 171h138v48c0 33-23 53-68 53s-70-20-70-53z" fill="#fff"/>
+  <path d="M229 185h14c22 0 31 13 30 28-2 23-20 33-50 31" fill="none" stroke="#fff" stroke-width="12"/>
+  <path d="M72 284h177" stroke="#fff" stroke-linecap="round" stroke-width="9"/>
+</svg>
