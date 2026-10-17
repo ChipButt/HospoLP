@@ -23,6 +23,8 @@ DATA = SITE / "data" / "social-posts.json"
 IMAGES = SITE / "assets" / "village-cafe" / "social"
 GRAPH = "https://graph.facebook.com/v26.0/"
 VALID_SOURCE = {"facebook", "instagram"}
+MAX_POSTS = 5
+FETCH_PER_ACCOUNT = 25
 USER_AGENT = "VillageCafeSiteFeed/1.0"
 
 def graph_get(endpoint, token, params):
@@ -82,7 +84,7 @@ def cache_photo(raw_url, source, post_id):
 def facebook_posts(page_id, token):
     payload = graph_get(page_id + "/posts", token, {
         "fields": "id,message,created_time,full_picture,permalink_url",
-        "limit": 12,
+        "limit": FETCH_PER_ACCOUNT,
     })
     posts = []
     for item in payload.get("data", []):
@@ -103,7 +105,7 @@ def facebook_posts(page_id, token):
 def instagram_posts(user_id, token):
     payload = graph_get(user_id + "/media", token, {
         "fields": "id,caption,permalink,timestamp,media_type,media_url,thumbnail_url",
-        "limit": 12,
+        "limit": FETCH_PER_ACCOUNT,
     })
     posts = []
     for item in payload.get("data", []):
@@ -161,8 +163,14 @@ def main():
     if configured and not successful:
         print("No connected feed could refresh.", file=sys.stderr)
         return 1
-    # When the same update is cross-posted, avoid duplicated text and imagery.
-    result.sort(key=lambda p: p.get("published_at") or "", reverse=True)
+    # Once at least one Meta account succeeds, never treat undated archived
+    # announcements as any of the five most recent posts.
+    if successful:
+        result = [p for p in result if p.get("archive") is not True
+                  and stable_date(p.get("published_at"))]
+    # Merge successful sources with last-known posts from temporarily
+    # disconnected sources; prefer the five newest across both platforms.
+    result.sort(key=lambda p: stable_date(p.get("published_at")) or "", reverse=True)
     seen_text = set()
     unique = []
     for post in result:
@@ -172,12 +180,12 @@ def main():
         if len(caption) > 40:
             seen_text.add(caption)
         unique.append(post)
-        if len(unique) == 12:
+        if len(unique) == MAX_POSTS:
             break
-    if unique == existing:
+    if unique == existing and current.get("max_posts") == MAX_POSTS:
         print("Feed unchanged; no commit required.")
         return 0
-    payload = {"schema_version": 1,
+    payload = {"schema_version": 1, "max_posts": MAX_POSTS,
                "updated_at": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
                "posts": unique}
     DATA.parent.mkdir(parents=True, exist_ok=True)
