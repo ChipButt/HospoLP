@@ -151,3 +151,26 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
 @media(max-width:560px){.social-hero{padding:24px 0 45px}.social-hero-image{aspect-ratio:4/3;border-radius:18px}.social-photo-grid,.social-posts-grid{grid-template-columns:1fr}.social-photo-card{min-height:290px}.social-photo-card-feature{grid-row:auto}.social-bottom-cta{padding:45px 0}.social-bottom-inner .actions{width:100%}.social-bottom-inner .button{flex:1}}
 
 .social-post-card[hidden],#cafe-photo-highlights[hidden],#cafe-post-feed[hidden],.social-feed-filters[hidden]{display:none!important}
+
+/* Café updates — full in-page posts, not social link tiles */
+.social-feed-intro{background:var(--cream);padding:70px 0 65px}
+.social-feed-intro-inner{max-width:1190px}
+.social-feed-intro h1{font-size:clamp(3.3rem,6.4vw,6.2rem);line-height:1.01;margin:0}
+.social-feed-intro h1 em{color:var(--coral);font-weight:400}
+.social-feed-intro .lead{margin:1.2rem 0 0;max-width:680px}
+.village-feed-section{background:var(--paper);padding-top:58px}
+.village-feed-wrap{max-width:850px}
+.village-feed-heading{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1.2rem;padding-bottom:1.5rem;border-bottom:1px solid var(--line)}
+.village-feed-heading h2{font-size:clamp(2.3rem,4vw,3.2rem);margin:0}
+.village-feed-stream{display:flex;flex-direction:column}
+.village-feed-post{margin:0;padding:2.3rem 0 2.7rem;border-bottom:1px solid var(--line)}
+.village-feed-post[hidden]{display:none!important}
+.village-feed-byline{display:flex;align-items:center;gap:.9rem;margin-bottom:1.35rem}
+.village-feed-emblem{flex:none;display:grid;place-items:center;width:48px;height:48px;border-radius:50%;color:var(--cream);background:var(--forest);font:400 1.4rem "DM Serif Display",serif}
+.village-feed-author{display:block;font-weight:800;color:var(--forest-dark);font-size:1.04rem}
+.village-feed-meta{font-size:.78rem;color:var(--muted);font-weight:600;margin-top:.06rem}
+.village-feed-caption{font-size:clamp(1.06rem,1.65vw,1.23rem);line-height:1.7;color:var(--ink);max-width:720px;white-space:pre-line;margin:0 0 1.25rem}
+.village-feed-image{margin:1.3rem 0 0;max-width:100%;border-radius:17px;overflow:hidden;background:var(--sage)}
+.village-feed-image img{display:block;width:100%;height:auto;max-height:680px;object-fit:contain}
+.village-feed-empty{padding:3rem 0;color:var(--muted);font-size:1.08rem}
+@media(max-width:560px){.social-feed-intro{padding:45px 0}.village-feed-section{padding-top:35px}.village-feed-post{padding:1.8rem 0 2rem}.village-feed-caption{font-size:1.04rem}.village-feed-byline{margin-bottom:1rem}.village-feed-emblem{height:42px;width:42px}}
