@@ -1,47 +1,32 @@
-# Village Café social feed – owner setup (not published on the café pages)
+# The Village Cafe — automatic social updates: connection checklist
 
-The public website at samples/village-cafe-bidford/updates.html displays real
-posts only. It never fabricates a social update. Before accounts are connected,
-it displays genuine café photographs with links to the real social profiles.
+**Status:** Website renderer and GitHub Actions importer are installed. A live feed has **not** been authenticated. The customer-facing page does not display invented social posts, unrelated photographs, credentials, or technical setup instructions.
 
-The static GitHub Pages site cannot securely keep Facebook/Instagram credentials.
-Instead, .github/workflows/village-cafe-social-feed.yml refreshes the latest
-posts using the Meta Graph API approximately every 15 minutes and commits safe JSON plus local
-post images to the repo. No subscription is required.
+## What the business owner needs to authorise
 
-## One-time account authorisation
+The Page owner or an administrator with sufficient Page access must consent to an integration with Meta. You cannot use the public URL alone as an API credential.
 
-An administrator for the business's Facebook Page must set up Meta Graph API
-access and grant the necessary permission to read the Page's published posts
-(e.g. pages_read_engagement and pages_read_user_content, per Meta's current
-approval rules). They must create a Page access token for the correct Page.
+1. Sign into [Meta for Developers](https://developers.facebook.com/) as an authorised business administrator and create/configure an application for Pages access. If requested, add the Page manager as an app role while testing.
+2. Grant the app the permissions appropriate for reading the Page's own published posts. For the Facebook Pages API, `pages_show_list` and `pages_read_engagement` are typically relevant. Additional access, including app review, may be required depending on the app's mode and use. Verify granted scopes using Graph API Explorer.
+3. Obtain a valid **Page access token** and the Page's **numeric ID** via the authorised /me/accounts flow, not from a guessed profile URL. Prefer a token with the appropriate lifetime / renewal plan.
+4. To include Instagram, it must be a Professional (Business or Creator) account linked to the Facebook Page for the currently implemented Facebook Login / Instagram Graph API route. Its authorised numeric IG account ID and appropriate `instagram_basic` permissions are required.
+5. In GitHub `ChipButt/HospoLP`, go to **Settings → Secrets and variables → Actions**. Store the resulting secrets (never in website HTML or chat):
+   - `CAFE_FB_PAGE_ID`: numeric Page ID
+   - `CAFE_FB_PAGE_TOKEN`: authorised Page access token
+   - `CAFE_IG_USER_ID`: numeric professional IG account ID (optional until connected)
+   - `CAFE_IG_ACCESS_TOKEN`: corresponding IG-access token, if separate (optional if authorised Page token works)
+6. Go to **Actions → Village Cafe social feed → Run workflow**. Check that the logs explicitly report loaded posts from the connected platform(s), rather than 'not connected' or 'could not refresh'.
+7. Confirm `samples/village-cafe-bidford/data/social-posts.json` now contains up to **five dated posts**, and that the referenced images exist in `assets/village-cafe/social/`. Check the public Updates page renders their full captions, dates and actual downloaded photos. Post a new test update and ensure it enters the feed and displaces the oldest once there are five.
 
-If Instagram is required, use the official Instagram Graph API with a linked
-Professional/Creator Instagram account and permissions to read media. This may
-require linking the professional account to a Facebook Page or using the
-Instagram Login route instead. The current importer expects the Facebook
-Graph-connected Instagram Business Account ID and token.
+The scheduled workflow runs approximately **every 15 minutes**. GitHub Actions schedules and GitHub Pages deployments can be delayed. When the webpage is open, it checks the published feed every **two minutes** and also when the tab becomes visible again. It is near-live, not immediate.
 
-In the GitHub repo go to Settings → Secrets and variables → Actions and add:
+The importer keeps previously retrieved dated posts if Meta is temporarily unavailable. Tokens must remain valid and may require renewal. A user who cannot administer the café's Page must obtain the owner's explicit consent first.
 
-- CAFE_FB_PAGE_ID: numeric Facebook Page ID
-- CAFE_FB_PAGE_TOKEN: corresponding authorised Page access token
-- CAFE_IG_USER_ID: numeric IG professional/business account ID (optional)
-- CAFE_IG_ACCESS_TOKEN: token for that IG account (optional if the Page token is authorised)
+## Technical files
 
-**Never paste tokens into HTML, JavaScript, issues, logs or chat messages.**
-Do not put them in this file.
+- Backend: `scripts/sync_village_cafe_social.py`
+- GitHub Actions: `.github/workflows/village-cafe-social-feed.yml`
+- Public data: `samples/village-cafe-bidford/data/social-posts.json`
+- Renderer: `samples/village-cafe-bidford/updates.js`
 
-Then run Actions → Village Cafe social feed → Run workflow to test.
-After credentials have been configured, the importer retains only the five latest dated posts across connected Facebook and Instagram accounts. GitHub Actions schedules and Pages publishing are not instantaneous; expect a delay from posting to display. The webpage checks for updated feed data every two minutes while open. During feed failures, it keeps previously retrieved posts.\n\nThe latest JSON file is at samples/village-cafe-bidford/data/social-posts.json.
-If the API is unavailable, the refresh job preserves previously retrieved posts
-rather than clearing the website. Account authorisation/token refresh is the
-owner's continuing responsibility under Meta's rules.
-
-The Facebook Page Plugin iframe was removed because it displayed a header but
-an empty timeline in the observed browser screenshot. Neither platform offers
-an uncredentialled, reliable live public-profile feed for static HTML sites.
-
-## Current historical display
-
-Until Meta access is authorised, the feed data contains four older, undated post summaries and selected matching or contextual images from the café's own photo archive. These images are explicitly labelled as archive photographs and are not represented as the original social-post attachments. They are **not** the five most recent posts. Do not add invented dates or captions to fill a fifth slot. Once the first authorised account sync succeeds, the importer removes this archive-only fallback and presents up to five verified, dated posts, newest first.
+**Never put API access tokens in issues, HTML, GitHub commits or ChatGPT.**
