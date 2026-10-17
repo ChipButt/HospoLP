@@ -1,5 +1,38 @@
 {
   "schema_version": 1,
   "updated_at": null,
-  "posts": []
+  "posts": [
+    {
+      "source": "facebook",
+      "permalink": "https://www.facebook.com/bidfordvillagecafe/posts/-pizza-night-at-the-village-cafe-we-really-are-very-excited-to-be-hosting-our-fi/1015276306528075/",
+      "published_at": null,
+      "archive": true,
+      "text": "The Village Cafe shared news of a Pizza48 pizza night, featuring handmade artisan pizzas.",
+      "image": null
+    },
+    {
+      "source": "facebook",
+      "permalink": "https://www.facebook.com/bidfordvillagecafe/photos/964186320999245/",
+      "published_at": null,
+      "archive": true,
+      "text": "The Village Cafe shared a photo about Frozzys frozen yoghurt treats for dogs.",
+      "image": null
+    },
+    {
+      "source": "facebook",
+      "permalink": "https://www.facebook.com/bidfordvillagecafe/photos/high-street-bidford-on-avonour-cafe-is-a-1-minute-walk-away-from-the-meadow-wher/746601239424422/",
+      "published_at": null,
+      "archive": true,
+      "text": "A Village Cafe photo post highlighted the nearby riverside meadow as a place to enjoy a takeaway.",
+      "image": null
+    },
+    {
+      "source": "facebook",
+      "permalink": "https://www.facebook.com/bidfordvillagecafe/posts/we-are-excited-to-finally-announce-that-the-village-cafe-will-open-for-business-/420705528680663/",
+      "published_at": null,
+      "archive": true,
+      "text": "The Village Cafe announced its original opening, offering fresh coffee, homemade cakes, sandwiches and pastries.",
+      "image": null
+    }
+  ]
 }
