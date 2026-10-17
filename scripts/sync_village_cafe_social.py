@@ -163,6 +163,11 @@ def main():
     if configured and not successful:
         print("No connected feed could refresh.", file=sys.stderr)
         return 1
+    if successful and not any(p.get("archive") is not True
+                              and stable_date(p.get("published_at"))
+                              for p in result) and existing:
+        print("No dated posts returned; preserving the last available feed.")
+        return 0
     # Once at least one Meta account succeeds, never treat undated archived
     # announcements as any of the five most recent posts.
     if successful:
