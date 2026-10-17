@@ -1,36 +1,50 @@
-/* Village Cafe — render social updates directly on the page. No post links or click-through cards. */
+/* Village Café — five most recent authorised social posts displayed directly on-page.
+   No link tiles. Historical archive photos are labelled separately from original post media. */
 (() => {
   'use strict';
+  const MAX_POSTS = 5;
+  const POLL_MS = 120000; // Check for a newly published GitHub Pages feed every two minutes.
   const grid = document.getElementById('cafe-posts-grid');
   const filters = document.getElementById('social-post-filters');
   const empty = document.getElementById('cafe-feed-empty');
   const heading = document.getElementById('cafe-posts-heading');
   if (!grid || !filters || !empty || !heading) return;
 
+  // Only assets hosted in the café's own repository can be displayed.
+  const allowedArchivePhotos = new Set([
+    'assets/village-cafe/community-guests.avif',
+    'assets/village-cafe/garden.avif',
+    'assets/village-cafe/home-story-exterior.avif',
+    'assets/village-cafe/original-shopfront.avif'
+  ]);
   function localPhoto(post) {
     if (typeof post.image !== 'string') return null;
+    if (post.archive === true && post.image_context === 'archive_illustration' &&
+        allowedArchivePhotos.has(post.image)) return post.image;
     return /^assets\/village-cafe\/social\/[A-Za-z0-9._-]+\.webp$/.test(post.image)
       ? post.image : null;
   }
-  function displayDate(value) {
-    if (typeof value !== 'string' || !value.trim()) return '';
-    const date = new Date(value);
-    return Number.isFinite(date.getTime())
-      ? date.toLocaleDateString('en-GB', {day: 'numeric', month: 'long', year: 'numeric'})
-      : '';
+  function timestamp(value) {
+    if (typeof value !== 'string') return 0;
+    const time = Date.parse(value);
+    return Number.isFinite(time) ? time : 0;
   }
-
+  function displayDate(value) {
+    const time = timestamp(value);
+    return time ? new Date(time).toLocaleDateString('en-GB',
+      {day:'numeric',month:'long',year:'numeric'}) : '';
+  }
+  function validPost(post) {
+    return post && typeof post === 'object' &&
+      ['facebook','instagram'].includes(post.source) &&
+      ((typeof post.text === 'string' && post.text.trim()) || localPhoto(post));
+  }
   function buildPost(post) {
-    if (!post || !['facebook','instagram'].includes(post.source)) return null;
-    const caption = typeof post.text === 'string' ? post.text.trim() : '';
-    const imagePath = localPhoto(post);
-    if (!caption && !imagePath) return null;
-
     const article = document.createElement('article');
     article.className = 'village-feed-post';
+
     const byline = document.createElement('div');
     byline.className = 'village-feed-byline';
-
     const emblem = document.createElement('span');
     emblem.className = 'village-feed-emblem';
     emblem.textContent = 'V';
@@ -44,80 +58,111 @@
     identity.appendChild(author);
     const metadata = document.createElement('div');
     metadata.className = 'village-feed-meta';
-    const label = post.source === 'facebook' ? 'Facebook' : 'Instagram';
-    const date = displayDate(post.published_at);
-    metadata.textContent = [label, post.archive === true ? 'From the archive' : date].filter(Boolean).join(' · ');
+    metadata.textContent = [
+      post.source === 'facebook' ? 'Facebook' : 'Instagram',
+      post.archive === true ? 'From the archive' : displayDate(post.published_at)
+    ].filter(Boolean).join(' · ');
     identity.appendChild(metadata);
     byline.appendChild(identity);
     article.appendChild(byline);
 
-    if (caption) {
-      const text = document.createElement('p');
-      text.className = 'village-feed-caption';
-      text.textContent = caption;
-      article.appendChild(text);
+    if (typeof post.text === 'string' && post.text.trim()) {
+      const caption = document.createElement('p');
+      caption.className = 'village-feed-caption';
+      caption.textContent = post.text.trim();
+      article.appendChild(caption);
     }
-    if (imagePath) {
-      const frame = document.createElement('figure');
-      frame.className = 'village-feed-image';
+
+    const photo = localPhoto(post);
+    if (photo) {
+      const figure = document.createElement('figure');
+      figure.className = 'village-feed-image';
       const img = document.createElement('img');
-      img.src = imagePath;
-      img.alt = 'Photo shared by The Village Cafe';
+      img.src = photo;
       img.loading = 'lazy';
-      img.addEventListener('error', () => frame.remove(), {once:true});
-      frame.appendChild(img);
-      article.appendChild(frame);
+      img.alt = post.image_context === 'archive_illustration'
+        ? 'Photograph from The Village Cafe archive'
+        : 'Photograph published by The Village Cafe';
+      img.addEventListener('error', () => figure.remove(), {once:true});
+      figure.appendChild(img);
+      if (post.image_context === 'archive_illustration') {
+        const note = document.createElement('figcaption');
+        note.textContent = 'From the café photo archive';
+        figure.appendChild(note);
+      }
+      article.appendChild(figure);
     }
     return article;
   }
-
-  const rendered = [];
-  function showFilter(filter) {
+  let rendered = [];
+  let filter = 'all';
+  let lastPayload = '';
+  let loading = false;
+  function applyFilter() {
     let count = 0;
     for (const item of rendered) {
       const show = filter === 'all' || item.source === filter;
       item.element.hidden = !show;
       if (show) count++;
     }
-    for (const btn of filters.querySelectorAll('[data-filter]')) {
-      const active = btn.dataset.filter === filter;
-      btn.classList.toggle('active', active);
-      btn.setAttribute('aria-pressed', String(active));
+    if (!count && filter !== 'all') {
+      filter = 'all';
+      return applyFilter();
     }
-    if (!count && filter !== 'all') showFilter('all');
+    for (const button of filters.querySelectorAll('[data-filter]')) {
+      const active = button.dataset.filter === filter;
+      button.classList.toggle('active',active);
+      button.setAttribute('aria-pressed',String(active));
+    }
   }
-
-  for (const btn of filters.querySelectorAll('[data-filter]')) {
-    btn.addEventListener('click', () => showFilter(btn.dataset.filter));
+  for (const button of filters.querySelectorAll('[data-filter]')) {
+    button.addEventListener('click', () => {
+      filter = button.dataset.filter || 'all';
+      applyFilter();
+    });
   }
-
-  async function loadFeed() {
+  async function refreshFeed() {
+    if (loading || document.visibilityState === 'hidden') return;
+    loading = true;
     try {
-      const response = await fetch('data/social-posts.json?v=' + Math.floor(Date.now()/3600000), {cache: 'no-store'});
+      const response = await fetch('data/social-posts.json?v=' + Date.now(),
+        {cache:'no-store'});
       if (!response.ok) throw new Error('Feed unavailable');
-      const data = await response.json();
-      if (!data || !Array.isArray(data.posts)) throw new Error('Feed data invalid');
-      const posts = data.posts.filter(p => p && typeof p === 'object')
-        .sort((a,b) => Date.parse(b.published_at || '') - Date.parse(a.published_at || ''))
-        .slice(0,12);
-
+      const payload = await response.json();
+      if (!payload || !Array.isArray(payload.posts)) throw new Error('Invalid feed');
+      const candidates = payload.posts.filter(validPost);
+      // Never present undated historical entries as one of the five latest live posts.
+      const live = candidates.filter(p => p.archive !== true && timestamp(p.published_at));
+      const posts = live.length
+        ? live.sort((a,b) => timestamp(b.published_at)-timestamp(a.published_at)).slice(0,MAX_POSTS)
+        : candidates.filter(p => p.archive === true).slice(0,MAX_POSTS);
+      const signature = JSON.stringify(posts);
+      if (signature === lastPayload) return;
+      lastPayload = signature;
+      const fragment = document.createDocumentFragment();
+      const next = [];
       for (const post of posts) {
         const element = buildPost(post);
-        if (!element) continue;
-        grid.appendChild(element);
-        rendered.push({source:post.source, element});
+        fragment.appendChild(element);
+        next.push({source:post.source,element});
       }
-      if (rendered.length === 0) {
-        empty.hidden = false;
-        return;
-      }
-      const onlyArchive = posts.every(p => p.archive === true);
-      heading.textContent = onlyArchive ? 'From our archive' : 'Latest from the café';
+      grid.replaceChildren(fragment);
+      rendered = next;
+      empty.hidden = rendered.length > 0;
+      heading.textContent = live.length ? 'Latest from the café'
+        : rendered.length ? 'From our archive' : 'Café updates';
       filters.hidden = new Set(rendered.map(p => p.source)).size < 2;
-      showFilter('all');
+      applyFilter();
     } catch (_) {
-      empty.hidden = false;
+      // Preserve the last successfully displayed posts during temporary failures.
+      if (!rendered.length) empty.hidden = false;
+    } finally {
+      loading = false;
     }
   }
-  loadFeed();
+  refreshFeed();
+  window.setInterval(refreshFeed,POLL_MS);
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') refreshFeed();
+  });
 })();
