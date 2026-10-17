@@ -1,5 +1,4 @@
-/* Village Café — five most recent authorised social posts displayed directly on-page.
-   No link tiles. Historical archive photos are labelled separately from original post media. */
+/* Village Café — five latest authorised Facebook / Instagram posts, inline on-page. */
 (() => {
   'use strict';
   const MAX_POSTS = 5;
@@ -10,18 +9,10 @@
   const heading = document.getElementById('cafe-posts-heading');
   if (!grid || !filters || !empty || !heading) return;
 
-  // Only assets hosted in the café's own repository can be displayed.
-  const allowedArchivePhotos = new Set([
-    'assets/village-cafe/community-guests.avif',
-    'assets/village-cafe/garden.avif',
-    'assets/village-cafe/home-story-exterior.avif',
-    'assets/village-cafe/original-shopfront.avif'
-  ]);
+  // Only images downloaded from authorised social posts by the GitHub importer.
   function localPhoto(post) {
-    if (typeof post.image !== 'string') return null;
-    if (post.archive === true && post.image_context === 'archive_illustration' &&
-        allowedArchivePhotos.has(post.image)) return post.image;
-    return /^assets\/village-cafe\/social\/[A-Za-z0-9._-]+\.webp$/.test(post.image)
+    return typeof post.image === 'string' &&
+      /^assets\/village-cafe\/social\/[A-Za-z0-9._-]+\.webp$/.test(post.image)
       ? post.image : null;
   }
   function timestamp(value) {
@@ -37,6 +28,7 @@
   function validPost(post) {
     return post && typeof post === 'object' &&
       ['facebook','instagram'].includes(post.source) &&
+      post.archive !== true && timestamp(post.published_at) > 0 &&
       ((typeof post.text === 'string' && post.text.trim()) || localPhoto(post));
   }
   function buildPost(post) {
@@ -60,7 +52,7 @@
     metadata.className = 'village-feed-meta';
     metadata.textContent = [
       post.source === 'facebook' ? 'Facebook' : 'Instagram',
-      post.archive === true ? 'From the archive' : displayDate(post.published_at)
+      displayDate(post.published_at)
     ].filter(Boolean).join(' · ');
     identity.appendChild(metadata);
     byline.appendChild(identity);
@@ -80,16 +72,9 @@
       const img = document.createElement('img');
       img.src = photo;
       img.loading = 'lazy';
-      img.alt = post.image_context === 'archive_illustration'
-        ? 'Photograph from The Village Cafe archive'
-        : 'Photograph published by The Village Cafe';
+      img.alt = 'Photograph published by The Village Cafe';
       img.addEventListener('error', () => figure.remove(), {once:true});
       figure.appendChild(img);
-      if (post.image_context === 'archive_illustration') {
-        const note = document.createElement('figcaption');
-        note.textContent = 'From the café photo archive';
-        figure.appendChild(note);
-      }
       article.appendChild(figure);
     }
     return article;
@@ -130,12 +115,9 @@
       if (!response.ok) throw new Error('Feed unavailable');
       const payload = await response.json();
       if (!payload || !Array.isArray(payload.posts)) throw new Error('Invalid feed');
-      const candidates = payload.posts.filter(validPost);
-      // Never present undated historical entries as one of the five latest live posts.
-      const live = candidates.filter(p => p.archive !== true && timestamp(p.published_at));
-      const posts = live.length
-        ? live.sort((a,b) => timestamp(b.published_at)-timestamp(a.published_at)).slice(0,MAX_POSTS)
-        : candidates.filter(p => p.archive === true).slice(0,MAX_POSTS);
+      const posts = payload.posts.filter(validPost)
+        .sort((a,b) => timestamp(b.published_at)-timestamp(a.published_at))
+        .slice(0,MAX_POSTS);
       const signature = JSON.stringify(posts);
       if (signature === lastPayload) return;
       lastPayload = signature;
@@ -149,8 +131,7 @@
       grid.replaceChildren(fragment);
       rendered = next;
       empty.hidden = rendered.length > 0;
-      heading.textContent = live.length ? 'Latest from the café'
-        : rendered.length ? 'From our archive' : 'Café updates';
+      heading.textContent = 'Latest from the café';
       filters.hidden = new Set(rendered.map(p => p.source)).size < 2;
       applyFilter();
     } catch (_) {
