@@ -61,3 +61,29 @@ h1,h2,h3,.display,.footer-title{font-family:"DM Serif Display",Georgia,serif;fon
  .history-gallery img{height:260px}
  .courtyard-feature figure{aspect-ratio:4/3}
 }
+
+/* Village Café — equal-height two-panel food tile and picture-led story timeline */
+.food-pair-tile .food-pair-media{position:absolute;inset:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));height:100%;width:100%;z-index:0}
+.food-pair-tile .food-pair-half{display:block;position:relative;height:100%;min-height:0;overflow:hidden;background:var(--sage)}
+.food-pair-tile .food-pair-half img{position:absolute;top:0;left:0;width:200%;height:100%;max-width:none;object-fit:fill;display:block;transition:none}
+.food-pair-tile .food-pair-breakfast img{left:auto;right:0;transform:scale(1.14);transform-origin:right bottom}
+.food-pair-tile:hover .food-pair-half img{filter:saturate(1.08)}
+.cake-photo-new{margin:0;position:relative}
+.cake-photo-new img{display:block;width:100%;height:220px;object-fit:cover;border-radius:20px}
+.cake-photo-new figcaption{font-size:.76rem;color:var(--muted);font-weight:700;margin:.6rem 0 0}
+.history-timeline{border-top:1px solid var(--line)}
+.history-entry{display:grid;grid-template-columns:92px minmax(0,.9fr) minmax(260px,1.1fr);gap:1.5rem;align-items:center;border-bottom:1px solid var(--line);padding:2.2rem 0}
+.history-year{font-weight:800;color:var(--coral);align-self:start;padding-top:.35rem;white-space:nowrap}
+.history-copy h3{font-size:clamp(1.6rem,2.4vw,2.35rem);margin:0 0 .7rem}
+.history-copy p{font-size:.98rem;color:var(--muted);margin:0}
+.history-picture,.history-photos figure{margin:0;position:relative;border-radius:18px;overflow:hidden;background:var(--sage)}
+.history-picture img{display:block;width:100%;height:275px;object-fit:cover;object-position:center}
+.history-picture figcaption,.history-photos figcaption{position:absolute;bottom:8px;left:10px;right:10px;background:#fffdf3ed;color:var(--forest-dark);padding:.45rem .65rem;border-radius:9px;font-size:.73rem;font-weight:800;max-width:max-content}
+.history-photos{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;height:275px}
+.history-photos figure{height:100%}
+.history-photos img{width:100%;height:100%;object-fit:cover;display:block}
+.history-accolade{text-align:center;background:var(--forest);color:#fff;border-radius:22px;padding:1.5rem}
+.history-accolade span{font-family:"DM Serif Display",serif;font-size:3.5rem;line-height:1;display:block}
+.history-accolade small{display:block;font-size:.77rem;font-weight:800;letter-spacing:.08em;margin-top:.5rem;text-transform:uppercase}
+@media(max-width:860px){.history-entry{grid-template-columns:78px minmax(0,1fr);gap:1rem}.history-entry>.history-picture,.history-entry>.history-photos,.history-entry>.history-accolade{grid-column:2}.history-entry>.history-picture img{height:250px}.history-photos{height:250px}}
+@media(max-width:560px){.history-entry{display:grid;grid-template-columns:1fr;gap:.9rem}.history-entry>.history-picture,.history-entry>.history-photos,.history-entry>.history-accolade{grid-column:1}.history-year{padding-top:0}.history-photos{height:225px}.history-entry>.history-picture img{height:235px}}
