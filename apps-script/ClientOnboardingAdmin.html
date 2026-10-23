@@ -1,0 +1,52 @@
+<!doctype html><html><head><base target="_top"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+:root{font-family:Inter,system-ui,sans-serif;color:#18344f;background:#f0faf6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:980px;margin:auto;padding:24px 18px 55px}.brand{font-size:13px;letter-spacing:.09em;font-weight:800;color:#136c63}.hero h1{font-size:clamp(27px,6vw,48px);line-height:1.05;color:#082f68;margin:10px 0}.hero p{color:#587181;max-width:730px}.card{border:1px solid #cbe0db;background:#fff;border-radius:18px;padding:23px;margin:20px 0;box-shadow:0 11px 36px #0b355010}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;font-size:13px;font-weight:750;color:#133b60;margin:11px 0}input,textarea{display:block;margin-top:6px;width:100%;padding:12px;border:1px solid #bacfd3;border-radius:10px;font:inherit;color:#18344f}textarea{min-height:110px}button{background:#082f68;border:1px solid #082f68;color:#fff;border-radius:12px;padding:11px 15px;font:700 14px system-ui;cursor:pointer}button:disabled{opacity:.55;cursor:wait}button.alt{background:#fff;color:#082f68}.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.hint{background:#f1f8f6;padding:12px 14px;border-radius:10px;color:#4e697b;font-size:13px}.error{color:#ad1c36}.good{color:#146342}.status{font-size:13px;color:#567282;padding-top:11px;overflow-wrap:anywhere}.workspace{border:1px solid #cce4dd;border-radius:12px;margin-top:9px;padding:16px}.workspace h3{margin:0 0 7px;font-size:17px;color:#082f68}.workspace p{margin:4px 0;font-size:13px}.workspace a{overflow-wrap:anywhere}.hidden{display:none!important}@media(max-width:650px){.grid{grid-template-columns:1fr}.card{padding:17px}} </style></head><body><main class="wrap">
+<div class="hero"><div class="brand">CHIP IN · PRIVATE CLIENT WORKSPACE ACTIVATION</div><h1>Send the files link after the quote is agreed.</h1><p>This owner-only control creates the client Drive folder on demand, then generates a link that lets the client upload files without entering your Drive or seeing other clients' folders.</p></div>
+<section class="card" id="loginPanel"><h2>Owner sign-in</h2><p class="hint">Enter the long owner key you configured in this Apps Script project's Script Properties. Never enter this key into the public Chip In website.</p><label>Chip In owner key <input id="ownerKey" type="password" autocomplete="off"></label><div class="buttons"><button id="signIn" type="button">Unlock client workspaces</button></div><div id="loginStatus" class="status" role="status"></div></section>
+<section id="adminPanel" class="hidden">
+<div class="card"><h2>Activate a client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
+<div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
+<details style="margin-top:16px"><summary>Meeting specification</summary><p class="hint">If you're opening this independently, paste exported meeting JSON here. The specification is saved in the private client folder.</p><textarea id="briefJson" spellcheck="false" placeholder='{"fields":{"business":"Example","email":"owner@example.com"}}'></textarea></details>
+<label style="display:flex;gap:10px;align-items:flex-start"><input id="approved" type="checkbox" style="width:auto;margin:4px 0"> I have confirmed that the client has approved the quotation and instructed Chip In to start this project.</label>
+<div class="buttons"><button id="create" type="button">Create their private upload workspace</button></div><div id="createStatus" class="status" role="status"></div>
+<div class="workspace hidden" id="created"><h3>Workspace activated</h3><p><strong>Client upload link:</strong> <a id="clientUrl" href="#" target="_blank" rel="noopener"></a></p><p><strong>Private Chip In Drive folder:</strong> <a id="driveUrl" target="_blank" rel="noopener"></a></p><p>Files stay in your private Drive. The client can upload through the link but cannot browse your Drive.</p><div class="buttons"><button type="button" id="copyLink" class="alt">Copy client upload link</button><button type="button" id="sendInvite">Email link to client</button></div><div id="emailStatus" class="status" role="status"></div></div></div>
+<div class="card"><h2>Client asset checker</h2><p class="hint">Use Refresh to see which clients have sent files and marked their upload complete.</p><button id="refresh" type="button" class="alt">Refresh client statuses</button><div id="workspaces" style="margin-top:15px"></div><div id="checkStatus" class="status" role="status"></div></div>
+</section></main>
+<script>
+let session='',lastCreated=null,initialBrief=null;
+const $=id=>document.getElementById(id);
+function status(id,message,error){const e=$(id);e.textContent=message;e.className='status '+(error?'error':'');}
+function gas(name,...args){return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args));}
+function escapeText(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function utf8DecodeBase64(v){let str=String(v||'').replace(/-/g,'+').replace(/_/g,'/');str+='='.repeat((4-str.length%4)%4);return decodeURIComponent(Array.from(atob(str)).map(c=>'%'+c.charCodeAt(0).toString(16).padStart(2,'0')).join(''));}
+function fillFromBrief(p){
+ if(!p||typeof p!=='object')return;
+ initialBrief=p.brief||p;
+ const f=p.fields||p.brief?.fields||p;
+ $('business').value=f.business||p.business||'';
+ $('email').value=f.email||p.email||'';
+ $('contact').value=f.contact||p.contact||'';
+ $('meetingId').value=p.meetingId||f.meetingId||'';
+ $('briefJson').value=JSON.stringify(initialBrief,null,2);
+ $('importNote').textContent='Meeting details imported. Confirm the price was accepted before activating.';
+}
+function loadHash(){
+ function accept(hash){if(!hash)return;try{fillFromBrief(JSON.parse(utf8DecodeBase64(decodeURIComponent(hash.replace(/^#/,'').replace(/^brief=/,'')))));}catch(err){status('createStatus','Could not read the supplied brief. You can enter the business details manually.',true);}}
+ if(typeof google!=='undefined'&&google.script&&google.script.url&&google.script.url.getLocation){google.script.url.getLocation(loc=>accept(loc.hash||''));}
+ else accept(window.location.hash||'');
+}
+$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await refresh();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+async function refresh(){status('checkStatus','Checking client uploads…');try{const all=await gas('clientOnboardingListWorkspaces',session);const box=$('workspaces');box.innerHTML='';if(!all.length)box.textContent='No approved client workspaces yet.';for(const r of all){const item=document.createElement('div');item.className='workspace';item.innerHTML='<h3>'+escapeText(r.business)+'</h3><p>'+escapeText(r.email)+' · <strong>'+escapeText(r.status.replace(/_/g,' '))+'</strong> · '+Number(r.fileCount)+' files</p><p>Last upload: '+escapeText(r.lastUploadAt||'None yet')+'</p><p><a target="_blank" rel="noopener" href="'+escapeText(r.folderUrl)+'">Open private Drive folder</a> · <a target="_blank" rel="noopener" href="'+escapeText(r.uploadUrl)+'">Client upload page</a></p>';box.append(item);}status('checkStatus',all.length+' client workspace(s) checked.');}catch(e){status('checkStatus',e.message||String(e),true);}}
+$('refresh').onclick=refresh;
+$('create').onclick=async()=>{const b=$('create');b.disabled=true;$('created').classList.add('hidden');status('createStatus','Creating private client folder…');try{
+ let brief={};const raw=$('briefJson').value.trim();if(raw)brief=JSON.parse(raw);else if(initialBrief)brief=initialBrief;
+ const payload={business:$('business').value.trim(),email:$('email').value.trim(),contact:$('contact').value.trim(),meetingId:$('meetingId').value.trim(),approved:$('approved').checked,brief};
+ const result=await gas('clientOnboardingCreateWorkspace',session,payload);
+ lastCreated=result;$('created').classList.remove('hidden');
+ $('clientUrl').href=result.uploadUrl;$('clientUrl').textContent=result.uploadUrl;
+ $('driveUrl').href=result.folderUrl;$('driveUrl').textContent=result.folderUrl;
+ status('createStatus',result.created?'Workspace created. You may now send the upload link.':'This meeting already has a workspace; using the existing link.');
+ await refresh();
+ }catch(e){status('createStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+$('copyLink').onclick=async()=>{if(!lastCreated)return;try{await navigator.clipboard.writeText(lastCreated.uploadUrl);status('emailStatus','Client upload link copied.');}catch(e){status('emailStatus','Copy unavailable. Select and copy the visible URL.',true);}};
+$('sendInvite').onclick=async()=>{if(!lastCreated)return;const b=$('sendInvite');b.disabled=true;status('emailStatus','Sending client invitation…');try{const r=await gas('clientOnboardingEmailInvitation',session,lastCreated.id);status('emailStatus','Invitation sent to '+r.email);}catch(e){status('emailStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+</script></body></html>
