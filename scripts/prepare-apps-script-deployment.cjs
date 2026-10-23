@@ -1,0 +1,63 @@
+#!/usr/bin/env node
+'use strict';
+
+/**
+ * Prepare a complete, freshly cloned live Apps Script project for deployment.
+ * clasp push replaces every remote file; NEVER push only the three changed
+ * files. Read the current live project first to preserve all existing modes.
+ */
+const fs=require('node:fs');
+const path=require('node:path');
+const ROOT=path.resolve(__dirname,'..');
+const UPDATED_FILES=[
+  ['apps-script/ClientOnboarding.gs','ClientOnboarding.js'],
+  ['apps-script/ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
+  ['apps-script/ClientOnboardingUpload.html','ClientOnboardingUpload.html']
+];
+const EXPECTED=[
+  'appsscript.json','Code.js','Index.html','Editor.js','EditorUI.html',
+  'ClientOnboarding.js','ClientOnboardingAdmin.html','ClientOnboardingUpload.html'
+];
+const NEEDED_OAUTH_SCOPES=[
+  'https://www.googleapis.com/auth/drive',
+  'https://www.googleapis.com/auth/script.external_request'
+];
+
+function prepareDeploy(projectPath,sourceRoot=ROOT){
+  if(!projectPath)throw new Error('Pass path of the freshly cloned Google Apps Script project.');
+  const project=path.resolve(projectPath);
+  if(project===sourceRoot||project.startsWith(sourceRoot+path.sep))throw new Error('Refusing to prepare inside the GitHub checkout. Use a separate freshly cloned directory.');
+  const all=fs.readdirSync(project).filter(n=>n.endsWith('.js')||n.endsWith('.html')||n==='appsscript.json');
+  const missing=EXPECTED.filter(n=>!all.includes(n));
+  if(missing.length)throw new Error('Live project missing required files; refusing full-project push: '+missing.join(', '));
+  if(all.length!==EXPECTED.length)throw new Error('Unexpected files in live project; review manually before overwrite: '+all.filter(n=>!EXPECTED.includes(n)).join(', '));
+  const code=fs.readFileSync(path.join(project,'Code.js'),'utf8');
+  if(!/mode\s*===\s*['"]onboard-admin['"]/.test(code)||!/mode\s*===\s*['"]onboard-upload['"]/.test(code)||!/renderEditor_/.test(code))
+    throw new Error('Expected existing web-app routing not found in live Code.js; refusing deployment.');
+  const manifestPath=path.join(project,'appsscript.json');
+  const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
+  if(!manifest||typeof manifest!=='object'||Array.isArray(manifest))throw new Error('Invalid Apps Script manifest.');
+  if(manifest.oauthScopes!==undefined){
+    if(!Array.isArray(manifest.oauthScopes))throw new Error('Manifest oauthScopes is not an array.');
+    const before=manifest.oauthScopes.slice();
+    for(const scope of NEEDED_OAUTH_SCOPES)if(!manifest.oauthScopes.includes(scope))manifest.oauthScopes.push(scope);
+    if(manifest.oauthScopes.length!==before.length){
+      fs.writeFileSync(manifestPath,JSON.stringify(manifest,null,2)+'\n',{mode:0o600});
+      console.log('Added Drive API and/or external_request permissions to the EXISTING manifest without replacing other scopes. The script owner may need to reauthorise those permissions.');
+    }
+  }else{
+    console.log('No explicit OAuth scope list; preserving automatic scope detection.');
+  }
+  for(const [relative,target] of UPDATED_FILES){
+    const original=fs.readFileSync(path.join(sourceRoot,relative),'utf8');
+    if(original.length<1000)throw new Error('Source looks unexpectedly short: '+relative);
+    fs.writeFileSync(path.join(project,target),original,'utf8');
+    console.log('Prepared '+target+' ('+original.length+' characters)');
+  }
+  console.log('Full-project safeguard passed: existing intake/editor files and manifest preserved.');
+}
+if(require.main===module){
+  try{prepareDeploy(process.argv[2]);}
+  catch(error){console.error('DEPLOY BLOCKED: '+error.message);process.exitCode=1;}
+}
+module.exports={prepareDeploy};
