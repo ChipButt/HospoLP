@@ -62,6 +62,7 @@ const context={
  PropertiesService:{getScriptProperties(){return{
   getProperty(k){return properties.has(k)?properties.get(k):null},
   setProperty(k,v){properties.set(k,String(v))},
+  deleteProperty(k){properties.delete(k)},
   getProperties(){return Object.fromEntries(properties)}
  }}},
  CacheService:{getScriptCache(){return{
