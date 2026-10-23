@@ -1,0 +1,22 @@
+name: Verify Client Onboarding
+on:
+  push:
+    paths:
+      - 'apps-script/ClientOnboarding.gs'
+      - 'apps-script/ClientOnboardingAdmin.html'
+      - 'apps-script/ClientOnboardingUpload.html'
+      - 'apps-script/Code.gs'
+      - 'scripts/test-client-onboarding.cjs'
+      - '.github/workflows/client-onboarding-test.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/test-client-onboarding.cjs
