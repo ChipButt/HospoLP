@@ -21,6 +21,19 @@ The owner can copy or email the *private client upload page* link. The client up
 
 The owner console displays counts and statuses, and finishing uploads sends an email to the account that deploys the script. ChatGPT can retrieve the uploaded files through the connected Google Drive and, when requested, use them to build the website in the proper client GitHub repository. No automatic publication to GitHub occurs on receipt.
 
+## Updating an existing, already deployed onboarding installation (Version 7 → Version 8)
+
+If you already tested the 25 MB uploader, you **do not need a new Apps Script project, folder or owner key**. In the existing **HospoLP Client Intake** project:
+
+1. Update only these three existing files with their latest GitHub contents: `ClientOnboarding.gs`, `ClientOnboardingUpload.html`, and `ClientOnboardingAdmin.html`. Use the **Raw** view from the repository and replace the contents of each matching Apps Script file. Keep `Code.gs`, `Editor.gs`, `EditorUI.html` and `Index.html` unchanged.
+2. Save the Apps Script project; verify **Unsaved changes** disappears.
+3. **Deploy → Manage deployments → Active Untitled Web app → Edit → New version → Deploy**, preserving the current web app ID and Execute as/Who has access.
+4. This upload route now uses Google's Drive resumable upload API via `UrlFetchApp` and `ScriptApp.getOAuthToken()`. If prompted to authorise the updated script's Google Drive/external-request permissions, do so while signed in as the owning account. **Do not send clients the new upload page until a real image upload succeeds.**
+5. Open the test client's existing private upload link. Try a small image first, then one over 25 MB and verify the file appears in the private **02 — Photos** folder and the progress bar reaches 100%. If Google reports an authorisation error, inspect **Executions** in Apps Script and re-authorise the new Drive/UrlFetch scopes.
+6. Reuse the existing test client folder; do not create a real client's workspace merely to verify the upgrade.
+
+The new owner dashboard includes a **Start client meeting / quotation** link to https://chipinworks.co.uk/client-meeting/, so the full flow begins with the checklist before quote approval.
+
 ## One-time steps required in Google Apps Script
 
 **IMPORTANT:** Pushing to GitHub is NOT an Apps Script deployment. The existing Apps Script web app serving \`https://script.google.com/macros/s/AKfycbzz7FWTrjHkH8LUCrEElzr1MFCN9lN408-C_wC2o2FAU5j8HYXd43uUBgUHRDsiB78/exec\` must be updated once by the account that owns it.
@@ -47,7 +60,7 @@ The owner console displays counts and statuses, and finishing uploads sends an e
 - Never expose \`CHIP_IN_ONBOARDING_ADMIN_KEY\` in public HTML, GitHub files, screenshots or client messages.
 - Do not share the master Drive folder with clients. The client portal permits **upload only**.
 - Upload tokens grant write access to one client's upload area until expiry. Treat the upload link as confidential, and send it only to the intended business contact.
-- Max 50 files, 25 MB per file, 250 MB total per workspace. Formats: images, PDFs, standard Word and Excel documents, and text. Check files before publishing; uploads are **not** automatically copied to live GitHub repositories.
+- Up to 50 files; images up to **100 MiB** each (shown as 100 MB in the UI), other documents up to **25 MiB** each, and **1 GiB total** per workspace. Files are sent as **4 MiB Drive-resumable chunks**, and the upload progress bar advances only after Google Drive acknowledges a chunk. Google Apps Script's UrlFetchApp requests require the deploying account's Drive/URL Fetch authorisation. Uploads are **not** automatically copied to live GitHub repositories.
 - Client acceptance is currently confirmed by the owner with the **quote approved** checkbox. The tool does not constitute an electronic signing service. Keep the client's written agreement.
 - Project notes currently save locally on the device used for the meeting. Download the build brief and the JSON meeting backup. Protect devices containing client contact information.
 - The older \`Client Submissions\` folder is outside this new system and has different permissions. Do not redirect new uploads there or make the new master folder public.
