@@ -103,7 +103,7 @@ function clientOnboardingPublicUrl_(record){
   return url+'?mode=onboard-upload&code='+encodeURIComponent(record.uploadToken);
 }
 function clientOnboardingOwnerEmail_(){
-  return Session.getEffectiveUser().getEmail()||'';
+  return Session.getEffectiveUser().getEmail()||'jamesbutt.chipin@gmail.com';
 }
 function clientOnboardingClean_(value,max){
   return String(value||'').replace(/[\x00-\x1f<>]/g,' ').trim().slice(0,max);
