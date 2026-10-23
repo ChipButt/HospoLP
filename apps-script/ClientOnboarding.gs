@@ -40,7 +40,8 @@ function renderClientOnboardingAdmin_(e) {
 }
 function renderClientOnboardingUpload_(e) {
   const t = HtmlService.createTemplateFromFile('ClientOnboardingUpload');
-  t.uploadToken = JSON.stringify(String((e && e.parameter && e.parameter.code) || ''));
+  const code = String((e && e.parameter && e.parameter.code) || '');
+  t.uploadToken = JSON.stringify(/^[0-9a-f]{96}$/.test(code) ? code : '');
   return t.evaluate().setTitle('Chip In — Send Your Website Files')
     .addMetaTag('viewport', 'width=device-width, initial-scale=1');
 }
@@ -85,6 +86,13 @@ function clientOnboardingRecord_(id){
 }
 function clientOnboardingSave_(record){
   PropertiesService.getScriptProperties().setProperty(CLIENT_ONBOARDING.projectPrefix+record.id,JSON.stringify(record));
+}
+function clientOnboardingUpdateManifest_(record){
+  const folder=DriveApp.getFolderById(record.folderId);
+  const old=folder.getFilesByName('upload-status.json');
+  const value=JSON.stringify({status:record.status,client:record.business,filesReceived:record.fileCount,totalBytes:record.totalBytes,lastUploadAt:record.lastUploadAt,updatedAt:record.updatedAt},null,2);
+  if(old.hasNext())old.next().setContent(value);
+  else folder.createFile('upload-status.json',value,MimeType.PLAIN_TEXT);
 }
 function clientOnboardingToken_(){
   return (Utilities.getUuid()+Utilities.getUuid()+Utilities.getUuid()).replace(/-/g,'');
@@ -231,6 +239,7 @@ function clientOnboardingUploadAsset(token,asset){
     fresh.lastUploadAt=fresh.updatedAt;
     fresh.status='files_received';
     clientOnboardingSave_(fresh);
+    clientOnboardingUpdateManifest_(fresh);
     return {name:file.getName(),category:cat,fileCount:fresh.fileCount};
   });
 }
@@ -242,6 +251,7 @@ function clientOnboardingFinishUploads(token){
     latest.status='ready_for_review';
     latest.updatedAt=new Date().toISOString();
     clientOnboardingSave_(latest);
+    clientOnboardingUpdateManifest_(latest);
     const owner=clientOnboardingOwnerEmail_();
     if(owner){
       try{MailApp.sendEmail({to:owner,subject:'Client files ready: '+latest.business,body:'Files have been uploaded for '+latest.business+'.\n\nFolder: '+latest.folderUrl+'\nFiles: '+latest.fileCount});}catch(err){console.warn('Owner notification failed',err);}
