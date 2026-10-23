@@ -15,6 +15,8 @@ const CONFIG = {
 
 function doGet(e) {
   const mode = String((e && e.parameter && e.parameter.mode) || '').trim();
+  if (mode === 'onboard-admin') return renderClientOnboardingAdmin_(e);
+  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);
   if (mode === 'editor') return renderEditor_(e);
   if (mode === 'content') return serveEditorContent_(e);
   return HtmlService.createTemplateFromFile('Index')
