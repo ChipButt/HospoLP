@@ -1,0 +1,45 @@
+<!doctype html><html><head><base target="_top"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
+:root{font-family:Inter,system-ui,sans-serif;color:#153550;background:#eff8f3}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:auto;padding:25px 16px 70px}.top{background:#082f68;color:#fff;padding:16px 24px}.top strong{letter-spacing:.06em}h1,h2{color:#082f68}h1{font-size:clamp(29px,6vw,47px);line-height:1.05;margin:15px 0}.intro{color:#5d7080}.card{background:#fff;border-radius:19px;padding:22px;margin-top:18px;border:1px solid #c9ded6}.tip{padding:11px 13px;border-radius:10px;background:#edf8f3;color:#466659;font-size:13px;line-height:1.5}.guide{display:grid;grid-template-columns:1fr 1fr;gap:10px}.guide article{padding:14px;border:1px solid #d1e2dc;border-radius:12px}.guide strong{color:#082f68}.guide p{font-size:13px;color:#627482;margin:6px 0 0}label{display:block;font-weight:700;margin:17px 0 8px;color:#082f68;font-size:14px}input[type=file]{display:block;width:100%;padding:14px;border:2px dashed #a6c2b5;background:#f5fbf8;border-radius:12px;cursor:pointer}.file-row{font-size:13px;border-bottom:1px solid #e0e9e5;padding:10px 0}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}button{border-radius:12px;background:#082f68;color:#fff;border:0;padding:13px 18px;font:700 14px system-ui;cursor:pointer}button:disabled{opacity:.5;cursor:wait}button.secondary{background:#ecf6f0;color:#082f68;border:1px solid #bed6ce}.status{font-size:13px;color:#5b6d7d;line-height:1.6;padding-top:10px;overflow-wrap:anywhere}.status.error{color:#b22222}.complete{border:1px solid #b1dcc6;background:#f4fff8;padding:16px;border-radius:12px;margin-top:20px}.hidden{display:none!important}.field{display:flex;align-items:center;gap:10px;padding:15px 0;font-size:13px}.field input{accent-color:#082f68;width:18px;height:18px}@media(max-width:650px){.guide{grid-template-columns:1fr}.card{padding:17px}}
+</style></head><body><div class="top"><strong>CHIP IN</strong> · Your website materials</div><main class="wrap">
+<h1>Send us everything we need for your website.</h1><p class="intro">Use this private project upload page to send photos, logos, menus and business details. You don't need a Google account, and you can't see any other clients' files.</p>
+<div id="loading" class="card">Checking your project upload link…</div>
+<div id="app" class="hidden">
+<div class="card"><h2 id="business">Your website</h2><p class="intro">Original files give us the best results. Upload the files to their matching sections below. If something doesn't apply to your business, simply leave that section empty.</p>
+<div class="guide">
+<article><strong>01 · Logos and Branding</strong><p>Prefer SVG or a high-resolution transparent PNG. If you have official brand colours or fonts, include them too. Avoid screenshots of the logo.</p></article>
+<article><strong>02 · Photographs</strong><p>Original camera or phone photos, ideally at least 2,000 pixels on the long edge. Show your premises, products, people or atmosphere. Avoid social-media downloads.</p></article>
+<article><strong>03 · Menus and Prices</strong><p>Current PDF or original editable menu, price list or product sheet. Please make prices, availability and allergens accurate; avoid blurry photos of printed menus.</p></article>
+<article><strong>04 · Events and Information</strong><p>Event posters and schedules, opening hours, contact details, social links or other information customers should know.</p></article>
+</div><p class="tip">You may upload up to 50 files, maximum 25 MB each (250 MB total). Accepted: common images, PDF, Word, Excel and plain text. Do not include passwords, payment card details or confidential customer records.</p></div>
+<div class="card"><h2>Add your files</h2><label>01 — Logo and branding<input type="file" id="brand" multiple accept="image/*,.svg,.png,.jpg,.jpeg,.webp,.pdf,.doc,.docx"></label>
+<label>02 — Original photographs<input type="file" id="photos" multiple accept="image/*"></label>
+<label>03 — Menus / prices<input type="file" id="menus" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"></label>
+<label>04 — Events / business documents<input type="file" id="other" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt"></label>
+<div id="chosen" class="status">No new files selected.</div>
+<label class="field"><input id="permission" type="checkbox"> I have permission to supply these files for use on the business website and confirm that the information is accurate to the best of my knowledge.</label>
+<div class="actions"><button id="upload" type="button">Upload selected files</button><button id="reload" class="secondary" type="button">Check files received</button></div><div id="status" class="status" role="status"></div>
+</div>
+<div class="card"><h2>When you've sent everything</h2><p>Click the button below to notify Chip In that your materials are ready for review. You can return to this upload link to send corrections while it's valid.</p><p id="count" class="tip"></p><button id="finish" type="button">I've finished uploading my files</button><div id="done" class="status" role="status"></div></div>
+</div></main><script>
+const token=<?!= uploadToken ?>;
+const $=id=>document.getElementById(id);
+const fileGroups=['brand','photos','menus','other'];
+function gas(name,...args){return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args));}
+function status(id,msg,error){$(id).textContent=msg;$(id).className='status'+(error?' error':'');}
+async function refresh(){const r=await gas('clientOnboardingClientInfo',token);$('business').textContent=r.business;$('count').textContent=r.filesReceived+' file(s) received. Current status: '+r.status.replace(/_/g,' ')+'.';$('loading').classList.add('hidden');$('app').classList.remove('hidden');return r;}
+function selected(){const all=[];for(const type of fileGroups)for(const f of $(type).files)all.push({file:f,category:type});return all;}
+function showSelected(){const all=selected();$('chosen').textContent=all.length?all.length+' new file(s) selected: '+all.map(x=>x.file.name).join(', '):'No new files selected.';}
+function fileBase64(file){return new Promise((ok,no)=>{const reader=new FileReader();reader.onload=()=>ok(String(reader.result).split(',')[1]||'');reader.onerror=()=>no(new Error('Failed to read '+file.name));reader.readAsDataURL(file);});}
+async function upload(){const all=selected();if(!all.length)return status('status','Choose at least one file.',true);if(!$('permission').checked)return status('status','Please confirm you have permission to provide these files.',true);if(all.length>50)return status('status','Please upload no more than 50 files.',true);
+const bad=all.find(x=>x.file.size>25*1024*1024);if(bad)return status('status',bad.file.name+' exceeds 25 MB.',true);
+$('upload').disabled=true;const errors=[];let sent=0;
+try{for(let i=0;i<all.length;i++){const x=all[i];status('status','Uploading '+(i+1)+' of '+all.length+': '+x.file.name+'…');try{let mime=x.file.type||'';if(!mime){if(/\.svg$/i.test(x.file.name))mime='image/svg+xml';else if(/\.txt$/i.test(x.file.name))mime='text/plain';}const result=await gas('clientOnboardingUploadAsset',token,{name:x.file.name,mimeType:mime,data:await fileBase64(x.file),category:x.category});sent++;}catch(err){errors.push(x.file.name+': '+(err.message||String(err)));}}
+ for(const type of fileGroups)$(type).value='';
+ showSelected();await refresh();status('status',sent+' file(s) uploaded.'+(errors.length?' Problems: '+errors.join('; '):''));
+}catch(err){status('status',err.message||String(err),true);}
+finally{$('upload').disabled=false;}}
+$('upload').onclick=upload;$('reload').onclick=()=>refresh().catch(e=>status('status',e.message||String(e),true));
+$('finish').onclick=async()=>{const b=$('finish');b.disabled=true;status('done','Notifying Chip In…');try{const result=await gas('clientOnboardingFinishUploads',token);status('done','Thank you. Your '+result.fileCount+' file(s) are marked ready. Chip In can now review them.');await refresh();}catch(e){status('done',e.message||String(e),true);}finally{b.disabled=false;}};
+fileGroups.forEach(x=>$(x).addEventListener('change',showSelected));
+refresh().catch(e=>{$('loading').textContent='Unable to open this upload link: '+(e.message||String(e));$('loading').style.color='#b22222';});
+</script></body></html>
