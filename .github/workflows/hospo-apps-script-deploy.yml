@@ -1,0 +1,86 @@
+name: Deploy HospoLP Apps Script (manual, safe)
+
+on:
+  workflow_dispatch:
+
+# First run is manual only. Auto-release can be enabled after verified E2E test.
+permissions:
+  contents: read
+
+concurrency:
+  group: hospo-apps-script-production
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Test onboarding and deployment safeguards
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: node scripts/test-client-onboarding.cjs
+      - run: node scripts/test-apps-script-deployment.cjs
+
+  deploy:
+    name: Preserve, version, and update the EXISTING web app
+    needs: test
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SCRIPT_ID: '16BFtJO-egh3HtoAv33nTizHfeFqEaZ7mwaDHbegM16j-xsIlv9ZMd3Zr'
+      DEPLOYMENT_ID: 'AKfycbzz7FWTrjHkH8LUCrEElzr1MFCN9lN408-C_wC2o2FAU5j8HYXd43uUBgUHRDsiB78'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install isolated Google clasp version
+        run: npm install --no-save --ignore-scripts @google/clasp@3.4.1
+      - name: Install credentials securely from GitHub Actions secret
+        env:
+          CLASPRC_JSON: ${{ secrets.CLASPRC_JSON }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),path=require('path'),os=require('os');
+          const secret=process.env.CLASPRC_JSON;
+          if(!secret)throw Error('CLASPRC_JSON GitHub Actions secret is missing. No live files have been touched.');
+          JSON.parse(secret); // fail before starting any deployment
+          fs.writeFileSync(path.join(os.homedir(),'.clasprc.json'),secret,{mode:0o600});
+          NODE
+      - name: Clone current live script including ALL existing files
+        run: |
+          set -euo pipefail
+          mkdir -p "${RUNNER_TEMP}/hospo-existing"
+          cd "${RUNNER_TEMP}/hospo-existing"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" clone-script "${SCRIPT_ID}"
+      - name: Prepare only approved onboarding files
+        run: node scripts/prepare-apps-script-deployment.cjs "${RUNNER_TEMP}/hospo-existing"
+      - name: Confirm existing deployment ID before changes
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/hospo-existing"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" list-deployments | grep -F "${DEPLOYMENT_ID}"
+      - name: Snapshot live source as rollback version
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/hospo-existing"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" create-version "Before GitHub deployment ${GITHUB_SHA:0:12}"
+      - name: Push full preserved project
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/hospo-existing"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" push --force
+      - name: Update EXISTING deployment, preserving customer URLs
+        run: |
+          set -euo pipefail
+          cd "${RUNNER_TEMP}/hospo-existing"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" create-deployment \
+            --deploymentId "${DEPLOYMENT_ID}" \
+            --description "Chip In onboarding ${GITHUB_SHA:0:12}"
+          "${GITHUB_WORKSPACE}/node_modules/.bin/clasp" list-deployments | grep -F "${DEPLOYMENT_ID}"
+      - name: Clear Google credentials
+        if: always()
+        run: rm -f "${HOME}/.clasprc.json"
