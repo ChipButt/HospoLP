@@ -15,8 +15,11 @@ const CLIENT_ONBOARDING = {
   projectPrefix: 'chipin-onboard-workspace:',
   meetingPrefix: 'chipin-onboard-meeting:',
   sessionPrefix: 'chipin-onboard-admin-session:',
-  maxFileBytes: 25 * 1024 * 1024,
-  maxTotalBytes: 250 * 1024 * 1024,
+  maxFileBytes: 25 * 1024 * 1024, // Non-image documents and legacy single-request upload
+  maxImageBytes: 100 * 1024 * 1024,
+  resumableChunkBytes: 4 * 1024 * 1024, // 16 × 256 KiB, Drive's required chunk alignment
+  uploadPrefix: 'chipin-onboard-upload:',
+  maxTotalBytes: 1024 * 1024 * 1024,
   maxFiles: 50,
   expiryDays: 90,
   ownerSessionSeconds: 21600,
@@ -213,7 +216,7 @@ function clientOnboardingByToken_(token){
 }
 function clientOnboardingClientInfo(token){
   const r=clientOnboardingByToken_(token);
-  return {business:r.business,status:r.status,filesReceived:r.fileCount,maxFiles:CLIENT_ONBOARDING.maxFiles,maxFileBytes:CLIENT_ONBOARDING.maxFileBytes,expiresAt:r.expiresAt};
+  return {business:r.business,status:r.status,filesReceived:r.fileCount,maxFiles:CLIENT_ONBOARDING.maxFiles,maxFileBytes:CLIENT_ONBOARDING.maxFileBytes,maxImageBytes:CLIENT_ONBOARDING.maxImageBytes,maxTotalBytes:CLIENT_ONBOARDING.maxTotalBytes,expiresAt:r.expiresAt};
 }
 function clientOnboardingUploadAsset(token,asset){
   const r=clientOnboardingByToken_(token);
@@ -243,11 +246,153 @@ function clientOnboardingUploadAsset(token,asset){
     return {name:file.getName(),category:cat,fileCount:fresh.fileCount};
   });
 }
+/**
+ * Drive API resumable uploads. Each browser call sends one acknowledged 4 MiB
+ * chunk, avoiding Google Apps Script single-call transfer size and execution
+ * limits. The Drive resumable session URL stays server-side, never in browser.
+ */
+function clientOnboardingUploadLimit_(mime){
+  return mime.indexOf('image/')===0 ? CLIENT_ONBOARDING.maxImageBytes : CLIENT_ONBOARDING.maxFileBytes;
+}
+function clientOnboardingReadUpload_(id){
+  const raw=PropertiesService.getScriptProperties().getProperty(CLIENT_ONBOARDING.uploadPrefix+String(id));
+  if(!raw)throw new Error('Upload session not found. Restart this file upload.');
+  return JSON.parse(raw);
+}
+function clientOnboardingSaveUpload_(upload){
+  PropertiesService.getScriptProperties().setProperty(CLIENT_ONBOARDING.uploadPrefix+upload.id,JSON.stringify(upload));
+}
+function clientOnboardingSessionHeaders_(response){
+  const all=response.getAllHeaders();
+  const headers={};
+  Object.keys(all).forEach(k=>headers[k.toLowerCase()]=all[k]);
+  return headers;
+}
+function clientOnboardingBeginUpload(token,asset){
+  const r=clientOnboardingByToken_(token);
+  const a=asset||{};
+  const category=String(a.category||'');
+  const mime=String(a.mimeType||'').toLowerCase();
+  const name=clientOnboardingSanitise_(a.name).slice(0,150);
+  const size=Number(a.size);
+  if(!Object.prototype.hasOwnProperty.call(CLIENT_ONBOARDING.categories,category))throw new Error('Choose a valid file category.');
+  if(!name)throw new Error('Choose a valid file.');
+  if(!(mime.indexOf('image/')===0||CLIENT_ONBOARDING.types.includes(mime)))throw new Error('This file format is not supported.');
+  if(!Number.isSafeInteger(size)||size<=0||size>clientOnboardingUploadLimit_(mime))throw new Error('Maximum size is 100 MB per image or 25 MB per other document.');
+  return clientOnboardingWithLock_(()=>{
+    const fresh=clientOnboardingRecord_(r.id);
+    if(fresh.fileCount>=CLIENT_ONBOARDING.maxFiles||fresh.totalBytes+size>CLIENT_ONBOARDING.maxTotalBytes)throw new Error('Client upload allowance reached.');
+    // Only one incomplete file per client at once, preventing over-allocation.
+    if(fresh.activeUploadId){
+      const pending=clientOnboardingReadUpload_(fresh.activeUploadId);
+      if(pending.name===name&&pending.mime===mime&&pending.size===size&&pending.category===category){
+        return {uploadId:pending.id,chunkBytes:CLIENT_ONBOARDING.resumableChunkBytes,nextByte:pending.nextByte,fileSize:size,resumed:true};
+      }
+      throw new Error('Another upload is unfinished. Resume the previous file before starting another.');
+    }
+    const response=UrlFetchApp.fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id,name,size,mimeType',{
+      method:'post',contentType:'application/json; charset=UTF-8',
+      headers:{
+        Authorization:'Bearer '+ScriptApp.getOAuthToken(),
+        'X-Upload-Content-Type':mime,'X-Upload-Content-Length':String(size)
+      },
+      payload:JSON.stringify({name:name,mimeType:mime,parents:[fresh.children[category]]}),
+      muteHttpExceptions:true,followRedirects:false
+    });
+    const code=response.getResponseCode();
+    const location=clientOnboardingSessionHeaders_(response).location;
+    if(code!==200||!location||!/^https:\/\/(?:www\.)?googleapis\.com\//.test(location)){
+      throw new Error('Google Drive could not start the large-file upload (HTTP '+code+'). Check Apps Script authorisation for UrlFetchApp and Drive.');
+    }
+    const id=Utilities.getUuid()+Utilities.getUuid();
+    const upload={id,clientId:fresh.id,tokenHash:clientOnboardingHash_(token),
+      name,mime,category,size,nextByte:0,sessionUrl:String(location),createdAt:new Date().toISOString()};
+    clientOnboardingSaveUpload_(upload);
+    fresh.activeUploadId=id;clientOnboardingSave_(fresh);
+    return {uploadId:id,chunkBytes:CLIENT_ONBOARDING.resumableChunkBytes,nextByte:0,fileSize:size,resumed:false};
+  });
+}
+function clientOnboardingUploadChecked_(token,uploadId){
+  const r=clientOnboardingByToken_(token);
+  const u=clientOnboardingReadUpload_(uploadId);
+  if(r.id!==u.clientId||!clientOnboardingSame_(u.tokenHash,clientOnboardingHash_(token)))throw new Error('This upload does not belong to your client link.');
+  if(r.activeUploadId!==u.id)throw new Error('The upload session is no longer active.');
+  if(Date.now()-Date.parse(u.createdAt)>6*86400000)throw new Error('This upload has expired. Ask Chip In to reset this upload.');
+  return {client:r,upload:u};
+}
+function clientOnboardingUploadCompleted_(r,u){
+  const fresh=clientOnboardingRecord_(r.id);
+  if(fresh.activeUploadId!==u.id)throw new Error('The upload session was already completed.');
+  fresh.fileCount++;
+  fresh.totalBytes+=u.size;
+  fresh.updatedAt=new Date().toISOString();
+  fresh.lastUploadAt=fresh.updatedAt;
+  fresh.status='files_received';
+  delete fresh.activeUploadId;
+  clientOnboardingSave_(fresh);
+  PropertiesService.getScriptProperties().deleteProperty(CLIENT_ONBOARDING.uploadPrefix+u.id);
+  clientOnboardingUpdateManifest_(fresh);
+  return {complete:true,nextByte:u.size,fileCount:fresh.fileCount,name:u.name};
+}
+function clientOnboardingDriveUploadResponse_(r,u,response){
+  const code=response.getResponseCode();
+  if(code===200||code===201){
+    const data=JSON.parse(response.getContentText()||'{}');
+    if(!data.id||!data.name)throw new Error('Google Drive did not confirm the completed file.');
+    return clientOnboardingUploadCompleted_(r,u);
+  }
+  if(code===308){
+    const range=String(clientOnboardingSessionHeaders_(response).range||'');
+    const match=/^bytes=0-(\d+)$/.exec(range);
+    const nextByte=match?Number(match[1])+1:0;
+    if(!Number.isSafeInteger(nextByte)||nextByte<0||nextByte>u.size)throw new Error('Google Drive returned an invalid acknowledged byte count.');
+    u.nextByte=nextByte;
+    clientOnboardingSaveUpload_(u);
+    return {complete:false,nextByte,fileSize:u.size};
+  }
+  throw new Error('Google Drive could not accept the upload chunk (HTTP '+code+'). Use Retry; no new folder is needed.');
+}
+function clientOnboardingUploadChunk(token,uploadId,start,encoded){
+  const found=clientOnboardingUploadChecked_(token,uploadId);
+  const r=found.client,u=found.upload;
+  if(!Number.isSafeInteger(start)||start!==u.nextByte)throw new Error('Upload offset changed. Refresh upload progress before retrying.');
+  if(typeof encoded!=='string'||encoded.length>Math.ceil(CLIENT_ONBOARDING.resumableChunkBytes*4/3)+32)throw new Error('Chunk is too large.');
+  const bytes=Utilities.base64Decode(encoded);
+  if(bytes.length<1||bytes.length>CLIENT_ONBOARDING.resumableChunkBytes||start+bytes.length>u.size)throw new Error('Invalid upload chunk size.');
+  if(start+bytes.length<u.size&&bytes.length%(256*1024)!==0)throw new Error('Intermediate chunks must be multiples of 256 KB.');
+  return clientOnboardingWithLock_(()=>{
+    const fresh=clientOnboardingUploadChecked_(token,uploadId);
+    if(start!==fresh.upload.nextByte)throw new Error('Upload offset changed. Retry using the refreshed offset.');
+    const response=UrlFetchApp.fetch(u.sessionUrl,{
+      method:'put',contentType:u.mime,headers:{
+        Authorization:'Bearer '+ScriptApp.getOAuthToken(),
+        'Content-Range':'bytes '+start+'-'+(start+bytes.length-1)+'/'+u.size
+      },payload:bytes,muteHttpExceptions:true,followRedirects:false
+    });
+    return clientOnboardingDriveUploadResponse_(r,u,response);
+  });
+}
+function clientOnboardingResumeUpload(token,uploadId){
+  const found=clientOnboardingUploadChecked_(token,uploadId);
+  return clientOnboardingWithLock_(()=>{
+    const fresh=clientOnboardingUploadChecked_(token,uploadId);
+    const response=UrlFetchApp.fetch(fresh.upload.sessionUrl,{
+      method:'put',headers:{
+        Authorization:'Bearer '+ScriptApp.getOAuthToken(),
+        'Content-Range':'bytes */'+fresh.upload.size
+      },payload:[],muteHttpExceptions:true,followRedirects:false
+    });
+    return clientOnboardingDriveUploadResponse_(fresh.client,fresh.upload,response);
+  });
+}
+
 function clientOnboardingFinishUploads(token){
   const r=clientOnboardingByToken_(token);
   return clientOnboardingWithLock_(()=>{
     const latest=clientOnboardingRecord_(r.id);
     if(latest.fileCount===0)throw new Error('Please upload at least one file before marking your materials ready.');
+    if(latest.activeUploadId)throw new Error('A file upload is still in progress. Finish it before marking your materials ready.');
+    if(latest.status==='ready_for_review')return {success:true,fileCount:latest.fileCount};
     latest.status='ready_for_review';
     latest.updatedAt=new Date().toISOString();
     clientOnboardingSave_(latest);
