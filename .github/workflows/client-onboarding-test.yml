@@ -7,6 +7,9 @@ on:
       - 'apps-script/ClientOnboardingUpload.html'
       - 'apps-script/Code.gs'
       - 'scripts/test-client-onboarding.cjs'
+      - 'scripts/prepare-apps-script-deployment.cjs'
+      - 'scripts/test-apps-script-deployment.cjs'
+      - '.github/workflows/hospo-apps-script-deploy.yml'
       - '.github/workflows/client-onboarding-test.yml'
   workflow_dispatch:
 jobs:
@@ -20,3 +23,4 @@ jobs:
         with:
           node-version: '22'
       - run: node scripts/test-client-onboarding.cjs
+      - run: node scripts/test-apps-script-deployment.cjs
