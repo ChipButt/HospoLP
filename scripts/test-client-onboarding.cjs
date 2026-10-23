@@ -16,7 +16,7 @@ function mkFolder(name,parent=null) {
   getUrl(){return 'https://drive.google.com/drive/folders/'+id},
   createFolder(n){const f=mkFolder(n,item);children.push(f);return f},
   createFile(n,data,mime){
-   if(typeof n!=='string')throw Error('Expected name');
+   if(typeof n!=='string'){const blob=n;n=blob.name;data=blob.data;mime=blob.mime;}
    const f={name:n,data,mime,getName(){return this.name},setContent(v){this.data=v},getContent(){return this.data}};
    files.push(f);return f;
   },
