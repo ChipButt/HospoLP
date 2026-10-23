@@ -166,6 +166,20 @@ assert.equal(big.fileSize,100*1024*1024);
 assert.equal(big.chunkBytes,4194304);
 assert.equal(invoke('clientOnboardingClientInfo(code)').maxImageBytes,100*1024*1024);
 assert.throws(()=>invoke("clientOnboardingFinishUploads(code)"),/still in progress/i);
+// Upload the full 100 MiB image in 25 x 4 MiB mocked Drive-confirmed chunks.
+context.bigUploadId=big.uploadId;
+for(let offset=0;offset<100*1024*1024;offset+=4*1024*1024){
+  const response=invoke('clientOnboardingUploadChunk(code,bigUploadId,'+offset+',chunk1)');
+  assert.equal(response.nextByte,offset+4*1024*1024);
+  if(offset+4*1024*1024===100*1024*1024)assert.equal(response.complete,true);
+}
+assert.equal(invoke('clientOnboardingClientInfo(code)').filesReceived,3);
+assert.equal(JSON.parse(manifest.data).filesReceived,3);
+assert.equal(invoke('clientOnboardingFinishUploads(code)').success,true);
+const previousNotifies=sent.length;
+assert.equal(invoke('clientOnboardingFinishUploads(code)').success,true);
+assert.equal(sent.length,previousNotifies); // Re-clicking "finished" does not email-spam the owner.
+
 const uploadText=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(uploadText,/id="progressBar"/);
 assert.match(uploadText,/100 MB/);
