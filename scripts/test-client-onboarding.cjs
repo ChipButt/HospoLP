@@ -6,6 +6,38 @@ const properties=new Map();
 const cache=new Map();
 const sent=[];
 const folderById=new Map();
+const pendingDriveUploads=new Map();
+let resumableCounter=0;
+const fakeResponse=(code,body,headers)=>({
+ getResponseCode(){return code},getContentText(){return body||''},getAllHeaders(){return headers||{}}
+});
+function fakeDriveFetch(url,options){
+ const cfg=options||{};
+ if(cfg.method==='post'&&url.includes('uploadType=resumable')){
+   const payload=JSON.parse(cfg.payload);
+   const id='driveupload-'+(++resumableCounter);
+   pendingDriveUploads.set(id,{name:payload.name,total:Number(cfg.headers['X-Upload-Content-Length']),size:0});
+   return fakeResponse(200,'',{Location:'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&upload_id='+id});
+ }
+ const id=String(url).split('upload_id=')[1];
+ const record=pendingDriveUploads.get(id);
+ if(!record)throw Error('Unknown resumable upload URI');
+ const range=cfg.headers['Content-Range'];
+ if(range.startsWith('bytes */')){
+  if(record.size===record.total)return fakeResponse(200,JSON.stringify({id,name:record.name}));
+  return fakeResponse(308,'',record.size?{'Range':'bytes=0-'+(record.size-1)}:{});
+ }
+ const match=/^bytes (\d+)-(\d+)\/(\d+)$/.exec(range);
+ if(!match)throw Error('Invalid range '+range);
+ const start=Number(match[1]),end=Number(match[2]),total=Number(match[3]);
+ assert.equal(total,record.total);
+ assert.equal(start,record.size);
+ assert.equal(end-start+1,cfg.payload.length);
+ record.size+=cfg.payload.length;
+ if(record.size===record.total)return fakeResponse(200,JSON.stringify({id,name:record.name}));
+ return fakeResponse(308,'',{'Range':'bytes=0-'+(record.size-1)});
+}
+
 let uuid=1,folderNumber=0;
 function mkFolder(name,parent=null) {
  const id='folder-'+(++folderNumber);
@@ -45,7 +77,8 @@ const context={
  },
  LockService:{getScriptLock(){return {waitLock(){},releaseLock(){}}}},
  DriveApp:{getFolderById(id){if(!folderById.has(id))throw Error('Unknown folder '+id);return folderById.get(id)}},
- ScriptApp:{getService(){return {getUrl(){return 'https://script.google.com/macros/s/TEST/exec'}}}},
+ ScriptApp:{getService(){return {getUrl(){return 'https://script.google.com/macros/s/TEST/exec'}}},getOAuthToken(){return 'fake-oauth-token'}},
+ UrlFetchApp:{fetch:fakeDriveFetch},
  Session:{getEffectiveUser(){return {getEmail(){return 'owner@chipin.example'}}},getScriptTimeZone(){return 'Europe/London'}},
  MimeType:{PLAIN_TEXT:'text/plain'},
  MailApp:{sendEmail(msg){sent.push(msg)}},
@@ -101,6 +134,46 @@ assert.equal(sent.length,2);
 const workspaces=invoke("clientOnboardingListWorkspaces(session)");
 assert.equal(workspaces.length,1);
 assert.equal(workspaces[0].status,'ready_for_review');
+// Test resumable uploads: server-authorised 4 MiB chunks, progress, limits and completion.
+context.newFile={name:'Original_Image_6MB.png',mimeType:'image/png',category:'photos',size:6*1024*1024};
+const started=invoke('clientOnboardingBeginUpload(code,newFile)');
+assert.equal(started.nextByte,0);
+assert.equal(started.chunkBytes,4*1024*1024);
+context.resumableId=started.uploadId;
+assert.throws(()=>invoke("clientOnboardingBeginUpload(code,{name:'different.png',mimeType:'image/png',category:'photos',size:10})"),/unfinished/i);
+const restored=invoke('clientOnboardingBeginUpload(code,newFile)');
+assert.equal(restored.resumed,true);
+context.chunk1=Buffer.alloc(4*1024*1024).toString('base64');
+const c1=invoke('clientOnboardingUploadChunk(code,resumableId,0,chunk1)');
+assert.equal(c1.complete,false);
+assert.equal(c1.nextByte,4*1024*1024);
+const status1=invoke('clientOnboardingResumeUpload(code,resumableId)');
+assert.equal(status1.nextByte,4*1024*1024);
+context.chunk2=Buffer.alloc(2*1024*1024).toString('base64');
+const c2=invoke('clientOnboardingUploadChunk(code,resumableId,4194304,chunk2)');
+assert.equal(c2.complete,true);
+assert.equal(c2.nextByte,6*1024*1024);
+assert.equal(invoke('clientOnboardingClientInfo(code)').filesReceived,2);
+assert.equal(JSON.parse(manifest.data).filesReceived,2);
+context.excess={name:'huge-image.png',mimeType:'image/png',category:'photos',size:101*1024*1024};
+assert.throws(()=>invoke('clientOnboardingBeginUpload(code,excess)'),/100 MB/i);
+context.bigDoc={name:'huge-menu.pdf',mimeType:'application/pdf',category:'menus',size:26*1024*1024};
+assert.throws(()=>invoke('clientOnboardingBeginUpload(code,bigDoc)'),/25 MB/i);
+context.maxImage={name:'max-photo.png',mimeType:'image/png',category:'photos',size:100*1024*1024};
+const big=invoke('clientOnboardingBeginUpload(code,maxImage)');
+assert.equal(big.fileSize,100*1024*1024);
+assert.equal(big.chunkBytes,4194304);
+assert.equal(invoke('clientOnboardingClientInfo(code)').maxImageBytes,100*1024*1024);
+assert.throws(()=>invoke("clientOnboardingFinishUploads(code)"),/still in progress/i);
+const uploadText=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
+assert.match(uploadText,/id="progressBar"/);
+assert.match(uploadText,/100 MB/);
+const innerScripts=[...uploadText.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+assert.equal(innerScripts.length,1);
+new vm.Script(innerScripts[0][1].replace(/<\?!= uploadToken \?>/,'""'),{filename:'ClientOnboardingUpload.html inline script'});
+const adminSource=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8');
+assert.match(adminSource,/chipinworks.co.uk\/client-meeting\//);
+
 const codeJs=fs.readFileSync('apps-script/Code.gs','utf8');
 assert.match(codeJs,/mode === 'onboard-admin'/);
 assert.match(codeJs,/mode === 'onboard-upload'/);
@@ -108,4 +181,4 @@ const adminHtml=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8')
 const uploadHtml=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(adminHtml,/ownerKey/);
 assert.match(uploadHtml,/Original camera|Original files|original/i);
-console.log('PASS: owner sign-in protection, approved-quote gating, idempotent workspace creation, private subfolders, upload-only token, file validation, status manifest, ready notification and client invitation.');
+console.log('PASS: quotes and approval, protected client folder creation, 100MB image limit, chunk acknowledgement, resumable progress, upload statuses, and client invitations.');
