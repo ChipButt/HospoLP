@@ -281,6 +281,10 @@ function hubClientCard(c){
    const tip=document.createElement('p');tip.className='hub-note';
    tip.textContent='The client sets their own password using a private 48-hour link. No password is included in the handover email.';
    section.append(tip);
+  }else if(!c.editor.loginVerified){
+   const tip=document.createElement('p');tip.className='hub-note';
+   tip.textContent='Password has been activated. The client must now use their own registered email and password to sign into the Simple Website Editor successfully before the final handover email can be sent.';
+   section.append(tip);
   }else if(!c.editor.handoverSentAt){
    hubAction(area,'Send final website + editor handover',async()=>{
     const result=await gas('clientOnboardingSendFinalHandover',session,c.id);
