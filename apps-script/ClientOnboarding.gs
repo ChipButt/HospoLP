@@ -535,7 +535,7 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
     if(!provision.pagesProject){
       const body={
         name:slug,production_branch:provision.branch,
-        build_config:{build_command:'',destination_dir:'',root_dir:''},
+        build_config:{build_command:'exit 0',destination_dir:'.'},
         source:{
           type:'github',
           config:{
