@@ -39,6 +39,13 @@ function fakeProvisionFetch(url,config){
      return fakeResponse(201,JSON.stringify({commit:{sha:'commit-1'}}));
    }
  }
+ if(url.startsWith('https://api.cloudflare.com/client/v4/accounts/1234567890abcdef1234567890abcdef/pages/projects/')&&cfg.method==='get'){
+   const slug=url.split('/').pop();
+   const stored=fakeClientPages.get(slug);
+   return stored
+     ?fakeResponse(200,JSON.stringify({success:true,result:{name:slug,subdomain:slug+'.pages.dev',source:stored.source}}))
+     :fakeResponse(404,JSON.stringify({success:false,errors:[{message:'Not Found'}]}));
+ }
  if(url==='https://api.cloudflare.com/client/v4/accounts/1234567890abcdef1234567890abcdef/pages/projects'){
    if(cfg.method!=='post')throw Error('Unexpected Cloudflare method');
    if(body.source?.type!=='github'||!body.source.config?.repo_name?.startsWith('chipin-')||body.source.config.owner!=='ChipButt')
@@ -260,6 +267,10 @@ assert.equal(repeated.status,'staging_ready');
 assert.equal(repoCreateCount,1);
 assert.equal(pagesCreateCount,2);
 assert.equal(invoke('clientOnboardingListWorkspaces(session)')[0].site.status,'staging_ready');
+ // The backend must never adopt someone else's same-named Pages project.
+ const another=invoke('clientSiteSlug_("Other Client","12345678-1234-4321-4321-123456789abc")');
+ assert.match(another,/^chipin-other-client-/);
+
 assert.equal(JSON.stringify(repeated).includes('github-private-test-token'),false);
 assert.equal(JSON.stringify(repeated).includes('cloudflare-test-token'),false);
 const adminScript=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8');
