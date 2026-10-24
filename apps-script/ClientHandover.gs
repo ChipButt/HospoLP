@@ -23,7 +23,8 @@ function clientHubReview_(r){
   try{
     const v=clientReviewLoad_(r);
     return {status:v.status,comments:v.comments.length,feedbackDueAt:v.feedbackDueAt||'',
-      approvedAt:v.approvedAt||'',approvedBy:v.approvedBy||'',revisionTargetAt:v.revisionTargetAt||''};
+      reviewUrl:clientReviewPublicUrl_(r),approvedAt:v.approvedAt||'',approvedBy:v.approvedBy||'',
+      revisionTargetAt:v.revisionTargetAt||''};
   }catch(err){return {status:'needs_attention',comments:0};}
 }
 function clientHubEditor_(r){
