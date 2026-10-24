@@ -12,12 +12,15 @@ const ROOT=path.resolve(__dirname,'..');
 const UPDATED_FILES=[
   ['apps-script/ClientOnboarding.gs','ClientOnboarding.js'],
   ['apps-script/ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
-  ['apps-script/ClientOnboardingUpload.html','ClientOnboardingUpload.html']
+  ['apps-script/ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
+  ['apps-script/ClientWebsiteReview.gs','ClientWebsiteReview.js'],
+  ['apps-script/ClientWebsiteReview.html','ClientWebsiteReview.html']
 ];
 const EXPECTED=[
   'appsscript.json','Code.js','Index.html','Editor.js','EditorUI.html',
   'ClientOnboarding.js','ClientOnboardingAdmin.html','ClientOnboardingUpload.html'
 ];
+const NEW_FILES=['ClientWebsiteReview.js','ClientWebsiteReview.html'];
 const NEEDED_OAUTH_SCOPES=[
   'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/script.external_request'
@@ -30,10 +33,21 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
   const all=fs.readdirSync(project).filter(n=>n.endsWith('.js')||n.endsWith('.html')||n==='appsscript.json');
   const missing=EXPECTED.filter(n=>!all.includes(n));
   if(missing.length)throw new Error('Live project missing required files; refusing full-project push: '+missing.join(', '));
-  if(all.length!==EXPECTED.length)throw new Error('Unexpected files in live project; review manually before overwrite: '+all.filter(n=>!EXPECTED.includes(n)).join(', '));
+  const unknown=all.filter(n=>!EXPECTED.includes(n)&&!NEW_FILES.includes(n));
+  if(unknown.length)throw new Error('Unexpected files in live project; review manually before overwrite: '+unknown.join(', '));
+  const reviewPresent=NEW_FILES.filter(n=>all.includes(n));
+  if(reviewPresent.length===1)throw new Error('Only one of the two review files is present remotely. Refusing partial deployment.');
   const code=fs.readFileSync(path.join(project,'Code.js'),'utf8');
   if(!/mode\s*===\s*['"]onboard-admin['"]/.test(code)||!/mode\s*===\s*['"]onboard-upload['"]/.test(code)||!/renderEditor_/.test(code))
     throw new Error('Expected existing web-app routing not found in live Code.js; refusing deployment.');
+  const reviewRoute="  if (mode === 'website-review') return renderClientWebsiteReview_(e);";
+  const uploadRoute="  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);";
+  if(!code.includes(reviewRoute)){
+    if(!code.includes(uploadRoute))throw new Error('Cannot locate exact live route insertion point. Refusing deployment.');
+    const updated=code.replace(uploadRoute,uploadRoute+'\n'+reviewRoute);
+    fs.writeFileSync(path.join(project,'Code.js'),updated,'utf8');
+    console.log('Added only website-review routing to preserved live Code.js.');
+  }
   const manifestPath=path.join(project,'appsscript.json');
   const manifest=JSON.parse(fs.readFileSync(manifestPath,'utf8'));
   if(!manifest||typeof manifest!=='object'||Array.isArray(manifest))throw new Error('Invalid Apps Script manifest.');
@@ -54,7 +68,7 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
     fs.writeFileSync(path.join(project,target),original,'utf8');
     console.log('Prepared '+target+' ('+original.length+' characters)');
   }
-  console.log('Full-project safeguard passed: existing intake/editor files and manifest preserved.');
+  console.log('Full-project safeguard passed: existing intake/editor files and manifest preserved; review route and files installed.');
 }
 if(require.main===module){
   try{prepareDeploy(process.argv[2]);}
