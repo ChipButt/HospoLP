@@ -41,17 +41,17 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
   if(!/mode\s*===\s*['"]onboard-admin['"]/.test(code)||!/mode\s*===\s*['"]onboard-upload['"]/.test(code)||!/renderEditor_/.test(code))
     throw new Error('Expected existing web-app routing not found in live Code.js; refusing deployment.');
   const reviewRoute="  if (mode === 'website-review') return renderClientWebsiteReview_(e);";
-  if(!/mode\\s*===\\s*['"]website-review['"]/.test(code)){
+  if(!/mode\s*===\s*['"]website-review['"]/.test(code)){
     // Keep *all* existing code, spacing and doGet modes. Insert immediately after
     // the existing onboarding upload route, whatever the local formatting.
-    const uploadLine=/^(\\s*if\\s*\\(\\s*mode\\s*===\\s*['"]onboard-upload['"]\\s*\\)\\s*return\\s+renderClientOnboardingUpload_\\(e\\)\\s*;?)[ \\t]*$/m;
-    let updated=code.replace(uploadLine,(original)=>original+'\\n'+reviewRoute);
+    const uploadLine=/^(\s*if\s*\(\s*mode\s*===\s*['"]onboard-upload['"]\s*\)\s*return\s+renderClientOnboardingUpload_\(e\)\s*;?)[ \t]*$/m;
+    let updated=code.replace(uploadLine,(original)=>original+'\n'+reviewRoute);
     if(updated===code){
       // Older live projects sometimes format the upload route differently:
       // safely insert after doGet's first local mode declaration, never a
       // wholesale replacement of Code.js.
-      const doGetMode=/(function\\s+doGet\\s*\\(\\s*e\\s*\\)\\s*\\{[\\s\\S]*?\\bconst\\s+mode\\s*=[^\\n]*;[ \\t]*\\r?\\n)/;
-      updated=code.replace(doGetMode,(original)=>original+reviewRoute+'\\n');
+      const doGetMode=/(function\s+doGet\s*\(\s*e\s*\)\s*\{[\s\S]*?\bconst\s+mode\s*=[^\n]*;[ \t]*\r?\n)/;
+      updated=code.replace(doGetMode,(original)=>original+reviewRoute+'\n');
     }
     if(updated===code)throw new Error('Cannot locate a validated doGet route anchor. Refusing deployment.');
     fs.writeFileSync(path.join(project,'Code.js'),updated,'utf8');
