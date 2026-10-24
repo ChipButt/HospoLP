@@ -117,11 +117,19 @@ function clientHandoverSheet_(){
   if(!sheet)throw new Error('The existing Simple Website Editor client registry is missing.');
   const rows=sheet.getDataRange().getValues();
   if(!rows.length)throw new Error('The editor client registry has no headings.');
-  const headers=rows[0].map(String);
+  let headers=rows[0].map(String);
   const required=['site_id','business_name','public_url','login_email','password_salt','password_hash',
-    'password_is_temporary','active','repo_full_name','content_root','media_root','schema_path'];
+    'active','repo_full_name','content_root','media_root','schema_path'];
   const missing=required.filter(k=>!headers.includes(k));
   if(missing.length)throw new Error('Client registry needs editor headings: '+missing.join(', ')+'. Refusing to write to an incompatible sheet.');
+  // The original, working HospoLP registry predates the temporary-password
+  // column. Add ONLY that missing column; never rewrite existing customers,
+  // salts, password hashes, login emails or other existing columns.
+  if(!headers.includes('password_is_temporary')){
+    ensureRegistryColumn_(sheet,'password_is_temporary');
+    headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
+    return {sheet,headers,rows:sheet.getDataRange().getValues()};
+  }
   return {sheet,headers,rows};
 }
 function clientOnboardingRegisterEditor(session,id){
