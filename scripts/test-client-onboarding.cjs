@@ -380,6 +380,96 @@ new vm.Script(reviewScripts[0][1].replace(/<\?!= reviewToken \?>/,'""'),{filenam
 assert.match(adminScript,/clientOnboardingStartWebsiteReview/);
 assert.match(adminScript,/clientOnboardingSendFinalApproval/);
 
+
+// The owner hub ties quote, assets, review, hosting, live domain and client
+// editor together. A signed-off site is NOT complete until the editor works.
+const listBeforeLaunch=invoke('clientOnboardingProjectHub(session)');
+assert.equal(listBeforeLaunch.length,1);
+assert.equal(listBeforeLaunch[0].review.status,'approved');
+assert.equal(listBeforeLaunch[0].editor.registered,false);
+assert.equal(listBeforeLaunch[0].completed,false);
+assert.throws(()=>invoke("clientOnboardingConfirmWebsiteLive('invalid',workspaceId,{})"),/Owner session expired/);
+assert.throws(()=>invoke("clientOnboardingConfirmWebsiteLive(session,workspaceId,{url:'http://unsafe.example/',httpsChecked:true,emailDnsChecked:true,clientDomainChecked:true})"),/HTTPS/i);
+assert.throws(()=>invoke("clientOnboardingConfirmWebsiteLive(session,workspaceId,{url:'https://client.pages.dev/',httpsChecked:true,emailDnsChecked:true,clientDomainChecked:true})"),/custom domain/i);
+assert.throws(()=>invoke("clientOnboardingConfirmWebsiteLive(session,workspaceId,{url:'https://client.example/',httpsChecked:true,emailDnsChecked:false,clientDomainChecked:true})"),/MX/i);
+const live=invoke("clientOnboardingConfirmWebsiteLive(session,workspaceId,{url:'https://testcafe.example/',httpsChecked:true,emailDnsChecked:true,clientDomainChecked:true})");
+assert.equal(live.launch.url,'https://testcafe.example/');
+assert.equal(live.editor.registered,false);
+assert.throws(()=>invoke('clientOnboardingSendFinalHandover(session,workspaceId)'),/individual Simple Website Editor/);
+assert.throws(()=>invoke("setInitialEditorPassword('client', 'unsafe-password')"),/Owner session expired/);
+assert.throws(()=>invoke("clientOnboardingRegisterEditor('invalid',workspaceId)"),/Owner session expired/);
+assert.throws(()=>invoke("clientOnboardingRegisterEditor(session,workspaceId)"),/missing editor.schema.json/);
+// Model a finished standard HospoLP-template website, not the placeholder.
+const fakeSiteName=workingSite.repositoryUrl.split('/').pop();
+const fakeSite=fakeClientRepos.get(fakeSiteName);
+assert.ok(fakeSite&&fakeSite.private);
+fakeSite.editorFiles.set('editor.schema.json',JSON.stringify({pages:[{id:'home',label:'Home',url:'/'}]}));
+for(const file of ['site','hours','menu','events','features','gallery','drinks','theme'])
+ fakeSite.editorFiles.set('content/'+file+'.json',JSON.stringify(file==='site'?{name:'Test Cafe'}:{}));
+const legacyApp="const EDITOR_DATA_URL='https://script.google.com/macros/s/TEST/exec';\nconst EDITOR_SITE_ID='lantern-yard';\nfunction loadEditorData(){}";
+fakeSite.editorFiles.set('assets/app.js',legacyApp);
+const enrolled=invoke('clientOnboardingRegisterEditor(session,workspaceId)');
+assert.equal(enrolled.editor.registered,true);
+assert.equal(enrolled.editor.activated,false);
+assert.match(enrolled.editor.editorUrl,/mode=editor&site=chipin-/);
+assert.match(fakeSite.editorFiles.get('assets/app.js'),new RegExp("const EDITOR_SITE_ID='"+enrolled.editor.siteId+"'"));
+assert.match(fakeSite.editorFiles.get('edit/index.html'),/CHIP IN CLIENT EDITOR REDIRECT/);
+assert.doesNotMatch(fakeSite.editorFiles.get('edit/index.html'),/site=lantern-yard/);
+assert.equal(editorRows.length,2);
+assert.equal(invoke('clientOnboardingRegisterEditor(session,workspaceId)').editor.registered,true);
+assert.equal(editorRows.length,2); // idempotent registry, no duplicate customer logins
+const mailBeforeSetup=sent.length;
+const setupMail=invoke('clientOnboardingSendEditorSetup(session,workspaceId)');
+assert.equal(setupMail.sent,true);
+assert.equal(setupMail.email,'a@test.com');
+assert.equal(sent.length,mailBeforeSetup+1);
+const message=sent[sent.length-1];
+assert.equal(message.to,'a@test.com');
+const inviteToken=(message.body||'').match(/&setup=([0-9a-f]{96})/);
+assert.ok(inviteToken,'Owner invite must carry a strong site-specific token');
+context.clientEditorSiteId=enrolled.editor.siteId;
+context.clientEditorInviteToken=inviteToken[1];
+assert.throws(()=>invoke("completeEditorInvitation(clientEditorSiteId,'bad','NewClientPassword123!')"),/invalid/i);
+assert.throws(()=>invoke("completeEditorInvitation(clientEditorSiteId,clientEditorInviteToken,'short')"),/at least 12/i);
+assert.throws(()=>invoke('clientOnboardingSendFinalHandover(session,workspaceId)'),/activate/);
+const activation=invoke("completeEditorInvitation(clientEditorSiteId,clientEditorInviteToken,'Unique12CharClientPassword!')");
+assert.equal(activation.success,true);
+assert.throws(()=>invoke("completeEditorInvitation(clientEditorSiteId,clientEditorInviteToken,'Unique12CharClientPassword!')"),/already used|invalid/i);
+const privateEditor=invoke('clientOnboardingProjectHub(session)')[0];
+assert.equal(privateEditor.editor.activated,true);
+const siteRow=invoke('getEditorSite_(clientEditorSiteId)');
+assert.equal(siteRow.repo_full_name,privateEditor.hosting.repository);
+assert.equal(siteRow.public_url,'https://testcafe.example/');
+assert.equal(siteRow.login_email,'a@test.com');
+context.clientEditorPassword='Unique12CharClientPassword!';
+const draftFolder=mkFolder('Chip In Websites Editor Drafts');
+properties.set('CHIP_IN_WEBSITES_DRAFT_FOLDER_ID',draftFolder.getId());
+const successfulClientLogin=invoke("loginEditor(clientEditorSiteId,'a@test.com',clientEditorPassword)");
+assert.equal(successfulClientLogin.siteName,'Test Cafe');
+assert.equal(successfulClientLogin.mustChangePassword,false);
+assert.equal(successfulClientLogin.publicUrl,'https://testcafe.example/');
+assert.ok(successfulClientLogin.schema.pages.length);
+assert.throws(()=>invoke("loginEditor(clientEditorSiteId,'a@different.example',clientEditorPassword)"),/incorrect/);
+const finalHandover=invoke('clientOnboardingSendFinalHandover(session,workspaceId)');
+assert.equal(finalHandover.sent,true);
+assert.equal(finalHandover.siteUrl,'https://testcafe.example/');
+assert.equal(finalHandover.editorUrl,'https://testcafe.example/edit/');
+assert.match(sent[sent.length-1].body,/Simple Website Editor/);
+assert.equal(invoke('clientOnboardingSendFinalHandover(session,workspaceId)').alreadySent,true);
+const finishedHub=invoke('clientOnboardingProjectHub(session)')[0];
+assert.equal(finishedHub.completed,true);
+assert.equal(finishedHub.steps.filter(x=>x.done).length,finishedHub.steps.length);
+const ui=fs.readFileSync('apps-script/EditorUI.html','utf8');
+assert.match(ui,/activateInvitation/);
+const uiJs=[...ui.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+assert.equal(uiJs.length,1);
+new vm.Script(uiJs[0][1].replace(/<\?!= initialSetupToken \?>/,"''"),
+ {filename:'EditorUI.html inline script'});
+const adminPage=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8');
+assert.match(adminPage,/Client Project Hub/);
+assert.match(adminPage,/Register client Simple Website Editor/);
+assert.match(adminPage,/Send final website \+ editor handover/);
+
 const uploadText=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(uploadText,/id="progressBar"/);
 assert.match(uploadText,/100 MB/);
@@ -396,4 +486,4 @@ const adminHtml=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8')
 const uploadHtml=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(adminHtml,/ownerKey/);
 assert.match(uploadHtml,/Original camera|Original files|original/i);
-console.log('PASS: protected upload and Pages provision, owner-created draft review, per-page pins, 72h feedback, one submission, amendment tracking, signed final approval and safe deployment syntax.');
+console.log('PASS: full client project hub, private upload, Cloudflare Pages, draft feedback, signed approval, manually verified domain, own GitHub-backed editor, secure client password activation/login and final handover.');
