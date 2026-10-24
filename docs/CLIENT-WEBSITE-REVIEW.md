@@ -37,7 +37,7 @@ GitHub Actions first clones all existing live Apps Script files, checks the exis
 
 ## Relevant source
 
-- `apps-script/ClientWebsiteReview.gs` — authenticated endpoints for comments, one-round submission and approval.
+- `apps-script/ClientReviewService.gs` — authenticated endpoints for comments, one-round submission and approval.
 - `apps-script/ClientWebsiteReview.html` — responsive client review portal with site iframe, pin mode and comments.
 - `apps-script/ClientOnboardingAdmin.html` — owner controls and comment status review.
 - `scripts/prepare-apps-script-deployment.cjs` — safe incremental installation into the existing live Apps Script project.
