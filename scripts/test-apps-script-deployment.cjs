@@ -20,14 +20,18 @@ fs.writeFileSync(path.join(root,'appsscript.json'),JSON.stringify({
 }));
 try{
   prepareDeploy(root);
-  assert.equal(fs.readFileSync(path.join(root,'Editor.js'),'utf8'),originalEditor);
+  assert.notEqual(fs.readFileSync(path.join(root,'Editor.js'),'utf8'),originalEditor);
+  assert.match(fs.readFileSync(path.join(root,'Editor.js'),'utf8'),/clientOnboardingRequireAdmin_\(ownerSession\)/);
   assert.equal(fs.readFileSync(path.join(root,'Code.js'),'utf8'),originalCode.replace("  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);", "  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);\n  if (mode === 'website-review') return renderClientWebsiteReview_(e);"));
   for(const [src,dst] of [
     ['ClientOnboarding.gs','ClientOnboarding.js'],
     ['ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
     ['ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
     ['ClientReviewService.gs','ClientReviewService.js'],
-    ['ClientWebsiteReview.html','ClientWebsiteReview.html']
+    ['ClientWebsiteReview.html','ClientWebsiteReview.html'],
+    ['ClientHandover.gs','ClientHandover.js'],
+    ['Editor.gs','Editor.js'],
+    ['EditorUI.html','EditorUI.html']
   ]){
     assert.equal(
       fs.readFileSync(path.join(root,dst),'utf8'),
@@ -39,7 +43,7 @@ try{
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/script.send_mail'));
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/drive'));
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/script.external_request'));
-  prepareDeploy(root); // rerunning against an already upgraded 10-file live project remains safe
+  prepareDeploy(root); // rerunning against an already upgraded 11-file live project remains safe
   assert.equal((fs.readFileSync(path.join(root,'Code.js'),'utf8').match(/website-review/g)||[]).length,1);
   fs.writeFileSync(path.join(root,'Mystery.js'),'unknown source');
   assert.throws(()=>prepareDeploy(root),/Unexpected files/);
@@ -49,7 +53,7 @@ try{
   fs.unlinkSync(path.join(root,'ClientWebsiteReview.js'));
   fs.unlinkSync(path.join(root,'EditorUI.html'));
   assert.throws(()=>prepareDeploy(root),/missing required files/);
-  console.log('PASS: 8→10-file Apps Script upgrade preserves existing editor/intake routes, appends one review route, preserves manifest, supports reruns, blocks unknown files.');
+  console.log('PASS: 8→11-file Apps Script upgrade protects editor password reset, preserves existing intake routes, appends one review route, preserves manifest, supports reruns, blocks unknown files.');
 }finally{
   fs.rmSync(root,{recursive:true,force:true});
 }
