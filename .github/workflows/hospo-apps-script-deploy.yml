@@ -1,9 +1,21 @@
-name: Deploy HospoLP Apps Script (manual, safe)
+name: Deploy HospoLP Apps Script (tested, versioned)
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'apps-script/ClientOnboarding.gs'
+      - 'apps-script/ClientOnboardingAdmin.html'
+      - 'apps-script/ClientOnboardingUpload.html'
+      - 'scripts/prepare-apps-script-deployment.cjs'
+      - 'scripts/test-apps-script-deployment.cjs'
+      - 'scripts/test-client-onboarding.cjs'
+      - '.github/workflows/hospo-apps-script-deploy.yml'
 
-# First run is manual only. Auto-release can be enabled after verified E2E test.
+# Auto-deploy only after both test suites pass. Every deploy clones live code,
+# checks the exact file inventory, snapshots a rollback version, and updates
+# only the existing deployment ID.
 permissions:
   contents: read
 
