@@ -1,79 +1,46 @@
-# Chip In Websites Visual Editor — Standard
+# Chip In Simple Website Editor — individual customer accounts
 
-Chip In Websites client websites do **not** use Pages CMS as the customer-facing editor.
+**Current implementation:** `apps-script/Editor.gs` and `apps-script/EditorUI.html`, deployed inside the existing *HospoLP Client Intake* Apps Script project. This is **not** the demo editor at `/demo-editor/`.
 
-## Customer experience
+Every client gets:
+- A finished, live website on their own custom domain and Cloudflare Pages project.
+- A branded `https://their-domain/edit/` shortcut into the existing central Apps Script Simple Website Editor, scoped to that client's **own `site_id`**.
+- A secure, one-time 48-hour setup email allowing them to choose a password of at least 12 characters, with no password transmitted to Chip In or held as plaintext in the registry.
+- A private login using their assigned email and own password. Once signed in they edit text, images, menus, opening hours, events, etc., see the live preview, save drafts, and publish changes to **only their own private GitHub repository**.
 
-Each website has an `/edit/` address. The client:
+## Onboarding a new client
 
-1. Opens their website editor.
-2. Enters their authorised email address and the temporary password set by Chip In.
-3. On their first successful login, is required to choose and confirm a new password.
-4. Uses that new password for all subsequent logins.
-5. Sees only their own website editor.
-6. Chooses a page from the left-hand controls.
-7. Edits text, hours, menus, events, facilities or photos on the left.
-8. Sees the website update immediately in the live preview on the right.
-9. Clicks **Publish changes** when happy.
+Use the owner-only **Client Project Hub** in the existing [Client Onboarding Admin](https://script.google.com/macros/s/AKfycbzz7FWTrjHkH8LUCrEElzr1MFCN9lN408-C_wC2o2FAU5j8HYXd43uUBgUHRDsiB78/exec?mode=onboard-admin).
 
-Clients never see GitHub, repositories, JSON files, deployments or other customers.
+1. Accept written quote, collect complete assets, build on a private client GitHub repo with Cloudflare Pages, run three-day review and complete five-working-day revisions.
+2. Receive **client's final written approval**, link their domain, check HTTPS/DNS/email MX and record the live URL in the Hub.
+3. **Register client Simple Website Editor.** This verifies schema, eight content JSON files and site app.js bridge in **their** repo, patches only the site identifier, creates `/edit/` redirect and appends a row to the existing shared editor registry sheet.
+4. **Email secure editor setup invitation**. They have 48 hours to pick their password. On redemption the password hash is stored and the invitation is invalidated.
+5. Test that client's editor login, preview and a harmless publish against the correct repo/domain.
+6. **Send final website + editor handover**. The handover email contains the live website URL, client `/edit/` URL, login email and short guidance—no GitHub credentials.
 
-## Architecture
+For a full owner checklist and remaining real account tests, see [CLIENT-PROJECT-HUB-HANDOVER.md](CLIENT-PROJECT-HUB-HANDOVER.md).
 
-- GitHub Pages hosts the public website shell/design.
-- Google Apps Script provides authentication and the visual editor.
-- Google Drive stores the client-published editable content.
-- The public site loads its latest published content from the Apps Script service using JSONP, with the repository JSON as a fallback.
-- Each client email is mapped server-side to a specific site ID.
-- Passwords are stored as salted SHA-256 hashes in the client registry, never as plaintext.
-- An admin-set initial password is marked as temporary. The editor blocks access until the customer replaces it on first login.
-- The browser cannot choose or change the underlying repository/site mapping.
+## Editor registry
 
-## Adding a client
+The actual current implementation uses a Google Sheet, NOT a hard-coded `EDITOR_CONFIG.SITES` list:
 
-Add a new entry to `EDITOR_CONFIG.SITES` in `apps-script/Editor.gs`:
+- Sheet ID: `12otLULjhJZ8dln9jPWa_DByUQ750NRHkhhciuCZimlY`
+- Sheet name: `Clients`
+- Required headings: `site_id, business_name, public_url, login_email, password_salt, password_hash, password_is_temporary, active, repo_full_name, content_root, media_root, schema_path`.
 
-```js
-'client-site-id': {
-  name: 'Client Business Name',
-  allowedEmails: ['client@example.com'],
-  publicUrl: 'https://example.com/',
-  rawBase: 'https://raw.githubusercontent.com/ChipButt/CLIENT_REPO/main/content/',
-  files: ['site','hours','drinks','menu','events','features','gallery','theme']
-}
-```
+A given site ID maps to exactly one repo and client email. Publishing via the editor uses a private server-side GitHub token from Apps Script Script Properties and the repo's `content/*.json` files. The client cannot see GitHub API tokens. Only the owner can create a new registry entry via the Hub.
 
-Then set the client repo's `/edit/` page and `assets/app.js` to use that site ID.
+The older `setInitialEditorPassword(siteId,newPassword)` routine was unsafe when callable from public Apps Script. It now **requires a valid owner onboarding session as a third argument** and must not be invoked without authorisation. The recommended account setup is the new one-time client invitation instead.
 
-## Apps Script deployment
+## Website template contract
 
-The existing **Chip In Websites Client Intake** Apps Script project is also the central Chip In Websites editor service.
+A new site's repository must contain the compatible `editor.schema.json`, all eight expected content JSON files, and `assets/app.js` with `EDITOR_DATA_URL`, `EDITOR_SITE_ID`, preview message handling and correct application of published JSON fields. The generic holding page created by initial Pages provisioning is **not a completed website** and will correctly fail editor registration. Build the actual website first. The editor redirects to Google Apps Script from `/edit/`.
 
-The deployed project must contain:
+The editor is independent of optional monthly site maintenance charges. If a bespoke website has not implemented the standard dynamic content integration, do not issue client editor credentials until it has been adapted and tested.
 
-- `Code.gs` from `apps-script/Code.gs`
-- `Editor.gs` from `apps-script/Editor.gs`
-- `Index.html` from `apps-script/Index.html`
-- `Editor.html` from `apps-script/Editor.html`
+## Deployment
 
-After changing any of these files, create a **new version** of the existing Web App deployment. Keep:
+Source changes to `apps-script/Editor.gs`, `apps-script/EditorUI.html`, `apps-script/ClientHandover.gs`, onboarding and review files are tested and deployed by `.github/workflows/hospo-apps-script-deploy.yml`, which clones and preserves the existing full project, versions before updating, and uses the same web-app deployment ID.
 
-- Execute as: **Me**
-- Who has access: **Anyone**
-
-The public deployment URL remains the single backend used by all Chip In Websites client websites.
-
-## Security rule
-
-Never put a GitHub token, GitHub credentials or repository write credentials in a client website. The client only authenticates against the Chip In Websites editor service and can only modify the approved content fields for the site assigned to their email address.
-
-
-## Initial client password
-
-Set a customer's initial password from Apps Script with:
-
-```js
-setInitialEditorPassword('client-site-id', 'temporary-password-here');
-```
-
-This stores the hashed password and marks it as temporary. After the customer signs in successfully, the editor requires a new password before exposing the website editor. Changing the password clears the temporary flag. For legacy registry rows without the `password_is_temporary` column/value, the secure default is to require a one-time password change.
+The mocked GitHub/Drive/Sheets editor tests pass as part of `scripts/test-client-onboarding.cjs`. Actual new-client Cloudflare credentials, DNS, email delivery and the first live editor publish must be tested with a controlled internal project before giving this to customers.
