@@ -8,7 +8,7 @@ const files=['Code.js','Index.html','Editor.js','EditorUI.html',
   'ClientOnboarding.js','ClientOnboardingAdmin.html','ClientOnboardingUpload.html'];
 for(const name of files){
   fs.writeFileSync(path.join(root,name),name==='Code.js'
-    ? "function doGet(e){if(mode === 'onboard-admin')return renderClientOnboardingAdmin_(e);if(mode === 'onboard-upload')return renderClientOnboardingUpload_(e);return renderEditor_(e)}"
+    ? "function doGet(e){\n  if (mode === 'onboard-admin') return renderClientOnboardingAdmin_(e);\n  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);\n  return renderEditor_(e);}"
     : 'old live source that must be preserved: '+name);
 }
 const originalEditor=fs.readFileSync(path.join(root,'Editor.js'),'utf8');
@@ -21,11 +21,13 @@ fs.writeFileSync(path.join(root,'appsscript.json'),JSON.stringify({
 try{
   prepareDeploy(root);
   assert.equal(fs.readFileSync(path.join(root,'Editor.js'),'utf8'),originalEditor);
-  assert.equal(fs.readFileSync(path.join(root,'Code.js'),'utf8'),originalCode);
+  assert.equal(fs.readFileSync(path.join(root,'Code.js'),'utf8'),originalCode.replace("  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);", "  if (mode === 'onboard-upload') return renderClientOnboardingUpload_(e);\n  if (mode === 'website-review') return renderClientWebsiteReview_(e);"));
   for(const [src,dst] of [
     ['ClientOnboarding.gs','ClientOnboarding.js'],
     ['ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
-    ['ClientOnboardingAdmin.html','ClientOnboardingAdmin.html']
+    ['ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
+    ['ClientWebsiteReview.gs','ClientWebsiteReview.js'],
+    ['ClientWebsiteReview.html','ClientWebsiteReview.html']
   ]){
     assert.equal(
       fs.readFileSync(path.join(root,dst),'utf8'),
@@ -37,12 +39,14 @@ try{
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/script.send_mail'));
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/drive'));
   assert.ok(m.oauthScopes.includes('https://www.googleapis.com/auth/script.external_request'));
+  prepareDeploy(root); // rerunning against an already upgraded 10-file live project remains safe
+  assert.equal((fs.readFileSync(path.join(root,'Code.js'),'utf8').match(/website-review/g)||[]).length,1);
   fs.writeFileSync(path.join(root,'Mystery.js'),'unknown source');
   assert.throws(()=>prepareDeploy(root),/Unexpected files/);
   fs.unlinkSync(path.join(root,'Mystery.js'));
   fs.unlinkSync(path.join(root,'EditorUI.html'));
   assert.throws(()=>prepareDeploy(root),/missing required files/);
-  console.log('PASS: full-project deployment preserves existing HospoLP intake/editor, retains OAuth manifest scopes, replaces only 3 onboarding files, refuses incomplete/unknown clones.');
+  console.log('PASS: 8→10-file Apps Script upgrade preserves existing editor/intake routes, appends one review route, preserves manifest, supports reruns, blocks unknown files.');
 }finally{
   fs.rmSync(root,{recursive:true,force:true});
 }
