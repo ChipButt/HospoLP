@@ -8,6 +8,7 @@
  */
 const CHIPIN_EDITOR_INVITE_PREFIX='chipin-client-editor-invite:';
 const CHIPIN_EDITOR_STATUS_PREFIX='chipin-client-editor-active:';
+const CHIPIN_EDITOR_LOGIN_PREFIX='chipin-client-editor-login:';
 const CHIPIN_EDITOR_INVITE_HOURS=48;
 
 function clientHubBrief_(r){
@@ -29,8 +30,11 @@ function clientHubReview_(r){
 }
 function clientHubEditor_(r){
   const e=r.editorHandover||{};
-  const active=Boolean(e.siteId&&PropertiesService.getScriptProperties().getProperty(CHIPIN_EDITOR_STATUS_PREFIX+e.siteId)==='yes');
+  const props=PropertiesService.getScriptProperties();
+  const active=Boolean(e.siteId&&props.getProperty(CHIPIN_EDITOR_STATUS_PREFIX+e.siteId)==='yes');
+  const loginAt=active?props.getProperty(CHIPIN_EDITOR_LOGIN_PREFIX+e.siteId)||'':'';
   return {siteId:e.siteId||'',registered:Boolean(e.siteId),activated:active,
+    loginVerified:Boolean(loginAt),lastVerifiedLoginAt:loginAt,
     inviteSentAt:e.inviteSentAt||'',editorUrl:e.editorUrl||'',handoverSentAt:e.handoverSentAt||''};
 }
 function clientHubOne_(r){
@@ -45,6 +49,7 @@ function clientHubOne_(r){
     {name:'Custom domain live',done:Boolean(launch.confirmedAt)},
     {name:'Client editor registered',done:editor.registered},
     {name:'Client editor password activated',done:editor.activated},
+    {name:'Client editor login verified',done:editor.loginVerified},
     {name:'Handover email sent',done:Boolean(editor.handoverSentAt)}
   ];
   return {id:r.id,business:r.business,email:r.email,contact:r.contact||'',
@@ -267,6 +272,8 @@ function clientOnboardingSendFinalHandover(session,id){
     throw new Error('Final written approval and recorded live HTTPS domain are required.');
   if(!e.siteId||PropertiesService.getScriptProperties().getProperty(CHIPIN_EDITOR_STATUS_PREFIX+e.siteId)!=='yes')
     throw new Error('The client must activate their individual Simple Website Editor password before handover.');
+  if(!PropertiesService.getScriptProperties().getProperty(CHIPIN_EDITOR_LOGIN_PREFIX+e.siteId))
+    throw new Error('The client must sign in successfully to their own Simple Website Editor before handover.');
   const site=getEditorSite_(e.siteId);
   if(site.repo_full_name!==r.siteProvision.repository||String(site.login_email).toLowerCase()!==r.email.toLowerCase())
     throw new Error('Editor registry does not match this client.');
