@@ -103,7 +103,7 @@ function mkFolder(name,parent=null) {
   createFolder(n){const f=mkFolder(n,item);children.push(f);return f},
   createFile(n,data,mime){
    if(typeof n!=='string'){const blob=n;n=blob.name;data=blob.data;mime=blob.mime;}
-   const f={name:n,data,mime,getName(){return this.name},setContent(v){this.data=v},getContent(){return this.data}};
+   const f={name:n,data,mime,getName(){return this.name},setContent(v){this.data=v},getContent(){return this.data},getBlob(){return {getDataAsString(){return String(f.data)}}}};
    files.push(f);return f;
   },
   getFilesByName(n){const arr=files.filter(f=>f.name===n);return{hasNext(){return arr.length>0},next(){return arr.shift()}}}
@@ -143,6 +143,8 @@ const context={
 vm.createContext(context);
 const src=fs.readFileSync('apps-script/ClientOnboarding.gs','utf8');
 new vm.Script(src,{filename:'ClientOnboarding.gs'}).runInContext(context);
+const reviewServer=fs.readFileSync('apps-script/ClientWebsiteReview.gs','utf8');
+new vm.Script(reviewServer,{filename:'ClientWebsiteReview.gs'}).runInContext(context);
 function invoke(expr){return vm.runInContext(expr,context);}
 assert.throws(()=>invoke("onboardingAuthenticate('test-key')"),/setup required/i);
 properties.set('CHIP_IN_ONBOARDING_ADMIN_KEY','test-key-with-32-characters-secret');
@@ -280,6 +282,63 @@ const adminScriptMatch=[...adminScript.matchAll(/<script>([\s\S]*?)<\/script>/g)
 assert.equal(adminScriptMatch.length,1);
 new vm.Script(adminScriptMatch[0][1],{filename:'ClientOnboardingAdmin.html inline script'});
 
+// Review portal: owner-only opening, three calendar days, client browser preview
+// with page/pin comment records, one consolidated round, signed final approval.
+assert.throws(()=>invoke("clientOnboardingStartWebsiteReview('bad',workspaceId)"),/Owner session expired/);
+const ownerReview=invoke("clientOnboardingStartWebsiteReview(session,workspaceId)");
+assert.equal(ownerReview.status,'open');
+assert.match(ownerReview.reviewUrl,/mode=website-review&code=/);
+assert.match(ownerReview.previewUrl,/\.pages\.dev/);
+const reviewAgain=invoke("clientOnboardingStartWebsiteReview(session,workspaceId)");
+assert.equal(reviewAgain.reviewUrl,ownerReview.reviewUrl);
+const reviewData=JSON.parse(root.children[0].files.find(x=>x.name==='website-review.json').data);
+assert.equal(new Date(reviewData.feedbackDueAt).getTime()-new Date(reviewData.openedAt).getTime(),72*3600*1000);
+const reviewToken=new URL(ownerReview.reviewUrl).searchParams.get('code');
+context.reviewToken=reviewToken;
+assert.throws(()=>invoke("clientReviewGet('random-string')"),/Invalid review link/);
+assert.equal(invoke('clientReviewGet(reviewToken)').canComment,true);
+assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'x',path:'/menu/',x:0.5,y:0.4})"),/describe the requested change/i);
+assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'Add a menu',path:'https://evil.example',x:0.5,y:0.4})"),/valid page path/i);
+assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'Add a menu',path:'/menu/',x:4,y:0})"),/pin position/i);
+context.reviewInput={title:'Homepage heading',text:'Please change the heading to welcome',path:'/',x:0.42,y:0.31};
+const reviewAfterComment=invoke('clientReviewAddComment(reviewToken,reviewInput)');
+assert.equal(reviewAfterComment.comments.length,1);
+assert.equal(reviewAfterComment.comments[0].x,0.42);
+const reviewCommentId=reviewAfterComment.comments[0].id;
+context.reviewCommentId=reviewCommentId;
+assert.throws(()=>invoke("clientOnboardingUpdateReviewComment('bad',workspaceId,reviewCommentId,'done')"),/Owner session expired/);
+assert.throws(()=>invoke('clientOnboardingSendFinalApproval(session,workspaceId)'),/submit the first review/);
+const invite=invoke('clientOnboardingSendReviewInvitation(session,workspaceId)');
+assert.equal(invite.sent,true);
+assert.equal(invite.email,'a@test.com');
+const submitted=invoke('clientReviewSubmitFeedback(reviewToken,false)');
+assert.equal(submitted.status,'submitted');
+assert.equal(submitted.canComment,false);
+assert.equal(invoke('clientReviewSubmitFeedback(reviewToken,false)').status,'submitted');
+assert.throws(()=>invoke('clientReviewAddComment(reviewToken,reviewInput)'),/deadline has passed|already submitted/);
+assert.throws(()=>invoke('clientOnboardingSendFinalApproval(session,workspaceId)'),/every submitted amendment/);
+assert.throws(()=>invoke("clientOnboardingUpdateReviewComment(session,workspaceId,reviewCommentId,'bad')"),/Invalid comment status/);
+const revised=invoke("clientOnboardingUpdateReviewComment(session,workspaceId,reviewCommentId,'done')");
+assert.equal(revised.comments[0].status,'done');
+const finalRequest=invoke('clientOnboardingSendFinalApproval(session,workspaceId)');
+assert.equal(finalRequest.sent,true);
+assert.equal(invoke('clientReviewGet(reviewToken)').canApprove,true);
+assert.throws(()=>invoke("clientReviewApprove(reviewToken,'Jane Approver',false)"),/confirm/i);
+const approved=invoke("clientReviewApprove(reviewToken,'Jane Approver',true)");
+assert.equal(approved.status,'approved');
+assert.ok(approved.approvedAt);
+assert.equal(invoke('clientOnboardingReviewStatus(session,workspaceId)').approvedBy,'Jane Approver');
+assert.equal(invoke('clientReviewApprove(reviewToken,"Jane Approver",true)').status,'approved');
+const reviewHtml=fs.readFileSync('apps-script/ClientWebsiteReview.html','utf8');
+assert.match(reviewHtml,/id="pinLayer"/);
+assert.match(reviewHtml,/clientReviewAddComment/);
+assert.match(reviewHtml,/clientReviewApprove/);
+const reviewScripts=[...reviewHtml.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+assert.equal(reviewScripts.length,1);
+new vm.Script(reviewScripts[0][1].replace(/<\?!= reviewToken \?>/,'""'),{filename:'ClientWebsiteReview.html inline script'});
+assert.match(adminScript,/clientOnboardingStartWebsiteReview/);
+assert.match(adminScript,/clientOnboardingSendFinalApproval/);
+
 const uploadText=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(uploadText,/id="progressBar"/);
 assert.match(uploadText,/100 MB/);
@@ -296,4 +355,4 @@ const adminHtml=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8')
 const uploadHtml=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(adminHtml,/ownerKey/);
 assert.match(uploadHtml,/Original camera|Original files|original/i);
-console.log('PASS: quote-gated owner-only private GitHub repo and Cloudflare Pages setup, safe retry/idempotency, no domain changes, upload chunking, notifications, and syntax checks.');
+console.log('PASS: protected upload and Pages provision, owner-created draft review, per-page pins, 72h feedback, one submission, amendment tracking, signed final approval and safe deployment syntax.');
