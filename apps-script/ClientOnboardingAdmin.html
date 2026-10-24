@@ -15,6 +15,7 @@
 <label style="display:flex;gap:10px;align-items:flex-start"><input id="approved" type="checkbox" style="width:auto;margin:4px 0"> I have confirmed that the client has approved the quotation and instructed Chip In to start this project.</label>
 <div class="buttons"><button id="create" type="button">Create their private upload workspace</button></div><div id="createStatus" class="status" role="status"></div>
 <div class="workspace hidden" id="created"><h3>Workspace activated</h3><p><strong>Client upload link:</strong> <a id="clientUrl" href="#" target="_blank" rel="noopener"></a></p><p><strong>Private Chip In Drive folder:</strong> <a id="driveUrl" target="_blank" rel="noopener"></a></p><p>Files stay in your private Drive. The client can upload through the link but cannot browse your Drive.</p><div class="buttons"><button type="button" id="copyLink" class="alt">Copy client upload link</button><button type="button" id="sendInvite">Email link to client</button></div><div id="emailStatus" class="status" role="status"></div></div></div>
+<div class="card"><h2>Step 3 — Check client assets</h2><p class="hint">Use Refresh to see which clients have sent files and marked their upload complete.</p><button id="refresh" type="button" class="alt">Refresh client statuses</button><div id="workspaces" style="margin-top:15px"></div><div id="checkStatus" class="status" role="status"></div></div>
 <div class="card" id="siteProvisioning">
 <h2>Step 4 — Create each client's website hosting (£0)</h2>
 <p class="hint">For each quote-approved workspace below, create a <strong>private GitHub client repository</strong> and a <strong>Cloudflare Pages</strong> project inside Chip In's existing Cloudflare account. This is a one-time owner action, separate from sending the assets-upload link. It creates a generic holding page, <strong>not the client’s finished or approved website</strong>.</p>
@@ -23,7 +24,6 @@
 <div class="buttons"><button id="checkHosting" class="alt" type="button">Check hosting connection</button></div>
 <p class="hint"><strong>Important:</strong> Provisioning does not alter DNS, attach a customer domain, purchase a domain, or publish approved content. Connect the customer's domain only after final written approval and verify their email/MX records beforehand.</p>
 </div>
-<div class="card"><h2>Step 3 — Check client assets</h2><p class="hint">Use Refresh to see which clients have sent files and marked their upload complete.</p><button id="refresh" type="button" class="alt">Refresh client statuses</button><div id="workspaces" style="margin-top:15px"></div><div id="checkStatus" class="status" role="status"></div></div>
 </section></main>
 <script>
 let session='',lastCreated=null,initialBrief=null;
