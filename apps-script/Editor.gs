@@ -43,12 +43,15 @@ function loginEditor(siteId, email, password) {
   }
   const token = Utilities.getUuid() + Utilities.getUuid();
   CacheService.getScriptCache().put(`editor-session:${token}`, JSON.stringify({siteId:site.site_id,email:cleanEmail}), EDITOR_CONFIG.SESSION_SECONDS);
-  // Record that this client has actually authenticated; just creating a
-  // password never counts as tested access for a final handover.
+  // Only mark a client editor as verified after we have ALSO loaded its
+  // own website content and editable schema. Valid credentials alone are not
+  // evidence that the editor can actually open.
+  const bootstrap=editorBootstrap_(site, token);
   const props=PropertiesService.getScriptProperties();
-  if(props.getProperty('chipin-client-editor-active:'+site.site_id)==='yes')
+  if(!bootstrap.mustChangePassword&&
+     props.getProperty('chipin-client-editor-active:'+site.site_id)==='yes')
     props.setProperty('chipin-client-editor-login:'+site.site_id,new Date().toISOString());
-  return editorBootstrap_(site, token);
+  return bootstrap;
 }
 
 function resumeEditorSession(siteId, token) {
