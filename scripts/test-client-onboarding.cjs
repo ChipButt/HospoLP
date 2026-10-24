@@ -453,6 +453,13 @@ assert.equal(siteRow.login_email,'a@test.com');
 context.clientEditorPassword='Unique12CharClientPassword!';
 const draftFolder=mkFolder('Chip In Websites Editor Drafts');
 properties.set('CHIP_IN_WEBSITES_DRAFT_FOLDER_ID',draftFolder.getId());
+// Valid credentials are not enough: the client editor must load its own
+// schema/content before the handover can be marked ready.
+const savedEditorSchema=fakeSite.editorFiles.get('editor.schema.json');
+fakeSite.editorFiles.delete('editor.schema.json');
+assert.throws(()=>invoke("loginEditor(clientEditorSiteId,'a@test.com',clientEditorPassword)"),/404|not found/i);
+assert.equal(invoke('clientOnboardingProjectHub(session)')[0].editor.loginVerified,false);
+fakeSite.editorFiles.set('editor.schema.json',savedEditorSchema);
 const successfulClientLogin=invoke("loginEditor(clientEditorSiteId,'a@test.com',clientEditorPassword)");
 assert.equal(successfulClientLogin.siteName,'Test Cafe');
 assert.equal(invoke('clientOnboardingProjectHub(session)')[0].editor.loginVerified,true);
