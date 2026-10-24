@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en"><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{font-family:Inter,system-ui,-apple-system,sans-serif;color:#173c46;background:#edf4f1}
+*{box-sizing:border-box}body{margin:0}button,input,textarea{font:inherit}
+button{cursor:pointer;border:0;border-radius:11px;background:#093b69;color:#fff;padding:11px 15px;font-weight:750}
+button:disabled{opacity:.5;cursor:default}button.ghost{background:#fff;color:#093b69;border:1px solid #aec7ca}
+header{background:#fff;border-bottom:1px solid #cfdfde;padding:15px max(18px,3vw);display:flex;align-items:center;gap:18px;justify-content:space-between}
+.logo{font-weight:900;color:#006554;letter-spacing:.1em;font-size:13px}
+header strong{display:block;font-size:17px}header small{color:#6c7b81}
+main{max-width:1460px;margin:auto;padding:22px 16px 65px}
+.headline{display:flex;gap:16px;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;margin-bottom:18px}
+.headline h1{margin:6px 0;font-size:clamp(25px,4vw,40px);color:#083768}
+.headline p{max-width:760px;line-height:1.6;color:#546b76}
+.tag{border:1px solid #c4dacc;background:#e5f5ed;color:#175a4b;border-radius:100px;padding:7px 12px;font-weight:750;font-size:12px}
+.layout{display:grid;grid-template-columns:minmax(0,1.85fr) minmax(330px,1fr);gap:16px;align-items:start}
+.card{border:1px solid #cadbd9;background:#fff;border-radius:17px;padding:17px;box-shadow:0 10px 30px #1539320b;min-width:0}
+.preview-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:13px}
+.preview-bar label{font-size:12px;font-weight:700;color:#396070}
+.preview-bar input{min-width:100px;flex:1;width:150px;border:1px solid #bbcece;border-radius:9px;padding:10px}
+.frame{position:relative;height:min(70vh,780px);min-height:380px;border:1px solid #c4d1d5;border-radius:13px;overflow:hidden;background:#fff}
+.frame iframe{width:100%;height:100%;border:0}
+.pin-layer{position:absolute;inset:0;background:#0873c00b;cursor:crosshair}
+.pin-layer:before{content:'Click the part you want to comment on';position:absolute;top:12px;left:12px;padding:9px 13px;color:#083b59;background:#fffffff2;border:1px solid #94bbcb;border-radius:100px;font-weight:700;font-size:12px;pointer-events:none}
+.pin{position:absolute;background:#db650c;border:2px solid white;color:white;width:29px;height:29px;border-radius:50%;transform:translate(-50%,-50%);display:grid;place-items:center;box-shadow:0 2px 8px #0005;font-weight:800;font-size:12px;pointer-events:none}
+.pin-new{background:#075b9b}
+.frame-tip{padding-top:10px;font-size:12px;color:#667783;line-height:1.6}
+.form label{display:block;font-size:13px;font-weight:800;color:#21516a;margin:12px 0 5px}
+.form input,.form textarea{display:block;width:100%;padding:12px;border:1px solid #b7cece;border-radius:10px;color:#173c46;background:#fff}
+.form textarea{min-height:110px;resize:vertical}
+.instructions{padding:12px 14px;background:#f3f9fa;border-radius:10px;font-size:13px;color:#476a70;line-height:1.55}
+.comments{display:flex;flex-direction:column;gap:9px;max-height:400px;overflow-y:auto}
+.comment{border:1px solid #d5e2df;border-radius:10px;padding:12px;background:#fcfdfd}
+.comment strong{font-size:14px}.comment small{color:#577484}.comment p{font-size:13px;line-height:1.55;margin:5px 0}
+.comment .meta{font-size:11px;color:#587383}
+.comment button{background:#fff;color:#9d3140;border:1px solid #f1bfca;padding:6px 10px;font-size:11px;margin-top:7px}
+.bottombox{border-top:1px solid #dbe7e4;margin-top:18px;padding-top:15px}
+.note{font-size:13px;line-height:1.6;color:#536e7a}.status{min-height:23px;font-size:13px;margin:10px 0;color:#285b53;overflow-wrap:anywhere}
+.error{color:#ae2c3a}
+.approval{background:#e7f5ea;border:1px solid #a8d3b0;padding:17px;border-radius:13px;margin-top:15px}
+.approval label{display:flex;align-items:flex-start;gap:9px;margin:12px 0;font-size:13px;line-height:1.45}
+.approval input[type=checkbox]{width:20px;height:20px;flex:0 0 20px}
+#finished{background:#e7f5ea;border:1px solid #8ac1a3;border-radius:12px;padding:14px}
+[hidden]{display:none!important}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.frame{height:56vh;min-height:360px}.card{padding:14px}}
+</style></head><body>
+<header><div class="logo">CHIP IN · WEBSITE REVIEW</div><div><strong id="businessTop">Your website</strong><small>One clear feedback round · Final written approval</small></div></header>
+<main>
+<div class="headline"><div><span class="tag" id="stage">Loading your review</span><h1 id="heading">Review your new website</h1><p id="intro">Explore your first draft, then add comments about anything you want changed. Your comments are saved privately. Submit one complete list before the deadline.</p></div><div id="deadline" class="tag">Checking deadline…</div></div>
+<div class="layout">
+<section class="card">
+ <div class="preview-bar"><label for="path">Website page:</label><input id="path" value="/" aria-label="Website page path" placeholder="/ or /menu/"><button id="go" type="button" class="ghost">Open page</button><button id="pinButton" type="button">Click to pin a comment</button></div>
+ <div class="frame" id="frame"><iframe id="site" title="Your website first draft" loading="eager" referrerpolicy="no-referrer"></iframe><div id="pins" aria-hidden="true"></div><div id="pinLayer" class="pin-layer" hidden tabindex="0" role="button" aria-label="Click where a change is needed"></div></div>
+ <div class="frame-tip">Browse the website normally, or choose <strong>Click to pin a comment</strong> and click the exact area you want changed. The pin captures its position on the selected page. For mobile/responsive layouts, describe the area in words as well. If the preview cannot be embedded, <a id="external" target="_blank" rel="noopener">open it in another tab</a> and leave a page-specific comment here.</div>
+</section>
+<aside class="card">
+ <h2 style="margin:0 0 12px;color:#093b69">Your feedback</h2>
+ <div class="instructions" id="instructions">You have three calendar days to return one consolidated list of changes. Photos, spelling, text and layout requests are all welcome. New pages/features outside the agreed quote may need a separate price.</div>
+ <div class="form" id="commentForm">
+  <label for="commentPath">Which page?</label><input id="commentPath" value="/" placeholder="/ or /menu/">
+  <label for="commentTitle">Section or item</label><input id="commentTitle" maxlength="100" placeholder="e.g. Main photo / heading">
+  <label for="commentBody">What would you like changed?</label><textarea id="commentBody" maxlength="1200" placeholder="Describe the requested change clearly, including which image/text to use."></textarea>
+  <p id="pinNote" class="note">Optional: pin a location in the website preview first.</p>
+  <button id="add" type="button">Save this comment</button>
+ </div>
+ <p class="status" id="message" role="status"></p>
+ <h3 style="margin:20px 0 10px;color:#093b69">Comments <span id="count">(0)</span></h3>
+ <div class="comments" id="comments" aria-live="polite"></div>
+ <div class="bottombox" id="submitBlock">
+  <label style="display:flex;align-items:flex-start;gap:9px;font-size:13px;line-height:1.5"><input type="checkbox" id="noChanges" style="width:18px;height:18px;flex:none"> I have reviewed the draft and do not need any changes.</label>
+  <button type="button" id="submit" style="width:100%;margin-top:12px">Submit my complete feedback to Chip In</button>
+  <p class="note">Submitting closes your feedback round. Additional requests after submission may be quoted separately. You'll be sent the finished version for final approval after the agreed revisions.</p>
+ </div>
+ <div id="waiting" class="instructions" hidden>Feedback has been sent to Chip In. The agreed revisions will be completed and a separate final-approval request sent to you.</div>
+ <section id="approval" class="approval" hidden>
+  <h3>Approve your finished website</h3><p class="note">Please inspect the finished website above and verify names, menus, prices, opening hours, links and photos. The final approval is recorded with your name and a timestamp.</p>
+  <label for="approver">Your full name</label><input id="approver" style="width:100%;padding:11px;border:1px solid #a8cabc;border-radius:9px" placeholder="Full name">
+  <label><input type="checkbox" id="confirmApproval"> I have reviewed the finished website and give Chip In written approval to connect it to our live domain. I understand DNS and SSL updates normally take 24–48 hours but can take longer.</label>
+  <button type="button" id="approve" style="width:100%">Give final approval for launch</button>
+ </section>
+ <div id="finished" hidden><strong>Website approved for launch.</strong><p class="note">Your written approval has been recorded. Chip In will arrange the domain cutover and confirm when the website is live.</p></div>
+</aside></div></main>
+<script>
+const REVIEW_TOKEN=<?!= reviewToken ?>;
+const $=id=>document.getElementById(id);
+let state=null,chosenPin=null,busy=false,currentPath='/';
+function gas(name,...args){return new Promise((resolve,reject)=>google.script.run.withSuccessHandler(resolve).withFailureHandler(reject)[name](...args));}
+function msg(text,error){$('message').textContent=text||'';$('message').classList.toggle('error',Boolean(error));}
+function setBusy(x){busy=x;['add','submit','approve','pinButton'].forEach(id=>$(id).disabled=x);}
+function safePath(v){const p=String(v||'/').trim();return /^\/(?!\/)[a-zA-Z0-9\/_.~%-]*$/.test(p)&&!p.includes('..')&&!/%2f|%5c/i.test(p)?p:null;}
+function writeText(node,text){node.textContent=String(text||'');}
+function renderPins(){
+ const layer=$('pins');layer.replaceChildren();
+ if(!state)return;
+ state.comments.filter(c=>c.path===currentPath&&c.x!==null&&c.y!==null).forEach((c,index)=>{
+  const pin=document.createElement('div');pin.className='pin';pin.textContent=String(index+1);
+  pin.style.cssText='left:'+(c.x*100)+'%;top:'+(c.y*100)+'%';layer.append(pin);
+ });
+ if(chosenPin&&chosenPin.path===currentPath){const pin=document.createElement('div');pin.className='pin pin-new';pin.textContent='+';pin.style.cssText='left:'+(chosenPin.x*100)+'%;top:'+(chosenPin.y*100)+'%';layer.append(pin);}
+}
+function goPage(){
+ if(!state)return;
+ const p=safePath($('path').value);
+ if(!p){msg('Use a website path beginning with /, such as /menu/ and without an external URL.',true);return;}
+ currentPath=p;$('commentPath').value=p;$('path').value=p;chosenPin=null;$('pinLayer').hidden=true;
+ $('site').src=state.previewUrl+p;renderPins();msg('');
+}
+function commentView(c,index){
+ const div=document.createElement('div');div.className='comment';
+ const head=document.createElement('strong');head.textContent=(index+1)+'. '+c.title;
+ const meta=document.createElement('div');meta.className='meta';meta.textContent=c.path+' · '+(c.status==='done'?'Completed':c.status==='in_progress'?'In progress':'Noted');
+ const body=document.createElement('p');body.textContent=c.text;
+ div.append(head,meta,body);
+ if(state.canComment){
+  const btn=document.createElement('button');btn.type='button';btn.textContent='Delete this comment';
+  btn.onclick=()=>change('clientReviewDeleteComment',REVIEW_TOKEN,c.id);
+  div.append(btn);
+ }
+ return div;
+}
+function render(s){
+ state=s;const review=s.status;
+ $('businessTop').textContent=s.business||'Your website';
+ $('deadline').textContent='Feedback due '+new Date(s.feedbackDueAt).toLocaleString('en-GB',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit',timeZone:'Europe/London'});
+ $('stage').textContent=review==='open'?'First draft review':review==='submitted'?'Feedback submitted':review==='awaiting_approval'?'Final version · Approval needed':'Approved for launch';
+ $('heading').textContent=review==='awaiting_approval'?'Review and approve your finished website':review==='approved'?'Thank you — website approved':'Review your new website';
+ $('intro').textContent=review==='awaiting_approval'?'The agreed amendments are complete. Check the site and record your final written approval below.':review==='approved'?'Your approval has been recorded; Chip In will arrange the domain launch.':'Explore your site and leave a single organised set of comments.';
+ $('commentForm').hidden=!s.canComment;
+ $('submitBlock').hidden=!s.canComment;
+ $('waiting').hidden=review!=='submitted';
+ $('approval').hidden=review!=='awaiting_approval';
+ $('finished').hidden=review!=='approved';
+ $('pinButton').disabled=!s.canComment;
+ $('count').textContent='('+s.comments.length+')';
+ const list=$('comments');list.replaceChildren();
+ s.comments.forEach((c,index)=>list.append(commentView(c,index)));
+ if(!s.comments.length)list.textContent='No comments saved yet.';
+ const external=$('external');external.href=s.previewUrl+currentPath;
+ renderPins();
+ if(!s.canComment){$('pinLayer').hidden=true;$('pinButton').textContent='Commenting closed';}
+ else $('pinButton').textContent='Click to pin a comment';
+ if(!s.canComment&&review==='open')msg('The three-day review window has ended. Contact Chip In to discuss your feedback deadline.',true);
+}
+async function change(name,...args){
+ if(busy)return;setBusy(true);msg('Saving…');
+ try{const next=await gas(name,...args);render(next);msg('Saved successfully.');}
+ catch(e){msg(e.message||String(e),true);}
+ finally{setBusy(false);}
+}
+$('go').onclick=goPage;
+$('path').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();goPage();}};
+$('pinButton').onclick=()=>{if(!state||!state.canComment)return;$('pinLayer').hidden=!$('pinLayer').hidden;msg($('pinLayer').hidden?'Pin mode off.':'Click the item in the preview you want to comment on.');};
+$('pinLayer').onclick=e=>{
+ const r=$('pinLayer').getBoundingClientRect();
+ chosenPin={path:currentPath,x:Math.max(0,Math.min(1,(e.clientX-r.left)/r.width)),y:Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))};
+ $('pinLayer').hidden=true;
+ $('commentPath').value=currentPath;
+ $('pinNote').textContent='Location pinned. Describe the requested change, then save.';
+ renderPins();
+ $('commentBody').focus();
+};
+$('add').onclick=async()=>{
+ const path=safePath($('commentPath').value);
+ if(!path){msg('Enter a valid page path starting with /.',true);return;}
+ const text=$('commentBody').value.trim();
+ if(text.length<3){msg('Describe the change you want in at least three characters.',true);return;}
+ await change('clientReviewAddComment',REVIEW_TOKEN,{path,title:$('commentTitle').value,text,
+   x:chosenPin&&chosenPin.path===path?chosenPin.x:null,y:chosenPin&&chosenPin.path===path?chosenPin.y:null});
+ if($('message').textContent==='Saved successfully.'){
+  chosenPin=null;$('commentBody').value='';$('commentTitle').value='';$('pinNote').textContent='Optional: pin a location in the website preview first.';
+  renderPins();
+ }
+};
+$('submit').onclick=async()=>{
+ if(!state||!state.canComment||busy)return;
+ if(!confirm('Submit your complete feedback to Chip In? This will close your included amendment round.'))return;
+ await change('clientReviewSubmitFeedback',REVIEW_TOKEN,$('noChanges').checked);
+};
+$('approve').onclick=async()=>{
+ if(!confirm('Are you ready to give final written approval to publish your finished website?'))return;
+ await change('clientReviewApprove',REVIEW_TOKEN,$('approver').value,$('confirmApproval').checked);
+};
+(async()=>{if(!REVIEW_TOKEN){msg('Your review link is invalid. Please ask Chip In for a new link.',true);return;}
+ try{const s=await gas('clientReviewGet',REVIEW_TOKEN);render(s);goPage();msg('Review ready. Comments are saved privately to your Chip In project.');}
+ catch(e){msg(e.message||String(e),true);$('stage').textContent='Access unavailable';}})();
+</script></body></html>
