@@ -1,5 +1,26 @@
 <!doctype html><html><head><base target="_top"><meta name="viewport" content="width=device-width, initial-scale=1"><style>
-:root{font-family:Inter,system-ui,sans-serif;color:#18344f;background:#f0faf6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:980px;margin:auto;padding:24px 18px 55px}.brand{font-size:13px;letter-spacing:.09em;font-weight:800;color:#136c63}.hero h1{font-size:clamp(27px,6vw,48px);line-height:1.05;color:#082f68;margin:10px 0}.hero p{color:#587181;max-width:730px}.card{border:1px solid #cbe0db;background:#fff;border-radius:18px;padding:23px;margin:20px 0;box-shadow:0 11px 36px #0b355010}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;font-size:13px;font-weight:750;color:#133b60;margin:11px 0}input,textarea{display:block;margin-top:6px;width:100%;padding:12px;border:1px solid #bacfd3;border-radius:10px;font:inherit;color:#18344f}textarea{min-height:110px}button{background:#082f68;border:1px solid #082f68;color:#fff;border-radius:12px;padding:11px 15px;font:700 14px system-ui;cursor:pointer}button:disabled{opacity:.55;cursor:wait}button.alt{background:#fff;color:#082f68}.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.hint{background:#f1f8f6;padding:12px 14px;border-radius:10px;color:#4e697b;font-size:13px}.error{color:#ad1c36}.good{color:#146342}.status{font-size:13px;color:#567282;padding-top:11px;overflow-wrap:anywhere}.workspace{border:1px solid #cce4dd;border-radius:12px;margin-top:9px;padding:16px}.workspace h3{margin:0 0 7px;font-size:17px;color:#082f68}.workspace p{margin:4px 0;font-size:13px}.workspace a{overflow-wrap:anywhere}.hidden{display:none!important}@media(max-width:650px){.grid{grid-template-columns:1fr}.card{padding:17px}} </style></head><body><main class="wrap">
+:root{font-family:Inter,system-ui,sans-serif;color:#18344f;background:#f0faf6}*{box-sizing:border-box}body{margin:0}.wrap{max-width:980px;margin:auto;padding:24px 18px 55px}.brand{font-size:13px;letter-spacing:.09em;font-weight:800;color:#136c63}.hero h1{font-size:clamp(27px,6vw,48px);line-height:1.05;color:#082f68;margin:10px 0}.hero p{color:#587181;max-width:730px}.card{border:1px solid #cbe0db;background:#fff;border-radius:18px;padding:23px;margin:20px 0;box-shadow:0 11px 36px #0b355010}.grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}label{display:block;font-size:13px;font-weight:750;color:#133b60;margin:11px 0}input,textarea{display:block;margin-top:6px;width:100%;padding:12px;border:1px solid #bacfd3;border-radius:10px;font:inherit;color:#18344f}textarea{min-height:110px}button{background:#082f68;border:1px solid #082f68;color:#fff;border-radius:12px;padding:11px 15px;font:700 14px system-ui;cursor:pointer}button:disabled{opacity:.55;cursor:wait}button.alt{background:#fff;color:#082f68}.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:15px}.hint{background:#f1f8f6;padding:12px 14px;border-radius:10px;color:#4e697b;font-size:13px}.error{color:#ad1c36}.good{color:#146342}.status{font-size:13px;color:#567282;padding-top:11px;overflow-wrap:anywhere}.workspace{border:1px solid #cce4dd;border-radius:12px;margin-top:9px;padding:16px}.workspace h3{margin:0 0 7px;font-size:17px;color:#082f68}.workspace p{margin:4px 0;font-size:13px}.workspace a{overflow-wrap:anywhere}.hidden{display:none!important}@media(max-width:650px){.grid{grid-template-columns:1fr}.card{padding:17px}} 
+.hub-projects{display:flex;flex-direction:column;gap:14px;margin:15px 0}
+.hub-card{background:#fff;border:1px solid #c7d9dc;border-radius:15px;padding:20px}
+.hub-card h3{margin:2px 0;color:#082f68;font-size:22px}
+.hub-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;flex-wrap:wrap}
+.hub-meta{color:#5a7181;font-size:13px;line-height:1.7;margin:8px 0}
+.hub-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:16px 0}
+.hub-step{padding:10px;background:#f8faf9;border:1px solid #d8e5df;border-radius:10px;font-size:12px;color:#647886}
+.hub-step.done{background:#e8f7eb;color:#155f42;border-color:#abd7b2}
+.hub-step strong{display:block;font-size:12px}
+.hub-links{display:flex;gap:9px;flex-wrap:wrap;padding:10px 0}
+.hub-links a{display:inline-flex;padding:8px 10px;border:1px solid #c9dce1;border-radius:9px;font-size:12px;background:#f2f8f9;color:#15507c;text-decoration:none;font-weight:700}
+.hub-actions{background:#f8fbfb;padding:12px;border-radius:12px;border:1px solid #e0e9e9}
+.hub-actions h4{margin:0 0 9px}
+.hub-actions .buttons{margin-top:8px}
+.hub-actions label{display:flex;align-items:flex-start;gap:8px;margin:8px 0;font-weight:500}
+.hub-actions label input[type=checkbox]{width:18px;flex:0 0 18px;margin:0}
+.hub-actions input[type=url]{width:100%;max-width:500px}
+.hub-actions button{font-size:12px}
+.hub-note{font-size:12px;color:#6c7a83}
+@media(max-width:680px){.hub-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.hub-card{padding:13px}}
+</style></head><body><main class="wrap">
 <div class="hero"><div class="brand">CHIP IN · CLIENT WEBSITE WORKFLOW</div><h1>From client meeting to their website files.</h1><p>Start with the guided client checklist and quotation. Only after written quote acceptance should you activate their upload workspace.</p></div>
 <section class="card" style="border-color:#9acbbc;background:#f9fffb">
 <h2 style="margin-top:0">Step 1 — Complete the meeting checklist and quote</h2>
@@ -9,6 +30,14 @@
 </section>
 <section class="card" id="loginPanel"><h2>Owner sign-in</h2><p class="hint">Enter the long owner key you configured in this Apps Script project's Script Properties. Never enter this key into the public Chip In website.</p><label>Chip In owner key <input id="ownerKey" type="password" autocomplete="off"></label><div class="buttons"><button id="signIn" type="button">Unlock client workspaces</button></div><div id="loginStatus" class="status" role="status"></div></section>
 <section id="adminPanel" class="hidden">
+<div class="card" id="clientProjectHub">
+<h2>Client Project Hub — everything in one place</h2>
+<p class="hint">Your secure owner dashboard for each website: quote and asset deadline, private uploads, GitHub and Cloudflare, draft feedback, final written approval, live domain, client editor and handover. A project is not marked handed over until the client's <strong>own Simple Website Editor</strong> password is activated and the handover email has been sent.</p>
+<div class="buttons"><button id="refreshHub" class="alt" type="button">Refresh all client projects</button></div>
+<div id="hubStatus" class="status" role="status"></div>
+<div id="hubProjects" class="hub-projects"></div>
+</div>
+
 <div class="card"><h2>Step 2 — Activate an approved client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
 <div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
 <details style="margin-top:16px"><summary>Meeting specification</summary><p class="hint">If you're opening this independently, paste exported meeting JSON here. The specification is saved in the private client folder.</p><textarea id="briefJson" spellcheck="false" placeholder='{"fields":{"business":"Example","email":"owner@example.com"}}'></textarea></details>
@@ -55,7 +84,7 @@ function loadHash(){
  if(typeof google!=='undefined'&&google.script&&google.script.url&&google.script.url.getLocation){google.script.url.getLocation(loc=>accept(loc.hash||''));}
  else accept(window.location.hash||'');
 }
-$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();await refreshReviews();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();await refreshReviews();await refreshHub();await refreshHub();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
 function addReviewCard(r,data){
  const box=$('reviews'),card=document.createElement('div');card.className='workspace';
  const title=document.createElement('h3');title.textContent=r.business;card.append(title);
@@ -162,6 +191,121 @@ async function refreshReviews(){
  }catch(e){status('reviewStatus',e.message||String(e),true);}
 }
 $('reviewRefresh').onclick=refreshReviews;
+
+function hubLink(parent,label,url){
+ if(!url||!/^https:\/\//i.test(url))return;
+ const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener noreferrer';a.textContent=label;parent.append(a);
+}
+function hubNotice(parent,message,isError){
+ parent.textContent=message;parent.className='status'+(isError?' error':'');
+}
+function hubAction(parent,label,func,messageEl,enabled=true){
+ const b=document.createElement('button');b.type='button';b.textContent=label;b.disabled=!enabled;
+ b.onclick=async()=>{
+  if(!confirm('Proceed with "'+label+'"? Please confirm you are working on the correct client.'))return;
+  b.disabled=true;hubNotice(messageEl,'Working…');
+  try{const response=await func();hubNotice(messageEl,response||'Completed.');await refreshHub();}
+  catch(e){hubNotice(messageEl,e.message||String(e),true);}
+  finally{b.disabled=false;}
+ };
+ parent.append(b);return b;
+}
+function hubClientCard(c){
+ const el=document.createElement('article');el.className='hub-card';
+ const top=document.createElement('div');top.className='hub-top';
+ const heading=document.createElement('div');const h=document.createElement('h3');h.textContent=c.business;heading.append(h);
+ const sub=document.createElement('div');sub.className='hub-meta';
+ sub.textContent=c.contact+' · '+c.email+' · Assets: '+c.assets.fileCount+' files · '+c.assets.status.replace(/_/g,' ');
+ heading.append(sub);top.append(heading);
+ const badge=document.createElement('strong');badge.textContent=c.completed?'Handover complete':'In progress';
+ badge.style.color=c.completed?'#176344':'#80602d';top.append(badge);el.append(top);
+ const contract=document.createElement('p');contract.className='hub-meta';
+ contract.textContent='Assets latest date: '+(c.contract.assetDeadline||'Not agreed')+
+  ' · Agreed build: '+(c.contract.buildCalendarDays||'Not agreed')+' calendar days'+
+  ' · Client review: '+c.review.status.replace(/_/g,' ')+
+  (c.review.feedbackDueAt?' · Feedback due: '+new Date(c.review.feedbackDueAt).toLocaleDateString('en-GB'):'');
+ el.append(contract);
+ const steps=document.createElement('div');steps.className='hub-steps';
+ for(const step of c.steps){
+  const box=document.createElement('div');box.className='hub-step'+(step.done?' done':'');
+  const b=document.createElement('strong');b.textContent=(step.done?'✓ ':'○ ')+step.name;box.append(b);steps.append(box);
+ }
+ el.append(steps);
+ const links=document.createElement('nav');links.className='hub-links';links.setAttribute('aria-label','Project links for '+c.business);
+ hubLink(links,'Client Meeting Builder','https://chipinworks.co.uk/client-meeting/');
+ hubLink(links,'Private assets folder',c.assets.folderUrl);
+ hubLink(links,'Client upload link',c.assets.uploadUrl);
+ hubLink(links,'Client source (owner only)',c.hosting.repositoryUrl);
+ hubLink(links,'Cloudflare draft',c.hosting.pagesUrl);
+ hubLink(links,'Client review portal',c.review.reviewUrl||'');
+ hubLink(links,'Finished live website',c.launch.url);
+ hubLink(links,'Simple Website Editor',c.editor.editorUrl);
+ el.append(links);
+ const section=document.createElement('div');section.className='hub-actions';
+ const title=document.createElement('h4');title.textContent='Your next steps';section.append(title);
+ const area=document.createElement('div');area.className='buttons';const note=document.createElement('p');note.className='status';note.setAttribute('role','status');
+ if(!c.review.approvedAt){
+  const tip=document.createElement('p');tip.className='hub-note';
+  tip.textContent='Complete the asset upload, hosting and three-day review in Steps 2–5 below. Only the client’s signed approval unlocks launch handover.';
+  section.append(tip);
+ }else if(!c.launch.confirmedAt){
+  const tip=document.createElement('p');tip.className='hub-note';
+  tip.textContent='Client approved the finished website on '+new Date(c.review.approvedAt).toLocaleString('en-GB')+
+   '. Connect the custom domain, verify HTTPS and preserve the existing business email DNS records. Then record the live URL below.';
+  section.append(tip);
+  const url=document.createElement('input');url.type='url';url.placeholder='https://client-domain.co.uk/';url.id='hub-domain-'+c.id;url.setAttribute('aria-label','Live domain for '+c.business);section.append(url);
+  const checks=[
+   'I checked the finished site loads over HTTPS on the client domain',
+   'I preserved and verified the client’s MX/email DNS records',
+   'I confirmed the correct custom domain is connected and approved'
+  ].map(text=>{const label=document.createElement('label');const ch=document.createElement('input');ch.type='checkbox';
+   const span=document.createElement('span');span.textContent=text;label.append(ch,span);section.append(label);return ch;});
+  hubAction(area,'Record website live',async()=>{
+   if(!checks.every(x=>x.checked))throw new Error('You must complete all three live-domain checks first.');
+   await gas('clientOnboardingConfirmWebsiteLive',session,c.id,{url:url.value,httpsChecked:true,emailDnsChecked:true,clientDomainChecked:true});
+   return 'Live website recorded. Next register the customer-specific Simple Website Editor.';
+  },note);
+ }else{
+  if(!c.editor.registered){
+   const tip=document.createElement('p');tip.className='hub-note';
+   tip.textContent='The website is live. Its private repo must contain the HospoLP editor.schema.json, content/*.json files and assets/app.js. The next action validates those files and configures this client’s own editor and /edit/ URL.';
+   section.append(tip);
+   hubAction(area,'Register client Simple Website Editor',async()=>{
+    await gas('clientOnboardingRegisterEditor',session,c.id);return 'Editor registered for this client; email their password activation next.';
+   },note);
+  }else if(!c.editor.activated){
+   hubAction(area,'Email secure editor setup invitation',async()=>{
+    const result=await gas('clientOnboardingSendEditorSetup',session,c.id);
+    return result.alreadyActivated?'Client editor is activated already.':'Private 48-hour setup link emailed to '+result.email+'.';
+   },note);
+   const tip=document.createElement('p');tip.className='hub-note';
+   tip.textContent='The client sets their own password using a private 48-hour link. No password is included in the handover email.';
+   section.append(tip);
+  }else if(!c.editor.handoverSentAt){
+   hubAction(area,'Send final website + editor handover',async()=>{
+    const result=await gas('clientOnboardingSendFinalHandover',session,c.id);
+    return result.sent?'Handover sent to '+result.email+'.':'Handover was already sent.';
+   },note);
+  }else{
+   const p=document.createElement('p');p.className='hub-note';p.textContent='Handover emailed on '+
+    new Date(c.editor.handoverSentAt).toLocaleString('en-GB')+'. Site and individual editor are available above.';
+   section.append(p);
+  }
+ }
+ section.append(area,note);el.append(section);
+ return el;
+}
+async function refreshHub(){
+ if(!session)return;
+ hubNotice($('hubStatus'),'Checking all client milestones…');
+ try{
+  const items=await gas('clientOnboardingProjectHub',session),box=$('hubProjects');
+  box.replaceChildren();for(const item of items)box.append(hubClientCard(item));
+  if(!items.length)box.textContent='No approved client projects yet. Start at the Client Meeting Builder.';
+  hubNotice($('hubStatus'),items.length+' approved client project(s) · '+items.filter(x=>x.completed).length+' handed over.');
+ }catch(e){hubNotice($('hubStatus'),e.message||String(e),true);}
+}
+$('refreshHub').onclick=refreshHub;
 async function checkHosting(){
  try{
   const r=await gas('clientOnboardingSiteSetupStatus',session);
