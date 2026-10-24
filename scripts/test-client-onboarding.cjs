@@ -41,7 +41,7 @@ function fakeProvisionFetch(url,config){
  }
  if(url==='https://api.cloudflare.com/client/v4/accounts/1234567890abcdef1234567890abcdef/pages/projects'){
    if(cfg.method!=='post')throw Error('Unexpected Cloudflare method');
-   if(body.source?.type!=='github'||!body.source.config?.repo_name?.startsWith('ChipButt/'))
+   if(body.source?.type!=='github'||!body.source.config?.repo_name?.startsWith('chipin-')||body.source.config.owner!=='ChipButt')
      throw Error('Cloudflare GitHub source is not linked to client repo');
    assert.equal(body.source.config.production_branch,'main');
    assert.equal(body.source.config.preview_deployment_setting,'none');
