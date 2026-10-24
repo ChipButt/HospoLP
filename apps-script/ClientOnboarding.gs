@@ -174,7 +174,7 @@ function clientOnboardingListWorkspaces(session){
   return Object.keys(p).filter(k=>k.indexOf(CLIENT_ONBOARDING.projectPrefix)===0)
     .map(k=>{try{
       const r=JSON.parse(p[k]);
-      return {id:r.id,business:r.business,email:r.email,status:r.status,fileCount:r.fileCount,lastUploadAt:r.lastUploadAt,createdAt:r.createdAt,folderUrl:r.folderUrl,uploadUrl:clientOnboardingPublicUrl_(r)};
+      return {id:r.id,business:r.business,email:r.email,status:r.status,fileCount:r.fileCount,lastUploadAt:r.lastUploadAt,createdAt:r.createdAt,folderUrl:r.folderUrl,uploadUrl:clientOnboardingPublicUrl_(r),site:clientSitePublicStatus_(r)};
     }catch(e){return null;}}).filter(Boolean).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,100);
 }
 function clientOnboardingWorkspaceStatus(session,id){
@@ -403,4 +403,179 @@ function clientOnboardingFinishUploads(token){
     }
     return {success:true,fileCount:latest.fileCount};
   });
+}
+
+
+/**
+ * Chip In private-site provisioning. Only callable with the owner session,
+ * never by public client upload links.
+ * One-time Script Properties (NEVER commit these values):
+ *   CHIPIN_GITHUB_PROVISION_TOKEN
+ *   CHIPIN_CLOUDFLARE_API_TOKEN
+ *   CHIPIN_CLOUDFLARE_ACCOUNT_ID
+ *
+ * Provisioning NEVER connects the client's custom domain or edits DNS;
+ * that belongs to the separate final-approval/launch procedure.
+ */
+const CHIPIN_CLIENT_SITES={
+  githubOwner:'ChipButt',
+  githubTokenProperty:'CHIPIN_GITHUB_PROVISION_TOKEN',
+  cloudTokenProperty:'CHIPIN_CLOUDFLARE_API_TOKEN',
+  cloudAccountProperty:'CHIPIN_CLOUDFLARE_ACCOUNT_ID'
+};
+function clientSiteSettings_(mustHaveTokens){
+  const props=PropertiesService.getScriptProperties();
+  const account=String(props.getProperty(CHIPIN_CLIENT_SITES.cloudAccountProperty)||'').trim();
+  const gitToken=String(props.getProperty(CHIPIN_CLIENT_SITES.githubTokenProperty)||'').trim();
+  const cloudToken=String(props.getProperty(CHIPIN_CLIENT_SITES.cloudTokenProperty)||'').trim();
+  const missing=[];
+  if(!gitToken)missing.push(CHIPIN_CLIENT_SITES.githubTokenProperty);
+  if(!cloudToken)missing.push(CHIPIN_CLIENT_SITES.cloudTokenProperty);
+  if(!/^[a-f0-9]{32}$/i.test(account))missing.push(CHIPIN_CLIENT_SITES.cloudAccountProperty);
+  if(mustHaveTokens&&missing.length)throw new Error('Site provisioning needs the owner to configure these Script Properties: '+missing.join(', ')+'. No client repository or hosting project has been created.');
+  return {account,gitToken,cloudToken,configured:missing.length===0,missing};
+}
+function clientOnboardingSiteSetupStatus(session){
+  clientOnboardingRequireAdmin_(session);
+  const c=clientSiteSettings_(false);
+  return {configured:c.configured,missing:c.missing,hosting:'Cloudflare Pages',hostingFeeGBP:0};
+}
+function clientSiteApi_(platform,url,method,payload,token,allowStatus){
+  const options={
+    method:method||'get',muteHttpExceptions:true,followRedirects:false,
+    headers:{
+      Authorization:'Bearer '+token,
+      Accept:platform==='github'?'application/vnd.github+json':'application/json',
+      'User-Agent':'ChipIn-client-site-provisioner'
+    }
+  };
+  if(payload!==null&&payload!==undefined){
+    options.contentType='application/json';
+    options.payload=JSON.stringify(payload);
+  }
+  let response;
+  try{response=UrlFetchApp.fetch(url,options);}
+  catch(err){throw new Error(platform+' connection failed. Check Apps Script Executions and connectivity.');}
+  const status=response.getResponseCode();
+  let body={};
+  try{body=JSON.parse(response.getContentText()||'{}');}catch(err){}
+  if(allowStatus&&allowStatus.indexOf(status)>=0)return {status,body};
+  if(status<200||status>299||(platform==='cloudflare'&&body.success===false)){
+    const detail=platform==='cloudflare'&&Array.isArray(body.errors)
+      ?body.errors.map(x=>String(x.message||'').slice(0,160)).join('; ')
+      :String(body.message||'').slice(0,160);
+    throw new Error(platform+' API HTTP '+status+(detail?' — '+detail:'')+'. Existing successful steps are retained; retry after resolving this.');
+  }
+  return body;
+}
+function clientSiteSlug_(business,id){
+  const clean=String(business||'client').toLowerCase().normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,30).replace(/-+$/,'');
+  return 'chipin-'+(clean||'client')+'-'+String(id).replace(/[^a-z0-9]/gi,'').slice(0,10).toLowerCase();
+}
+function clientSiteStarterHtml_(){
+  // No client's business details/content are made public before approval.
+  return '<!doctype html>\n<html lang="en"><head><meta charset="utf-8">'+
+    '<meta name="viewport" content="width=device-width,initial-scale=1">'+
+    '<meta name="robots" content="noindex,nofollow">'+
+    '<title>Website in preparation</title>'+
+    '<style>body{font:17px system-ui,sans-serif;min-height:100vh;margin:0;display:grid;place-items:center;background:#f5f9f7;color:#173b35;text-align:center}main{padding:32px;max-width:520px}h1{font-size:clamp(32px,6vw,56px)}p{line-height:1.6}</style>'+
+    '</head><body><main><h1>Website in preparation</h1><p>This site has not yet been approved for launch.</p></main></body></html>\n';
+}
+function clientOnboardingProvisionClientSite(session,workspaceId){
+  clientOnboardingRequireAdmin_(session);
+  const cfg=clientSiteSettings_(true);
+  return clientOnboardingWithLock_(()=>{
+    const r=clientOnboardingRecord_(workspaceId);
+    if(!r.meetingId||!r.business||!r.email)throw new Error('A quote-approved client workspace is required before creating website infrastructure.');
+    if(r.siteProvision&&r.siteProvision.pagesProject){
+      return clientSitePublicStatus_(r);
+    }
+    const slug=(r.siteProvision&&r.siteProvision.slug)||clientSiteSlug_(r.business,r.id);
+    const gitBase='https://api.github.com';
+    const cfBase='https://api.cloudflare.com/client/v4/accounts/'+encodeURIComponent(cfg.account)+'/pages/projects';
+    let provision=r.siteProvision||{slug,startedAt:new Date().toISOString()};
+    if(!provision.repository){
+      // Prove the token belongs to the expected owner. Never create in a different account.
+      const user=clientSiteApi_('github',gitBase+'/user','get',null,cfg.gitToken);
+      if(user.login!==CHIPIN_CLIENT_SITES.githubOwner)throw new Error('GitHub provisioning token must belong to the ChipButt account. No repository was created.');
+      const repo=clientSiteApi_('github',gitBase+'/user/repos','post',{
+        name:slug,description:'Chip In managed client website. Private source; domain launched only after client approval.',
+        private:true,auto_init:true,has_issues:false,has_wiki:false
+      },cfg.gitToken);
+      if(!repo.id||!repo.private||repo.owner.login!==CHIPIN_CLIENT_SITES.githubOwner||repo.name!==slug)
+        throw new Error('GitHub did not confirm the expected PRIVATE client repository. Investigate before retrying.');
+      provision.repository=repo.full_name;
+      provision.repositoryId=String(repo.id);
+      provision.branch=repo.default_branch||'main';
+      provision.repositoryUrl=repo.html_url;
+      r.siteProvision=provision;
+      clientOnboardingSave_(r); // checkpoint: avoid duplicate repos on Cloudflare failure
+    }
+    if(!provision.starterAdded){
+      const contentsUrl=gitBase+'/repos/'+provision.repository+'/contents/index.html';
+      const index=clientSiteStarterHtml_();
+      const existing=clientSiteApi_('github',contentsUrl+'?ref='+encodeURIComponent(provision.branch),'get',null,cfg.gitToken,[404]);
+      if(existing.status===404){
+        clientSiteApi_('github',contentsUrl,'put',{
+          message:'Prepare generic non-client staging page',
+          content:Utilities.base64Encode(Utilities.newBlob(index,'text/html').getBytes()),
+          branch:provision.branch
+        },cfg.gitToken);
+      }else{
+        // A non-empty index.html written by a separate process is never overwritten.
+        const actual=existing.body;
+        if(actual.type!=='file'||actual.name!=='index.html')
+          throw new Error('An unexpected index.html exists in the new client repo. Refusing to overwrite it.');
+      }
+      provision.starterAdded=true;
+      r.siteProvision=provision;
+      clientOnboardingSave_(r);
+    }
+    if(!provision.pagesProject){
+      const body={
+        name:slug,production_branch:provision.branch,
+        build_config:{build_command:'',destination_dir:'',root_dir:''},
+        source:{
+          type:'github',
+          config:{
+            owner:CHIPIN_CLIENT_SITES.githubOwner,
+            owner_id:provision.repositoryOwnerId||'',
+            repo_name:provision.repository,
+            repo_id:provision.repositoryId,
+            production_branch:provision.branch,
+            production_deployments_enabled:true,
+            preview_deployment_setting:'none',
+            pr_comments_enabled:false
+          }
+        }
+      };
+      // Owner ID is required by Pages' GitHub source config.
+      const user=clientSiteApi_('github',gitBase+'/user','get',null,cfg.gitToken);
+      if(user.login!==CHIPIN_CLIENT_SITES.githubOwner)throw new Error('GitHub token owner changed during provisioning.');
+      body.source.config.owner_id=String(user.id);
+      const result=clientSiteApi_('cloudflare',cfBase,'post',body,cfg.cloudToken);
+      const project=result.result||result;
+      if(!project.name||project.name!==slug)throw new Error('Cloudflare did not confirm the expected Pages project. Inspect Cloudflare before retrying.');
+      provision.pagesProject=project.name;
+      provision.pagesUrl='https://'+String(project.subdomain||project.name+'.pages.dev').replace(/^https?:\/\//,'');
+      provision.hostingFeeGBP=0;
+      provision.provisionedAt=new Date().toISOString();
+      r.siteProvision=provision;
+      clientOnboardingSave_(r);
+    }
+    return clientSitePublicStatus_(r);
+  });
+}
+function clientSitePublicStatus_(r){
+  const p=r.siteProvision||{};
+  return {id:r.id,configured:Boolean(p.pagesProject),
+    status:p.pagesProject?'staging_ready':p.repository?'repository_created':'not_provisioned',
+    repositoryUrl:p.repositoryUrl||'',pagesUrl:p.pagesUrl||'',
+    cloudflareProject:p.pagesProject||'',hostingFeeGBP:0,
+    domainConnected:false,customDomain:'',customDomainNote:'A client domain must be attached only after final written launch approval; check DNS and preserve MX/email records.'};
+}
+function clientOnboardingSiteStatus(session,workspaceId){
+  clientOnboardingRequireAdmin_(session);
+  return clientSitePublicStatus_(clientOnboardingRecord_(workspaceId));
 }
