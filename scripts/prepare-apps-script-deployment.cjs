@@ -13,14 +13,14 @@ const UPDATED_FILES=[
   ['apps-script/ClientOnboarding.gs','ClientOnboarding.js'],
   ['apps-script/ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
   ['apps-script/ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
-  ['apps-script/ClientWebsiteReview.gs','ClientWebsiteReview.js'],
+  ['apps-script/ClientReviewService.gs','ClientReviewService.js'],
   ['apps-script/ClientWebsiteReview.html','ClientWebsiteReview.html']
 ];
 const EXPECTED=[
   'appsscript.json','Code.js','Index.html','Editor.js','EditorUI.html',
   'ClientOnboarding.js','ClientOnboardingAdmin.html','ClientOnboardingUpload.html'
 ];
-const NEW_FILES=['ClientWebsiteReview.js','ClientWebsiteReview.html'];
+const NEW_FILES=['ClientReviewService.js','ClientWebsiteReview.html'];
 const NEEDED_OAUTH_SCOPES=[
   'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/script.external_request'
@@ -35,6 +35,9 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
   if(missing.length)throw new Error('Live project missing required files; refusing full-project push: '+missing.join(', '));
   const unknown=all.filter(n=>!EXPECTED.includes(n)&&!NEW_FILES.includes(n));
   if(unknown.length)throw new Error('Unexpected files in live project; review manually before overwrite: '+unknown.join(', '));
+  // Google Apps Script does not allow script and HTML files sharing a base name.
+  const basenames=all.filter(n=>n!=='appsscript.json').map(n=>n.replace(/\.(js|html)$/,''));
+  if(new Set(basenames).size!==basenames.length)throw new Error('Duplicate Apps Script basenames would make clasp push fail. Refusing deployment.');
   const reviewPresent=NEW_FILES.filter(n=>all.includes(n));
   if(reviewPresent.length===1)throw new Error('Only one of the two review files is present remotely. Refusing partial deployment.');
   const code=fs.readFileSync(path.join(project,'Code.js'),'utf8');
