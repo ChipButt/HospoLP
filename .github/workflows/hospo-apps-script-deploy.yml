@@ -8,6 +8,8 @@ on:
       - 'apps-script/ClientOnboarding.gs'
       - 'apps-script/ClientOnboardingAdmin.html'
       - 'apps-script/ClientOnboardingUpload.html'
+      - 'apps-script/ClientReviewService.gs'
+      - 'apps-script/ClientWebsiteReview.html'
       - 'scripts/prepare-apps-script-deployment.cjs'
       - 'scripts/test-apps-script-deployment.cjs'
       - 'scripts/test-client-onboarding.cjs'
