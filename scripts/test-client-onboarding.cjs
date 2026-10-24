@@ -19,7 +19,7 @@ function fakeProvisionFetch(url,config){
    if(!body.private||!body.auto_init)throw Error('Client source must be private and initialised.');
    repoCreateCount++;
    if(fakeClientRepos.has(body.name))return fakeResponse(422,JSON.stringify({message:'Already exists'}));
-   const result={id:500+repoCreateCount,owner:{login:'ChipButt'},name:body.name,
+   const result={id:500+repoCreateCount,owner:{login:'ChipButt'},name:body.name,editorFiles:new Map(),
      full_name:'ChipButt/'+body.name,private:true,default_branch:'main',
      html_url:'https://github.com/ChipButt/'+body.name};
    fakeClientRepos.set(body.name,result);
@@ -37,6 +37,25 @@ function fakeProvisionFetch(url,config){
      assert.doesNotMatch(content,/Test Cafe|a@test\.com/);
      repoResult.indexHtml=content;siteStarterCount++;
      return fakeResponse(201,JSON.stringify({commit:{sha:'commit-1'}}));
+   }
+ }
+ if(url.startsWith('https://api.github.com/repos/ChipButt/')&&url.includes('/contents/')){
+   const pathMatch=/^https:\/\/api\.github\.com\/repos\/ChipButt\/([^/]+)\/contents\/([^?]+)(?:\?ref=[^&]*)?$/.exec(url);
+   if(!pathMatch)throw Error('Unexpected repo contents URL '+url);
+   const repo=fakeClientRepos.get(pathMatch[1]);
+   if(!repo)throw Error('Unknown private client repo');
+   const filename=pathMatch[2].split('/').map(decodeURIComponent).join('/');
+   const prior=repo.editorFiles.get(filename);
+   if(cfg.method==='get'){
+     if(!prior)return fakeResponse(404,JSON.stringify({message:'Not Found'}));
+     return fakeResponse(200,JSON.stringify({type:'file',name:filename.split('/').pop(),
+       content:Buffer.from(prior).toString('base64'),sha:'sha-'+filename}));
+   }
+   if(cfg.method==='put'){
+     if(prior&&!body.sha)throw Error('Expected content SHA when updating an existing file');
+     if(body.branch!=='main')throw Error('Incorrect client repo branch');
+     repo.editorFiles.set(filename,Buffer.from(body.content,'base64').toString());
+     return fakeResponse(200,JSON.stringify({content:{sha:'updated-'+filename}}));
    }
  }
  if(url.startsWith('https://api.cloudflare.com/client/v4/accounts/1234567890abcdef1234567890abcdef/pages/projects/')&&cfg.method==='get'){
@@ -112,6 +131,19 @@ function mkFolder(name,parent=null) {
 }
 const root=mkFolder('Chip In — Website Client Assets');
 folderById.set('1cLuFi32Zry5uswOjbeEIFwGllYV7TzbB',root);
+// Existing Simple Website Editor registry with its required headings.
+const editorHeaders=['site_id','business_name','public_url','login_email','password_salt','password_hash',
+ 'password_is_temporary','active','repo_full_name','content_root','media_root','schema_path'];
+const editorRows=[editorHeaders.slice()];
+const editorSheet={
+ getDataRange(){return {getValues(){return editorRows.map(r=>r.slice())}}},
+ getLastColumn(){return editorHeaders.length},
+ getRange(row,col,nRows,nCols){return {
+  getValues(){return editorRows.slice(row-1,row-1+(nRows||1)).map(r=>r.slice(col-1,col-1+(nCols||1)))},
+  setValue(v){editorRows[row-1][col-1]=v}
+ }},
+ appendRow(row){assert.equal(row.length,editorHeaders.length);editorRows.push(row.slice())}
+};
 const context={
  PropertiesService:{getScriptProperties(){return{
   getProperty(k){return properties.has(k)?properties.get(k):null},
@@ -129,10 +161,11 @@ const context={
   formatDate(){return '2026-10-23'},
   base64Decode(s){return Array.from(Buffer.from(s,'base64'))},
   base64Encode(s){return Buffer.from(String(s),'utf8').toString('base64')},
-  newBlob(data,mime,name){return{name,mime,data}}
+  newBlob(data,mime,name){return{name,mime,data,getBytes(){return Buffer.from(data)},getDataAsString(){return Buffer.from(data).toString('utf8')}}}
  },
  LockService:{getScriptLock(){return {waitLock(){},releaseLock(){}}}},
  DriveApp:{getFolderById(id){if(!folderById.has(id))throw Error('Unknown folder '+id);return folderById.get(id)}},
+ SpreadsheetApp:{openById(id){assert.equal(id,'12otLULjhJZ8dln9jPWa_DByUQ750NRHkhhciuCZimlY');return {getSheetByName(name){return name==='Clients'?editorSheet:null}}}},
  ScriptApp:{getService(){return {getUrl(){return 'https://script.google.com/macros/s/TEST/exec'}}},getOAuthToken(){return 'fake-oauth-token'}},
  UrlFetchApp:{fetch:fakeDriveFetch},
  Session:{getEffectiveUser(){return {getEmail(){return 'owner@chipin.example'}}},getScriptTimeZone(){return 'Europe/London'}},
@@ -145,6 +178,8 @@ const src=fs.readFileSync('apps-script/ClientOnboarding.gs','utf8');
 new vm.Script(src,{filename:'ClientOnboarding.gs'}).runInContext(context);
 const reviewServer=fs.readFileSync('apps-script/ClientReviewService.gs','utf8');
 new vm.Script(reviewServer,{filename:'ClientReviewService.gs'}).runInContext(context);
+new vm.Script(fs.readFileSync('apps-script/Editor.gs','utf8'),{filename:'Editor.gs'}).runInContext(context);
+new vm.Script(fs.readFileSync('apps-script/ClientHandover.gs','utf8'),{filename:'ClientHandover.gs'}).runInContext(context);
 function invoke(expr){return vm.runInContext(expr,context);}
 assert.throws(()=>invoke("onboardingAuthenticate('test-key')"),/setup required/i);
 properties.set('CHIP_IN_ONBOARDING_ADMIN_KEY','test-key-with-32-characters-secret');
