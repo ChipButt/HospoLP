@@ -541,7 +541,7 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
           config:{
             owner:CHIPIN_CLIENT_SITES.githubOwner,
             owner_id:provision.repositoryOwnerId||'',
-            repo_name:provision.repository,
+            repo_name:slug,
             repo_id:provision.repositoryId,
             production_branch:provision.branch,
             production_deployments_enabled:true,
