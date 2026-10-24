@@ -13,6 +13,14 @@
 </style>
 </head>
 <body>
+<div class="login" id="editorInvitation" style="display:none"><div class="login-card">
+<h1>Set up your private Website Editor</h1>
+<p class="muted">This editor is for your own finished website. Choose a private password (at least 12 characters); it will never be emailed or shown to Chip In.</p>
+<label for="invitePassword">Create your password</label><input id="invitePassword" type="password" minlength="12" autocomplete="new-password">
+<label for="inviteConfirm">Confirm your password</label><input id="inviteConfirm" type="password" minlength="12" autocomplete="new-password">
+<button class="primary" id="activateInvitation" type="button">Activate my website editor</button>
+<div class="error" id="invitationError" role="status" hidden></div>
+</div></div>
 <div class="login" id="login"><div class="login-card"><h1><?= siteName ?></h1><p class="muted">Website Editor</p><label>Email address</label><input id="email" type="email" autocomplete="username"><label>Password</label><input id="password" type="password" autocomplete="current-password"><button class="primary" id="loginButton">Log in</button><div class="error" id="loginError" hidden></div></div></div>
 <div class="first-password" id="firstPassword">
   <div class="first-password-card">
@@ -30,6 +38,7 @@
 <div class="account" id="account"><div class="account-card"><h2>Change password</h2><label>Current password</label><input id="currentPassword" type="password"><label>New password</label><input id="newPassword" type="password"><label>Confirm new password</label><input id="confirmPassword" type="password"><div class="account-actions"><button class="linkbtn" id="cancelPassword">Cancel</button><button class="primary" id="savePassword" style="width:auto;margin:0">Change password</button></div></div></div>
 <script>
 const SITE_ID='<?= siteId ?>',PUBLIC_URL='<?= publicUrl ?>';
+const CLIENT_SETUP_TOKEN=<?!= initialSetupToken ?>;
 let token=localStorage.getItem(`hospolp:${SITE_ID}:token`)||'',draft=null,schema=null,activePage=null,saveTimer=null,saveInFlight=false,saveQueued=false,restoredDraft=false;
 const $=s=>document.querySelector(s),esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])),clone=o=>JSON.parse(JSON.stringify(o));
 function run(name,...args){return new Promise((resolve,reject)=>{const r=google.script.run.withSuccessHandler(resolve).withFailureHandler(e=>reject(new Error(e.message||e)));r[name](...args)})}
@@ -38,6 +47,31 @@ function setPath(path,value){const p=path.split('.');let o=draft;for(let i=0;i<p
 function showLoginError(m){$('#loginError').textContent=m;$('#loginError').hidden=false}
 function formatTime(iso){if(!iso)return'';try{return new Date(iso).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}catch(e){return''}}
 function setSaveState(text,kind){const el=$('#saveState');el.textContent=text;el.className='save-state'+(kind?' '+kind:'')}
+function openInviteIfPresent(){
+ if(!CLIENT_SETUP_TOKEN)return false;
+ $('#editorInvitation').style.display='grid';$('#login').style.display='none';
+ $('#invitePassword').focus();return true;
+}
+$('#activateInvitation').onclick=async()=>{
+ const a=$('#invitePassword').value,b=$('#inviteConfirm').value,error=$('#invitationError');
+ error.hidden=true;
+ if(a.length<12){error.textContent='Please use at least 12 characters.';error.hidden=false;return;}
+ if(a!==b){error.textContent='Passwords do not match.';error.hidden=false;return;}
+ const button=$('#activateInvitation');button.disabled=true;
+ try{
+  await run('completeEditorInvitation',SITE_ID,CLIENT_SETUP_TOKEN,a);
+  $('#editorInvitation').style.display='none';
+  $('#login').style.display='grid';
+  $('#password').value=a;$('#password').focus();
+  showLoginError('Your password is set. Enter the email address from your invitation and log in.');
+  // A used one-time link cannot be accidentally replayed on reload.
+  if(window.history&&window.history.replaceState){
+   const safe=window.location.href.replace(/([?&])setup=[^&#]*(&?)/,'$1').replace(/[?&]$/,'');
+   try{window.history.replaceState(null,'',safe);}catch(e){}
+  }
+ }catch(e){error.textContent=e.message||String(e);error.hidden=false;}
+ finally{button.disabled=false;}
+};
 $('#loginButton').onclick=async()=>{try{$('#loginError').hidden=true;const r=await run('loginEditor',SITE_ID,$('#email').value.trim(),$('#password').value);token=r.token;localStorage.setItem(`hospolp:${SITE_ID}:token`,token);start(r)}catch(e){showLoginError(e.message)}};
 $('#password').addEventListener('keydown',e=>{if(e.key==='Enter')$('#loginButton').click()});
 async function resume(){if(!token)return;try{start(await run('resumeEditorSession',SITE_ID,token))}catch(e){localStorage.removeItem(`hospolp:${SITE_ID}:token`);token=''}}
@@ -74,7 +108,7 @@ $('#publish').onclick=async()=>{const b=$('#publish');try{clearTimeout(saveTimer
 $('#completeFirstPassword').onclick=async()=>{const b=$('#completeFirstPassword'),n=$('#firstNewPassword').value,c=$('#firstConfirmPassword').value,e=$('#firstPasswordError');e.hidden=true;if(n!==c){e.textContent='The passwords do not match.';e.hidden=false;return}try{b.disabled=true;b.textContent='Saving…';const r=await run('completeInitialPasswordChange',SITE_ID,token,n);$('#firstNewPassword').value=$('#firstConfirmPassword').value='';start(r)}catch(err){e.textContent=err.message;e.hidden=false}finally{b.disabled=false;b.textContent='Save password & continue'}};
 $('#accountButton').onclick=()=>$('#account').style.display='grid';$('#cancelPassword').onclick=()=>$('#account').style.display='none';$('#savePassword').onclick=async()=>{const n=$('#newPassword').value;if(n!==$('#confirmPassword').value){alert('The new passwords do not match.');return}try{await run('changeEditorPassword',SITE_ID,token,$('#currentPassword').value,n);$('#account').style.display='none';$('#currentPassword').value=$('#newPassword').value=$('#confirmPassword').value='';alert('Password changed.')}catch(e){alert(e.message)}};
 window.addEventListener('beforeunload',()=>{if(saveTimer)saveDraftNow(false)});
-resume();
+if(!openInviteIfPresent())resume();
 </script>
 </body>
 </html>
