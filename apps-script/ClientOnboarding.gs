@@ -519,12 +519,12 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
       if(existing.status===404){
         clientSiteApi_('github',contentsUrl,'put',{
           message:'Prepare generic non-client staging page',
-          content:Utilities.base64Encode(Utilities.newBlob(index,'text/html').getBytes()),
+          content:Utilities.base64Encode(index,Utilities.Charset.UTF_8),
           branch:provision.branch
         },cfg.gitToken);
       }else{
         // A non-empty index.html written by a separate process is never overwritten.
-        const actual=existing.body;
+        const actual=existing;
         if(actual.type!=='file'||actual.name!=='index.html')
           throw new Error('An unexpected index.html exists in the new client repo. Refusing to overwrite it.');
       }
