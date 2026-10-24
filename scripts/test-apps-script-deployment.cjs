@@ -26,7 +26,7 @@ try{
     ['ClientOnboarding.gs','ClientOnboarding.js'],
     ['ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
     ['ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
-    ['ClientWebsiteReview.gs','ClientWebsiteReview.js'],
+    ['ClientReviewService.gs','ClientReviewService.js'],
     ['ClientWebsiteReview.html','ClientWebsiteReview.html']
   ]){
     assert.equal(
@@ -44,6 +44,9 @@ try{
   fs.writeFileSync(path.join(root,'Mystery.js'),'unknown source');
   assert.throws(()=>prepareDeploy(root),/Unexpected files/);
   fs.unlinkSync(path.join(root,'Mystery.js'));
+  fs.writeFileSync(path.join(root,'ClientWebsiteReview.js'),'duplicate basename');
+  assert.throws(()=>prepareDeploy(root),/Duplicate Apps Script basenames/);
+  fs.unlinkSync(path.join(root,'ClientWebsiteReview.js'));
   fs.unlinkSync(path.join(root,'EditorUI.html'));
   assert.throws(()=>prepareDeploy(root),/missing required files/);
   console.log('PASS: 8→10-file Apps Script upgrade preserves existing editor/intake routes, appends one review route, preserves manifest, supports reruns, blocks unknown files.');
