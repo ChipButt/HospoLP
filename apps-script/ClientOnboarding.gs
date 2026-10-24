@@ -554,8 +554,21 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
       const user=clientSiteApi_('github',gitBase+'/user','get',null,cfg.gitToken);
       if(user.login!==CHIPIN_CLIENT_SITES.githubOwner)throw new Error('GitHub token owner changed during provisioning.');
       body.source.config.owner_id=String(user.id);
-      const result=clientSiteApi_('cloudflare',cfBase,'post',body,cfg.cloudToken);
-      const project=result.result||result;
+      // If a previous request succeeded but its acknowledgement was lost,
+      // adopt ONLY the exact existing Cloudflare project connected to this repo.
+      const existing=clientSiteApi_('cloudflare',cfBase+'/'+encodeURIComponent(slug),'get',null,cfg.cloudToken,[404]);
+      let project;
+      if(existing.status===404){
+        const result=clientSiteApi_('cloudflare',cfBase,'post',body,cfg.cloudToken);
+        project=result.result||result;
+      }else{
+        project=existing.result||existing;
+        const src=project.source||{},config=src.config||{};
+        if(src.type!=='github'||String(config.repo_id)!==String(provision.repositoryId)
+          ||config.owner!==CHIPIN_CLIENT_SITES.githubOwner){
+          throw new Error('Cloudflare already has a project with this name, but it is not connected to this exact client repo. Refusing to adopt or overwrite it.');
+        }
+      }
       if(!project.name||project.name!==slug)throw new Error('Cloudflare did not confirm the expected Pages project. Inspect Cloudflare before retrying.');
       provision.pagesProject=project.name;
       provision.pagesUrl='https://'+String(project.subdomain||project.name+'.pages.dev').replace(/^https?:\/\//,'');
