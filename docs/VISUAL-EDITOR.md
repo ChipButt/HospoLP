@@ -16,7 +16,7 @@ Use the owner-only **Client Project Hub** in the existing [Client Onboarding Adm
 2. Receive **client's final written approval**, link their domain, check HTTPS/DNS/email MX and record the live URL in the Hub.
 3. **Register client Simple Website Editor.** This verifies schema, eight content JSON files and site app.js bridge in **their** repo, patches only the site identifier, creates `/edit/` redirect and appends a row to the existing shared editor registry sheet.
 4. **Email secure editor setup invitation**. They have 48 hours to pick their password. On redemption the password hash is stored and the invitation is invalidated.
-5. Test that client's editor login, preview and a harmless publish against the correct repo/domain.
+5. Have the client sign in to their own editor; the owner dashboard records the **first successful editor login** as a separate mandatory milestone. Test the live preview and a harmless publish against the correct repo/domain.
 6. **Send final website + editor handover**. The handover email contains the live website URL, client `/edit/` URL, login email and short guidance—no GitHub credentials.
 
 For a full owner checklist and remaining real account tests, see [CLIENT-PROJECT-HUB-HANDOVER.md](CLIENT-PROJECT-HUB-HANDOVER.md).
