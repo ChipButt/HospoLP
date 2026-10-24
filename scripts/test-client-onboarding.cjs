@@ -143,8 +143,8 @@ const context={
 vm.createContext(context);
 const src=fs.readFileSync('apps-script/ClientOnboarding.gs','utf8');
 new vm.Script(src,{filename:'ClientOnboarding.gs'}).runInContext(context);
-const reviewServer=fs.readFileSync('apps-script/ClientWebsiteReview.gs','utf8');
-new vm.Script(reviewServer,{filename:'ClientWebsiteReview.gs'}).runInContext(context);
+const reviewServer=fs.readFileSync('apps-script/ClientReviewService.gs','utf8');
+new vm.Script(reviewServer,{filename:'ClientReviewService.gs'}).runInContext(context);
 function invoke(expr){return vm.runInContext(expr,context);}
 assert.throws(()=>invoke("onboardingAuthenticate('test-key')"),/setup required/i);
 properties.set('CHIP_IN_ONBOARDING_ADMIN_KEY','test-key-with-32-characters-secret');
