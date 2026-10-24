@@ -286,17 +286,22 @@ new vm.Script(adminScriptMatch[0][1],{filename:'ClientOnboardingAdmin.html inlin
 // with page/pin comment records, one consolidated round, signed final approval.
 assert.throws(()=>invoke("clientOnboardingStartWebsiteReview('bad',workspaceId)"),/Owner session expired/);
 const ownerReview=invoke("clientOnboardingStartWebsiteReview(session,workspaceId)");
-assert.equal(ownerReview.status,'open');
+assert.equal(ownerReview.status,'prepared');
 assert.match(ownerReview.reviewUrl,/mode=website-review&code=/);
 assert.match(ownerReview.previewUrl,/\.pages\.dev/);
 const reviewAgain=invoke("clientOnboardingStartWebsiteReview(session,workspaceId)");
 assert.equal(reviewAgain.reviewUrl,ownerReview.reviewUrl);
 const reviewData=JSON.parse(root.children[0].files.find(x=>x.name==='website-review.json').data);
-assert.equal(new Date(reviewData.feedbackDueAt).getTime()-new Date(reviewData.openedAt).getTime(),72*3600*1000);
+assert.equal(reviewData.feedbackDueAt,null); // clock not running until link emailed
 const reviewToken=new URL(ownerReview.reviewUrl).searchParams.get('code');
 context.reviewToken=reviewToken;
 assert.throws(()=>invoke("clientReviewGet('random-string')"),/Invalid review link/);
-assert.equal(invoke('clientReviewGet(reviewToken)').canComment,true);
+assert.equal(invoke('clientReviewGet(reviewToken)').canComment,false);
+assert.throws(()=>invoke('clientOnboardingCloseExpiredReview(session,workspaceId)'),/deadline has not passed|already closed/i);
+const firstReviewInvite=invoke('clientOnboardingSendReviewInvitation(session,workspaceId)');
+const openReview=invoke('clientReviewGet(reviewToken)');
+assert.equal(openReview.canComment,true);
+assert.equal(new Date(firstReviewInvite.feedbackDueAt).getTime()-new Date(openReview.reviewOpenedAt).getTime(),72*3600*1000);
 assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'x',path:'/menu/',x:0.5,y:0.4})"),/describe the requested change/i);
 assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'Add a menu',path:'https://evil.example',x:0.5,y:0.4})"),/valid page path/i);
 assert.throws(()=>invoke("clientReviewAddComment(reviewToken,{text:'Add a menu',path:'/menu/',x:4,y:0})"),/pin position/i);
@@ -311,6 +316,7 @@ assert.throws(()=>invoke('clientOnboardingSendFinalApproval(session,workspaceId)
 const invite=invoke('clientOnboardingSendReviewInvitation(session,workspaceId)');
 assert.equal(invite.sent,true);
 assert.equal(invite.email,'a@test.com');
+assert.equal(invite.feedbackDueAt,firstReviewInvite.feedbackDueAt); // resend never restarts clock
 const submitted=invoke('clientReviewSubmitFeedback(reviewToken,false)');
 assert.equal(submitted.status,'submitted');
 assert.equal(submitted.canComment,false);
