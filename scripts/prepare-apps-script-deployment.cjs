@@ -14,13 +14,16 @@ const UPDATED_FILES=[
   ['apps-script/ClientOnboardingAdmin.html','ClientOnboardingAdmin.html'],
   ['apps-script/ClientOnboardingUpload.html','ClientOnboardingUpload.html'],
   ['apps-script/ClientReviewService.gs','ClientReviewService.js'],
-  ['apps-script/ClientWebsiteReview.html','ClientWebsiteReview.html']
+  ['apps-script/ClientWebsiteReview.html','ClientWebsiteReview.html'],
+  ['apps-script/ClientHandover.gs','ClientHandover.js'],
+  ['apps-script/Editor.gs','Editor.js'],
+  ['apps-script/EditorUI.html','EditorUI.html']
 ];
 const EXPECTED=[
   'appsscript.json','Code.js','Index.html','Editor.js','EditorUI.html',
   'ClientOnboarding.js','ClientOnboardingAdmin.html','ClientOnboardingUpload.html'
 ];
-const NEW_FILES=['ClientReviewService.js','ClientWebsiteReview.html'];
+const NEW_FILES=['ClientReviewService.js','ClientWebsiteReview.html','ClientHandover.js'];
 const NEEDED_OAUTH_SCOPES=[
   'https://www.googleapis.com/auth/drive',
   'https://www.googleapis.com/auth/script.external_request'
@@ -38,7 +41,7 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
   if(new Set(basenames).size!==basenames.length)throw new Error('Duplicate Apps Script basenames would make clasp push fail. Refusing deployment.');
   const unknown=all.filter(n=>!EXPECTED.includes(n)&&!NEW_FILES.includes(n));
   if(unknown.length)throw new Error('Unexpected files in live project; review manually before overwrite: '+unknown.join(', '));
-  const reviewPresent=NEW_FILES.filter(n=>all.includes(n));
+  const reviewPresent=['ClientReviewService.js','ClientWebsiteReview.html'].filter(n=>all.includes(n));
   if(reviewPresent.length===1)throw new Error('Only one of the two review files is present remotely. Refusing partial deployment.');
   const code=fs.readFileSync(path.join(project,'Code.js'),'utf8');
   if(!/mode\s*===\s*['"]onboard-admin['"]/.test(code)||!/mode\s*===\s*['"]onboard-upload['"]/.test(code)||!/renderEditor_/.test(code))
@@ -74,7 +77,14 @@ function prepareDeploy(projectPath,sourceRoot=ROOT){
   }else{
     console.log('No explicit OAuth scope list; preserving automatic scope detection.');
   }
-  for(const [relative,target] of UPDATED_FILES){
+  // Critical: reject a partial rollout of the private client editor login
+  // because editor setup must never be public without the owner-session guard.
+  if(!fs.readFileSync(path.join(sourceRoot,'apps-script/Editor.gs'),'utf8').includes('clientOnboardingRequireAdmin_(ownerSession)'))
+    throw new Error('Unsafe editor password-reset implementation: owner authentication is missing.');
+  const handover=fs.readFileSync(path.join(sourceRoot,'apps-script/ClientHandover.gs'),'utf8');
+  if(!handover.includes('function completeEditorInvitation(')||!handover.includes('function clientOnboardingProjectHub('))
+    throw new Error('The protected editor handover service is missing required functions.');
+    for(const [relative,target] of UPDATED_FILES){
     const original=fs.readFileSync(path.join(sourceRoot,relative),'utf8');
     if(original.length<1000)throw new Error('Source looks unexpectedly short: '+relative);
     fs.writeFileSync(path.join(project,target),original,'utf8');
