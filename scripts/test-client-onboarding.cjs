@@ -133,16 +133,20 @@ const root=mkFolder('Chip In — Website Client Assets');
 folderById.set('1cLuFi32Zry5uswOjbeEIFwGllYV7TzbB',root);
 // Existing Simple Website Editor registry with its required headings.
 const editorHeaders=['site_id','business_name','public_url','login_email','password_salt','password_hash',
- 'password_is_temporary','active','repo_full_name','content_root','media_root','schema_path'];
+ 'active','repo_full_name','content_root','media_root','schema_path'];
 const editorRows=[editorHeaders.slice()];
+const legacyEditorRow={site_id:'lantern-yard',business_name:'Lantern Yard',public_url:'https://demo.example/',
+ login_email:'demo@example.com',password_salt:'legacy-salt',password_hash:'preserve-existing-hash',
+ active:true,repo_full_name:'ChipButt/HospoLP',content_root:'content',media_root:'media/editor',schema_path:'editor.schema.json'};
+editorRows.push(editorHeaders.map(h=>legacyEditorRow[h]??''));
 const editorSheet={
  getDataRange(){return {getValues(){return editorRows.map(r=>r.slice())}}},
- getLastColumn(){return editorHeaders.length},
+ getLastColumn(){return editorRows[0].length},
  getRange(row,col,nRows,nCols){return {
   getValues(){return editorRows.slice(row-1,row-1+(nRows||1)).map(r=>r.slice(col-1,col-1+(nCols||1)))},
   setValue(v){editorRows[row-1][col-1]=v}
  }},
- appendRow(row){assert.equal(row.length,editorHeaders.length);editorRows.push(row.slice())}
+ appendRow(row){assert.equal(row.length,editorRows[0].length);editorRows.push(row.slice())}
 };
 const context={
  PropertiesService:{getScriptProperties(){return{
@@ -416,9 +420,11 @@ assert.match(enrolled.editor.editorUrl,/mode=editor&site=chipin-/);
 assert.match(fakeSite.editorFiles.get('assets/app.js'),new RegExp("const EDITOR_SITE_ID='"+enrolled.editor.siteId+"'"));
 assert.match(fakeSite.editorFiles.get('edit/index.html'),/CHIP IN CLIENT EDITOR REDIRECT/);
 assert.doesNotMatch(fakeSite.editorFiles.get('edit/index.html'),/site=lantern-yard/);
-assert.equal(editorRows.length,2);
+assert.equal(editorRows.length,3);
+assert.ok(editorRows[0].includes('password_is_temporary'));
+assert.equal(editorRows[1][editorRows[0].indexOf('password_hash')],'preserve-existing-hash');
 assert.equal(invoke('clientOnboardingRegisterEditor(session,workspaceId)').editor.registered,true);
-assert.equal(editorRows.length,2); // idempotent registry, no duplicate customer logins
+assert.equal(editorRows.length,3); // idempotent registry, no duplicate customer logins
 const mailBeforeSetup=sent.length;
 const setupMail=invoke('clientOnboardingSendEditorSetup(session,workspaceId)');
 assert.equal(setupMail.sent,true);
