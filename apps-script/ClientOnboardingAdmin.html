@@ -26,7 +26,7 @@
 </div>
 <div class="card" id="websiteReviewAdmin">
 <h2>Step 5 — First draft review &amp; final approval</h2>
-<p class="hint">When the first draft is ready in Cloudflare Pages, start the client's <strong>three-day</strong> feedback window and email their unique review link. Clients can browse the website, pin comments to a page, then submit one consolidated list. You track amendments here, mark them complete and request their <strong>final written sign-off</strong>. The live domain remains disconnected until approval.</p>
+<p class="hint">When the first draft is ready in Cloudflare Pages, prepare the review link and <strong>email it</strong>. The client's <strong>three-day</strong> feedback window begins when the first invitation email is sent, not when you prepare the link. Clients can browse the website, pin comments to a page, then submit one consolidated list. You track amendments here, mark them complete and request their <strong>final written sign-off</strong>. The live domain remains disconnected until approval.</p>
 <p class="hint"><strong>Do not send clients a private GitHub repository link.</strong> Send the client-specific review portal URL. Note: an unprotected <code>pages.dev</code> preview is publicly accessible even though the review link requires a token. Use Cloudflare Access or avoid placing confidential assets on staging.</p>
 <div id="reviews" class="reviews"></div>
 <div class="buttons"><button type="button" id="reviewRefresh" class="alt">Refresh review milestones and comments</button></div>
@@ -85,16 +85,16 @@ function addReviewCard(r,data){
   };controls.append(b);return b;
  }
  if(data.status==='not_started'&&r.site&&r.site.configured){
-  action('Start 3-day first-draft review',async()=>{
-   if(!confirm('Start the three-day clock NOW for '+r.business+'? Ensure the first draft is already available at their Pages staging URL.'))return 'No changes.';
-   const result=await gas('clientOnboardingStartWebsiteReview',session,r.id);
-   return 'Review opened. Feedback due: '+result.feedbackDueAt+'. Send the invitation next.';
+  action('Prepare first-draft review link',async()=>{
+   if(!confirm('Prepare a first-draft review link for '+r.business+'? Ensure the first draft is already available at their Pages staging URL.'))return 'No changes.';
+   await gas('clientOnboardingStartWebsiteReview',session,r.id);
+   return 'Review prepared. Email the invitation to start the three-day feedback clock.';
   });
  }else if(data.status==='not_started'){
   const help=document.createElement('p');help.className='hint';help.textContent='Provision Cloudflare Pages staging first, then this review can begin.';card.append(help);
  }
- if(data.status==='open'){
-  action('Email first-draft review link',async()=>{
+ if(data.status==='prepared'||data.status==='open'){
+  action(data.status==='prepared'?'Email draft and start 3-day review':'Resend link (same deadline)',async()=>{
    const result=await gas('clientOnboardingSendReviewInvitation',session,r.id);
    return 'Review link emailed to '+result.email+'.';
   });
@@ -120,6 +120,13 @@ function addReviewCard(r,data){
    group.append(p);
   }
   card.append(group);
+ }
+ if(data.status==='open'&&data.feedbackDueAt&&Date.now()>new Date(data.feedbackDueAt).getTime()){
+  action('Close expired feedback round (no launch approval)',async()=>{
+   if(!confirm('The client did not submit in time. Close their agreed three-day feedback window? This does NOT authorise publication; final written approval is still required.'))return 'No changes.';
+   await gas('clientOnboardingCloseExpiredReview',session,r.id);
+   return 'Feedback round closed. You may now request final sign-off after verifying the finished website.';
+  });
  }
  if(data.status==='submitted'){
   action('Send finished website for written approval',async()=>{
