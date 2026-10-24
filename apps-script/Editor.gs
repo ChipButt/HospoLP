@@ -14,6 +14,8 @@ function renderEditor_(e) {
   t.siteId = site.site_id;
   t.siteName = site.business_name;
   t.publicUrl = site.public_url;
+  const invitation = String((e && e.parameter && e.parameter.setup) || '');
+  t.initialSetupToken = JSON.stringify(/^[0-9a-f]{96}$/.test(invitation) ? invitation : '');
   return t.evaluate()
     .setTitle(`${site.business_name} Website Editor`)
     .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
@@ -71,7 +73,10 @@ function completeInitialPasswordChange(siteId, token, newPassword) {
   return editorBootstrap_(getEditorSite_(siteId), token);
 }
 
-function setInitialEditorPassword(siteId, newPassword) {
+function setInitialEditorPassword(siteId, newPassword, ownerSession) {
+  // Public Apps Script functions are remotely invokable. NEVER allow an
+  // unauthenticated caller to reset a customer's website editor password.
+  clientOnboardingRequireAdmin_(ownerSession);
   const site = getEditorSite_(siteId);
   validatePassword_(newPassword);
   const salt = Utilities.getUuid().replace(/-/g, '') + Utilities.getUuid().replace(/-/g, '');
@@ -280,7 +285,7 @@ function githubToken_() {
   const props = PropertiesService.getScriptProperties();
   const key = 'CHIP_IN_WEBSITES_GITHUB_TOKEN';
   const legacyKey = ['HOSP','OLP_GITHUB_TOKEN'].join('');
-  const token = props.getProperty(key) || props.getProperty(legacyKey);
+  const token = props.getProperty(key) || props.getProperty(legacyKey) || props.getProperty('CHIPIN_GITHUB_PROVISION_TOKEN');
   if (!token) throw new Error('Chip In Websites publishing has not been connected to GitHub yet.');
   if (!props.getProperty(key)) props.setProperty(key, token);
   if (props.getProperty(legacyKey)) props.deleteProperty(legacyKey);
