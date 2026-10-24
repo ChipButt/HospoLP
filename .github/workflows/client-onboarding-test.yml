@@ -5,6 +5,8 @@ on:
       - 'apps-script/ClientOnboarding.gs'
       - 'apps-script/ClientOnboardingAdmin.html'
       - 'apps-script/ClientOnboardingUpload.html'
+      - 'apps-script/ClientReviewService.gs'
+      - 'apps-script/ClientWebsiteReview.html'
       - 'apps-script/Code.gs'
       - 'scripts/test-client-onboarding.cjs'
       - 'scripts/prepare-apps-script-deployment.cjs'
