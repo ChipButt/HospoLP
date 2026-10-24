@@ -157,6 +157,7 @@ const context={
  Utilities:{
   DigestAlgorithm:{SHA_256:'SHA_256'},Charset:{UTF_8:'UTF_8'},
   computeDigest(_,s){return Array.from(crypto.createHash('sha256').update(s).digest())},
+  sleep(ms){},
   getUuid(){const h=(uuid++).toString(16).padStart(32,'0');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20)},
   formatDate(){return '2026-10-23'},
   base64Decode(s){return Array.from(Buffer.from(s,'base64'))},
