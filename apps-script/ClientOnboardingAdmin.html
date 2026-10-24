@@ -15,6 +15,14 @@
 <label style="display:flex;gap:10px;align-items:flex-start"><input id="approved" type="checkbox" style="width:auto;margin:4px 0"> I have confirmed that the client has approved the quotation and instructed Chip In to start this project.</label>
 <div class="buttons"><button id="create" type="button">Create their private upload workspace</button></div><div id="createStatus" class="status" role="status"></div>
 <div class="workspace hidden" id="created"><h3>Workspace activated</h3><p><strong>Client upload link:</strong> <a id="clientUrl" href="#" target="_blank" rel="noopener"></a></p><p><strong>Private Chip In Drive folder:</strong> <a id="driveUrl" target="_blank" rel="noopener"></a></p><p>Files stay in your private Drive. The client can upload through the link but cannot browse your Drive.</p><div class="buttons"><button type="button" id="copyLink" class="alt">Copy client upload link</button><button type="button" id="sendInvite">Email link to client</button></div><div id="emailStatus" class="status" role="status"></div></div></div>
+<div class="card" id="siteProvisioning">
+<h2>Step 4 — Create each client's website hosting (£0)</h2>
+<p class="hint">For each quote-approved workspace below, create a <strong>private GitHub client repository</strong> and a <strong>Cloudflare Pages</strong> project inside Chip In's existing Cloudflare account. This is a one-time owner action, separate from sending the assets-upload link. It creates a generic holding page, <strong>not the client’s finished or approved website</strong>.</p>
+<div id="siteSetupStatus" class="status" role="status">Checking hosting connection…</div>
+<p class="hint"><strong>One-time setup:</strong> The owner must configure three secret Script Properties in the existing Google Apps Script project: <code>CHIPIN_GITHUB_PROVISION_TOKEN</code>, <code>CHIPIN_CLOUDFLARE_API_TOKEN</code> and <code>CHIPIN_CLOUDFLARE_ACCOUNT_ID</code>. Never share tokens in client briefs, screenshots or GitHub source. Cloudflare must also be authorised to access newly created private repositories through its GitHub integration.</p>
+<div class="buttons"><button id="checkHosting" class="alt" type="button">Check hosting connection</button></div>
+<p class="hint"><strong>Important:</strong> Provisioning does not alter DNS, attach a customer domain, purchase a domain, or publish approved content. Connect the customer's domain only after final written approval and verify their email/MX records beforehand.</p>
+</div>
 <div class="card"><h2>Step 3 — Check client assets</h2><p class="hint">Use Refresh to see which clients have sent files and marked their upload complete.</p><button id="refresh" type="button" class="alt">Refresh client statuses</button><div id="workspaces" style="margin-top:15px"></div><div id="checkStatus" class="status" role="status"></div></div>
 </section></main>
 <script>
@@ -40,9 +48,59 @@ function loadHash(){
  if(typeof google!=='undefined'&&google.script&&google.script.url&&google.script.url.getLocation){google.script.url.getLocation(loc=>accept(loc.hash||''));}
  else accept(window.location.hash||'');
 }
-$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await refresh();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
-async function refresh(){status('checkStatus','Checking client uploads…');try{const all=await gas('clientOnboardingListWorkspaces',session);const box=$('workspaces');box.innerHTML='';if(!all.length)box.textContent='No approved client workspaces yet.';for(const r of all){const item=document.createElement('div');item.className='workspace';item.innerHTML='<h3>'+escapeText(r.business)+'</h3><p>'+escapeText(r.email)+' · <strong>'+escapeText(r.status.replace(/_/g,' '))+'</strong> · '+Number(r.fileCount)+' files</p><p>Last upload: '+escapeText(r.lastUploadAt||'None yet')+'</p><p><a target="_blank" rel="noopener" href="'+escapeText(r.folderUrl)+'">Open private Drive folder</a> · <a target="_blank" rel="noopener" href="'+escapeText(r.uploadUrl)+'">Client upload page</a></p>';box.append(item);}status('checkStatus',all.length+' client workspace(s) checked.');}catch(e){status('checkStatus',e.message||String(e),true);}}
+$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+async function checkHosting(){
+ try{
+  const r=await gas('clientOnboardingSiteSetupStatus',session);
+  status('siteSetupStatus',r.configured?'Hosting credentials configured. Eligible clients may be provisioned using the action below.':'Configuration needed in Script Properties: '+r.missing.join(', ')+'. No infrastructure can be created until these are configured.',!r.configured);
+ }catch(err){status('siteSetupStatus',err.message||String(err),true);}
+}
+async function refresh(){
+ status('checkStatus','Checking approved client workspaces and hosting…');
+ try{
+  const all=await gas('clientOnboardingListWorkspaces',session);
+  const box=$('workspaces');box.innerHTML='';
+  if(!all.length)box.textContent='No approved client workspaces yet.';
+  for(const r of all){
+   const item=document.createElement('div');item.className='workspace';
+   item.innerHTML='<h3>'+escapeText(r.business)+'</h3>'+
+    '<p>'+escapeText(r.email)+' · <strong>'+escapeText(r.status.replace(/_/g,' '))+'</strong> · '+Number(r.fileCount)+' files</p>'+
+    '<p>Last upload: '+escapeText(r.lastUploadAt||'None yet')+'</p>'+
+    '<p><a target="_blank" rel="noopener" href="'+escapeText(r.folderUrl)+'">Open private Drive folder</a> · <a target="_blank" rel="noopener" href="'+escapeText(r.uploadUrl)+'">Client upload page</a></p>';
+   const line=document.createElement('p'),site=r.site||{};
+   const label=document.createElement('strong');label.textContent='Website hosting: ';line.append(label);
+   line.append(document.createTextNode(site.configured?'Private repo and Pages project created — free static hosting.':site.status==='repository_created'?'GitHub repository exists; Cloudflare setup needs attention.':'Not provisioned yet.'));
+   if(site.repositoryUrl&&/^https:\/\/github\.com\/ChipButt\//.test(site.repositoryUrl)){
+    const a=document.createElement('a');a.href=site.repositoryUrl;a.target='_blank';a.rel='noopener';a.textContent=' · Private GitHub repo';line.append(a);
+   }
+   if(site.pagesUrl&&/^https:\/\/[a-z0-9.-]+\.pages\.dev\/?$/.test(site.pagesUrl)){
+    const a=document.createElement('a');a.href=site.pagesUrl;a.target='_blank';a.rel='noopener';a.textContent=' · Cloudflare Pages staging';line.append(a);
+   }
+   item.append(line);
+   const buttons=document.createElement('div');buttons.className='buttons';
+   const button=document.createElement('button');button.type='button';
+   button.textContent=site.configured?'Hosting already provisioned':'Create private GitHub repo + Cloudflare Pages (£0)';
+   button.disabled=Boolean(site.configured);
+   const feedback=document.createElement('div');feedback.className='status';feedback.setAttribute('role','status');
+   button.onclick=async()=>{
+    if(!confirm('Create separate PRIVATE GitHub repo and Cloudflare Pages staging project for '+r.business+'? This does NOT attach the client domain or publish approved website content.'))return;
+    button.disabled=true;feedback.textContent='Provisioning site infrastructure in your existing accounts…';
+    try{
+     const done=await gas('clientOnboardingProvisionClientSite',session,r.id);
+     feedback.textContent='Site infrastructure created: '+done.repositoryUrl+' · '+done.pagesUrl+'. Domain remains unconnected until final approval.';
+     await refresh();
+    }catch(err){
+     feedback.textContent='Provisioning not completed: '+(err.message||String(err))+'. Any completed step will be retained for safe retry.';
+     feedback.classList.add('error');button.disabled=false;
+    }
+   };
+   buttons.append(button);item.append(buttons,feedback);box.append(item);
+  }
+  status('checkStatus',all.length+' approved client workspace(s) checked.');
+ }catch(e){status('checkStatus',e.message||String(e),true);}
+}
 $('refresh').onclick=refresh;
+$('checkHosting').onclick=checkHosting;
 $('create').onclick=async()=>{const b=$('create');b.disabled=true;$('created').classList.add('hidden');status('createStatus','Creating private client folder…');try{
  let brief={};const raw=$('briefJson').value.trim();if(raw)brief=JSON.parse(raw);else if(initialBrief)brief=initialBrief;
  const payload={business:$('business').value.trim(),email:$('email').value.trim(),contact:$('contact').value.trim(),meetingId:$('meetingId').value.trim(),approved:$('approved').checked,brief};
