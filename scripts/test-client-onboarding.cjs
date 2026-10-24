@@ -7,11 +7,58 @@ const cache=new Map();
 const sent=[];
 const folderById=new Map();
 const pendingDriveUploads=new Map();
+
+const fakeClientRepos=new Map(),fakeClientPages=new Map();
+let repoCreateCount=0,pagesCreateCount=0,siteStarterCount=0,failPagesOnce=false;
+function fakeProvisionFetch(url,config){
+ const cfg=config||{};
+ const body=cfg.payload?JSON.parse(cfg.payload):null;
+ if(url==='https://api.github.com/user')
+   return fakeResponse(200,JSON.stringify({login:'ChipButt',id:12345}));
+ if(url==='https://api.github.com/user/repos'&&cfg.method==='post'){
+   if(!body.private||!body.auto_init)throw Error('Client source must be private and initialised.');
+   repoCreateCount++;
+   if(fakeClientRepos.has(body.name))return fakeResponse(422,JSON.stringify({message:'Already exists'}));
+   const result={id:500+repoCreateCount,owner:{login:'ChipButt'},name:body.name,
+     full_name:'ChipButt/'+body.name,private:true,default_branch:'main',
+     html_url:'https://github.com/ChipButt/'+body.name};
+   fakeClientRepos.set(body.name,result);
+   return fakeResponse(201,JSON.stringify(result));
+ }
+ if(url.startsWith('https://api.github.com/repos/ChipButt/')&&url.includes('/contents/index.html')){
+   const slug=url.match(/^https:\/\/api.github.com\/repos\/ChipButt\/([^/]+)\//)[1];
+   const repoResult=fakeClientRepos.get(slug);
+   if(!repoResult)throw Error('Repository was not created');
+   if(cfg.method==='get'&&!repoResult.indexHtml)return fakeResponse(404,JSON.stringify({message:'Not Found'}));
+   if(cfg.method==='get')return fakeResponse(200,JSON.stringify({type:'file',name:'index.html'}));
+   if(cfg.method==='put'){
+     const content=Buffer.from(body.content,'base64').toString();
+     assert.match(content,/Website in preparation/);
+     assert.doesNotMatch(content,/Test Cafe|a@test\.com/);
+     repoResult.indexHtml=content;siteStarterCount++;
+     return fakeResponse(201,JSON.stringify({commit:{sha:'commit-1'}}));
+   }
+ }
+ if(url==='https://api.cloudflare.com/client/v4/accounts/1234567890abcdef1234567890abcdef/pages/projects'){
+   if(cfg.method!=='post')throw Error('Unexpected Cloudflare method');
+   if(body.source?.type!=='github'||!body.source.config?.repo_name?.startsWith('ChipButt/'))
+     throw Error('Cloudflare GitHub source is not linked to client repo');
+   assert.equal(body.source.config.production_branch,'main');
+   assert.equal(body.source.config.preview_deployment_setting,'none');
+   pagesCreateCount++;
+   if(failPagesOnce){failPagesOnce=false;return fakeResponse(403,JSON.stringify({success:false,errors:[{message:'GitHub application must be authorised for the private repo'}]}));}
+   fakeClientPages.set(body.name,body);
+   return fakeResponse(200,JSON.stringify({success:true,result:{name:body.name,subdomain:body.name+'.pages.dev'}}));
+ }
+ throw Error('Unexpected external request '+cfg.method+' '+url);
+}
+
 let resumableCounter=0;
 const fakeResponse=(code,body,headers)=>({
  getResponseCode(){return code},getContentText(){return body||''},getAllHeaders(){return headers||{}}
 });
 function fakeDriveFetch(url,options){
+ if(String(url).startsWith('https://api.github.com/')||String(url).startsWith('https://api.cloudflare.com/'))return fakeProvisionFetch(url,options);
  const cfg=options||{};
  if(cfg.method==='post'&&url.includes('uploadType=resumable')){
    const payload=JSON.parse(cfg.payload);
@@ -74,6 +121,7 @@ const context={
   getUuid(){const h=(uuid++).toString(16).padStart(32,'0');return h.slice(0,8)+'-'+h.slice(8,12)+'-'+h.slice(12,16)+'-'+h.slice(16,20)+'-'+h.slice(20)},
   formatDate(){return '2026-10-23'},
   base64Decode(s){return Array.from(Buffer.from(s,'base64'))},
+  base64Encode(s){return Buffer.from(String(s),'utf8').toString('base64')},
   newBlob(data,mime,name){return{name,mime,data}}
  },
  LockService:{getScriptLock(){return {waitLock(){},releaseLock(){}}}},
@@ -180,6 +228,47 @@ const previousNotifies=sent.length;
 assert.equal(invoke('clientOnboardingFinishUploads(code)').success,true);
 assert.equal(sent.length,previousNotifies); // Re-clicking "finished" does not email-spam the owner.
 
+// Site provisioning is owner-only, requires configured credentials, and is
+// safe to retry after an incomplete Cloudflare connection.
+context.workspaceId=first.id;
+assert.throws(()=>invoke("clientOnboardingProvisionClientSite('bad',workspaceId)"),/Owner session expired/i);
+assert.equal(invoke('clientOnboardingSiteSetupStatus(session)').configured,false);
+assert.throws(()=>invoke('clientOnboardingProvisionClientSite(session,workspaceId)'),/Script Properties/);
+assert.equal(fakeClientRepos.size,0);
+properties.set('CHIPIN_GITHUB_PROVISION_TOKEN','github-private-test-token');
+properties.set('CHIPIN_CLOUDFLARE_API_TOKEN','cloudflare-test-token');
+properties.set('CHIPIN_CLOUDFLARE_ACCOUNT_ID','1234567890abcdef1234567890abcdef');
+assert.equal(invoke('clientOnboardingSiteSetupStatus(session)').configured,true);
+failPagesOnce=true;
+assert.throws(()=>invoke('clientOnboardingProvisionClientSite(session,workspaceId)'),/cloudflare API HTTP 403/);
+assert.equal(repoCreateCount,1); // repo was securely persisted
+assert.equal(siteStarterCount,1);
+assert.equal(fakeClientRepos.size,1);
+let state=invoke('clientOnboardingSiteStatus(session,workspaceId)');
+assert.equal(state.status,'repository_created');
+assert.match(state.repositoryUrl,/^https:\/\/github.com\/ChipButt\//);
+const workingSite=invoke('clientOnboardingProvisionClientSite(session,workspaceId)');
+assert.equal(workingSite.status,'staging_ready');
+assert.equal(workingSite.hostingFeeGBP,0);
+assert.equal(workingSite.domainConnected,false);
+assert.match(workingSite.pagesUrl,/\.pages\.dev$/);
+assert.equal(repoCreateCount,1);
+assert.equal(siteStarterCount,1);
+assert.equal(pagesCreateCount,2);
+const repeated=invoke('clientOnboardingProvisionClientSite(session,workspaceId)');
+assert.equal(repeated.status,'staging_ready');
+assert.equal(repoCreateCount,1);
+assert.equal(pagesCreateCount,2);
+assert.equal(invoke('clientOnboardingListWorkspaces(session)')[0].site.status,'staging_ready');
+assert.equal(JSON.stringify(repeated).includes('github-private-test-token'),false);
+assert.equal(JSON.stringify(repeated).includes('cloudflare-test-token'),false);
+const adminScript=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8');
+assert.match(adminScript,/clientOnboardingProvisionClientSite/);
+assert.match(adminScript,/CHIPIN_CLOUDFLARE_API_TOKEN/);
+const adminScriptMatch=[...adminScript.matchAll(/<script>([\s\S]*?)<\/script>/g)];
+assert.equal(adminScriptMatch.length,1);
+new vm.Script(adminScriptMatch[0][1],{filename:'ClientOnboardingAdmin.html inline script'});
+
 const uploadText=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(uploadText,/id="progressBar"/);
 assert.match(uploadText,/100 MB/);
@@ -196,4 +285,4 @@ const adminHtml=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8')
 const uploadHtml=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(adminHtml,/ownerKey/);
 assert.match(uploadHtml,/Original camera|Original files|original/i);
-console.log('PASS: quotes and approval, protected client folder creation, 100MB image limit, chunk acknowledgement, resumable progress, upload statuses, and client invitations.');
+console.log('PASS: quote-gated owner-only private GitHub repo and Cloudflare Pages setup, safe retry/idempotency, no domain changes, upload chunking, notifications, and syntax checks.');
