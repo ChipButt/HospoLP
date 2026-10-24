@@ -24,7 +24,14 @@
 <div class="buttons"><button id="checkHosting" class="alt" type="button">Check hosting connection</button></div>
 <p class="hint"><strong>Important:</strong> Provisioning does not alter DNS, attach a customer domain, purchase a domain, or publish approved content. Connect the customer's domain only after final written approval and verify their email/MX records beforehand.</p>
 </div>
-</section></main>
+<div class="card" id="websiteReviewAdmin">
+<h2>Step 5 — First draft review &amp; final approval</h2>
+<p class="hint">When the first draft is ready in Cloudflare Pages, start the client's <strong>three-day</strong> feedback window and email their unique review link. Clients can browse the website, pin comments to a page, then submit one consolidated list. You track amendments here, mark them complete and request their <strong>final written sign-off</strong>. The live domain remains disconnected until approval.</p>
+<p class="hint"><strong>Do not send clients a private GitHub repository link.</strong> Send the client-specific review portal URL. Note: an unprotected <code>pages.dev</code> preview is publicly accessible even though the review link requires a token. Use Cloudflare Access or avoid placing confidential assets on staging.</p>
+<div id="reviews" class="reviews"></div>
+<div class="buttons"><button type="button" id="reviewRefresh" class="alt">Refresh review milestones and comments</button></div>
+<div id="reviewStatus" class="status" role="status"></div>
+</div></section></main>
 <script>
 let session='',lastCreated=null,initialBrief=null;
 const $=id=>document.getElementById(id);
@@ -48,7 +55,106 @@ function loadHash(){
  if(typeof google!=='undefined'&&google.script&&google.script.url&&google.script.url.getLocation){google.script.url.getLocation(loc=>accept(loc.hash||''));}
  else accept(window.location.hash||'');
 }
-$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();await refreshReviews();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+function addReviewCard(r,data){
+ const box=$('reviews'),card=document.createElement('div');card.className='workspace';
+ const title=document.createElement('h3');title.textContent=r.business;card.append(title);
+ const statusLine=document.createElement('p');statusLine.textContent='Review: '+(data.status||'not started').replace(/_/g,' ');card.append(statusLine);
+ if(data.feedbackDueAt){
+  const due=document.createElement('p');due.textContent='Client feedback deadline: '+new Date(data.feedbackDueAt).toLocaleString('en-GB',{timeZone:'Europe/London'});card.append(due);
+ }
+ if(data.reviewUrl){
+  const label=document.createElement('p'),link=document.createElement('a');
+  link.href=data.reviewUrl;link.target='_blank';link.rel='noopener';link.textContent='Open private client review portal';
+  label.append(link);card.append(label);
+ }
+ if(data.previewUrl){
+  const label=document.createElement('p');label.textContent='Staging website: ';
+  const link=document.createElement('a');link.href=data.previewUrl;link.target='_blank';link.rel='noopener';link.textContent=data.previewUrl;
+  label.append(link);card.append(label);
+ }
+ const controls=document.createElement('div');controls.className='buttons';
+ const notice=document.createElement('div');notice.className='status';notice.setAttribute('role','status');
+ function action(label,fn){
+  const b=document.createElement('button');b.type='button';b.textContent=label;
+  b.onclick=async()=>{
+   b.disabled=true;notice.classList.remove('error');notice.textContent='Working…';
+   try{const msg=await fn();notice.textContent=msg||'Saved.';await refreshReviews();}
+   catch(e){notice.textContent=e.message||String(e);notice.classList.add('error');}
+   finally{b.disabled=false;}
+  };controls.append(b);return b;
+ }
+ if(data.status==='not_started'&&r.site&&r.site.configured){
+  action('Start 3-day first-draft review',async()=>{
+   if(!confirm('Start the three-day clock NOW for '+r.business+'? Ensure the first draft is already available at their Pages staging URL.'))return 'No changes.';
+   const result=await gas('clientOnboardingStartWebsiteReview',session,r.id);
+   return 'Review opened. Feedback due: '+result.feedbackDueAt+'. Send the invitation next.';
+  });
+ }else if(data.status==='not_started'){
+  const help=document.createElement('p');help.className='hint';help.textContent='Provision Cloudflare Pages staging first, then this review can begin.';card.append(help);
+ }
+ if(data.status==='open'){
+  action('Email first-draft review link',async()=>{
+   const result=await gas('clientOnboardingSendReviewInvitation',session,r.id);
+   return 'Review link emailed to '+result.email+'.';
+  });
+ }
+ if(data.comments&&data.comments.length){
+  const group=document.createElement('div');group.className='workspace';
+  const h=document.createElement('h3');h.textContent='Consolidated amendments ('+data.comments.length+')';group.append(h);
+  for(const c of data.comments){
+   const p=document.createElement('div');p.className='workspace';
+   const label=document.createElement('strong');label.textContent=c.title+' · '+c.path;p.append(label);
+   const body=document.createElement('p');body.textContent=c.text;p.append(body);
+   if(data.status==='submitted'){
+    const select=document.createElement('select');select.setAttribute('aria-label','Amendment status for '+c.title);select.style.padding='9px';
+    [['open','Outstanding'],['in_progress','In progress'],['done','Completed']].forEach(([v,l])=>{
+     const opt=document.createElement('option');opt.value=v;opt.textContent=l;select.append(opt);
+    });
+    select.value=c.status;
+    select.onchange=async()=>{select.disabled=true;try{await gas('clientOnboardingUpdateReviewComment',session,r.id,c.id,select.value);await refreshReviews();}catch(e){notice.textContent=e.message||String(e);notice.classList.add('error');}finally{select.disabled=false;}};
+    p.append(select);
+   }else{
+    const state=document.createElement('span');state.textContent=' · '+c.status;p.append(state);
+   }
+   group.append(p);
+  }
+  card.append(group);
+ }
+ if(data.status==='submitted'){
+  action('Send finished website for written approval',async()=>{
+   if(!confirm('Have all included revisions been implemented and checked in the staged website?'))return 'No changes.';
+   const result=await gas('clientOnboardingSendFinalApproval',session,r.id);
+   return 'Written approval request emailed to '+result.email+'.';
+  });
+ }
+ if(data.status==='awaiting_approval'){
+  const info=document.createElement('p');info.textContent='Waiting for the client to approve the finished website. Do not change DNS yet.';card.append(info);
+ }
+ if(data.status==='approved'){
+  const info=document.createElement('p');
+  info.textContent='FINAL WRITTEN APPROVAL: '+data.approvedBy+' · '+data.approvedAt+
+    '. Site may now be scheduled for a carefully checked custom-domain cutover (normally 24–48 hours; DNS may take longer).';
+  info.className='good';card.append(info);
+ }
+ card.append(controls,notice);box.append(card);
+}
+async function refreshReviews(){
+ if(!session)return;
+ const box=$('reviews');box.replaceChildren();status('reviewStatus','Loading website review statuses…');
+ try{
+  const all=await gas('clientOnboardingListWorkspaces',session);
+  for(const r of all){
+   let data;
+   try{data=await gas('clientOnboardingReviewStatus',session,r.id);}
+   catch(e){data={status:'error',comments:[]};}
+   addReviewCard(r,data);
+  }
+  if(!all.length)box.textContent='Activate an approved client workspace first.';
+  status('reviewStatus',all.length+' client review record(s) checked.');
+ }catch(e){status('reviewStatus',e.message||String(e),true);}
+}
+$('reviewRefresh').onclick=refreshReviews;
 async function checkHosting(){
  try{
   const r=await gas('clientOnboardingSiteSetupStatus',session);
@@ -109,7 +215,7 @@ $('create').onclick=async()=>{const b=$('create');b.disabled=true;$('created').c
  $('clientUrl').href=result.uploadUrl;$('clientUrl').textContent=result.uploadUrl;
  $('driveUrl').href=result.folderUrl;$('driveUrl').textContent=result.folderUrl;
  status('createStatus',result.created?'Workspace created. You may now send the upload link.':'This meeting already has a workspace; using the existing link.');
- await refresh();
+ await refresh();await refreshReviews();
  }catch(e){status('createStatus',e.message||String(e),true);}finally{b.disabled=false;}};
 $('copyLink').onclick=async()=>{if(!lastCreated)return;try{await navigator.clipboard.writeText(lastCreated.uploadUrl);status('emailStatus','Client upload link copied.');}catch(e){status('emailStatus','Copy unavailable. Select and copy the visible URL.',true);}};
 $('sendInvite').onclick=async()=>{if(!lastCreated)return;const b=$('sendInvite');b.disabled=true;status('emailStatus','Sending client invitation…');try{const r=await gas('clientOnboardingEmailInvitation',session,lastCreated.id);status('emailStatus','Invitation sent to '+r.email);}catch(e){status('emailStatus',e.message||String(e),true);}finally{b.disabled=false;}};
