@@ -82,7 +82,7 @@ function normalisePath(path){try{let p=new URL(path,PUBLIC_URL).pathname;p=p.rep
 function syncEditorToPreview(pathname){if(!schema?.pages?.length||!pathname)return;const current=normalisePath(pathname);const match=schema.pages.find(p=>normalisePath(new URL(p.url||'',PUBLIC_URL).pathname)===current);if(!match||match.id===activePage)return;activePage=match.id;renderTabs();renderForm();sendPreview()}
 function wrap(path,inner){return `<div class="field" data-editor-key="${esc(path)}">${inner}</div>`}
 function basicField(f){const v=getPath(f.path);if(f.type==='boolean')return wrap(f.path,`<div class="toggle"><strong>${esc(f.label)}</strong><input type="checkbox" data-path="${esc(f.path)}" ${v?'checked':''}></div>`);if(f.type==='textarea')return wrap(f.path,`<label>${esc(f.label)}</label><textarea data-path="${esc(f.path)}">${esc(v)}</textarea>`);if(f.type==='image')return imageField(f.label,f.path,v);return wrap(f.path,`<label>${esc(f.label)}</label><input data-path="${esc(f.path)}" value="${esc(v)}">`)}
-function imageField(label,path,value){const src=value?resolveImage(value):'';return wrap(path,`<label>${esc(label)}</label>${src?`<img class="image-thumb" src="${esc(src)}" alt="">`:'<p class="muted">No image selected</p>'}<div class="image-actions"><input type="file" accept="image/*" data-upload="${esc(path)}"><button type="button" class="danger" data-remove-image="${esc(path)}" ${value?'':'disabled'}>Remove</button></div>`)}
+function imageField(label,path,value){const src=value?resolveImage(value):'';return wrap(path,`<label>${esc(label)}</label>${src?`<img class="image-thumb" src="${esc(src)}" alt="">`:'<p class="muted">No image selected</p>'}<div class="image-actions"><input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" data-upload="${esc(path)}"><button type="button" class="danger" data-remove-image="${esc(path)}" ${value?'':'disabled'}>Remove</button></div><small class="muted">Images up to 50 MB. Large originals are archived privately; a high-quality web copy is published automatically.</small>`)}
 function resolveImage(path){if(!path)return'';if(/^https?:\/\//i.test(path))return path;return PUBLIC_URL+String(path).replace(/^\//,'')}
 function renderComplex(f){const items=getPath(f.path)||[];
 if(f.type==='hours')return wrap(f.path,`<label>${esc(f.label)}</label>${items.map((x,i)=>`<div class="card"><strong>${esc(x.day||'Day')}</strong>${basicField({label:'Closed all day',type:'boolean',path:`${f.path}.${i}.closed`})}${basicField({label:'Display text',type:'text',path:`${f.path}.${i}.display`})}<div class="row2">${basicField({label:'Opens',type:'text',path:`${f.path}.${i}.opens`})}${basicField({label:'Closes',type:'text',path:`${f.path}.${i}.closes`})}</div></div>`).join('')}`);
@@ -94,7 +94,98 @@ return basicField(f)}
 function renderForm(){const p=schema.pages.find(x=>x.id===activePage);$('#form').innerHTML=`<h2>${esc(p.label)}</h2><p class="muted">Changes appear in the preview immediately. They are saved as a private draft automatically and only go live when you press <strong>Publish changes</strong>.</p>${restoredDraft?'<p class="draft-note">Your previously saved draft has been restored. You can carry on from where you left off.</p>':''}`+p.groups.map(g=>`<section class="group"><h3>${esc(g.label)}</h3>${g.fields.map(f=>['hours','menu','events','features','gallery'].includes(f.type)?renderComplex(f):basicField(f)).join('')}</section>`).join('');bind()}
 function bind(){document.querySelectorAll('[data-path]').forEach(el=>{const fn=()=>{setPath(el.dataset.path,el.type==='checkbox'?el.checked:el.value);dirty()};el.oninput=fn;el.onchange=fn});document.querySelectorAll('[data-upload]').forEach(el=>el.onchange=()=>uploadImage(el,el.dataset.upload));document.querySelectorAll('[data-remove-image]').forEach(el=>el.onclick=()=>{setPath(el.dataset.removeImage,'');renderForm();dirty()});document.querySelectorAll('[data-action]').forEach(el=>el.onclick=()=>doAction(el));document.querySelectorAll('.field[data-editor-key]').forEach(el=>{el.onmouseenter=()=>sendHighlight(el.dataset.editorKey);el.onmouseleave=()=>sendHighlight(null)})}
 function doAction(el){const list=getPath(el.dataset.path)||[],a=+el.dataset.a,b=+el.dataset.b;switch(el.dataset.action){case'add-menu':list[a].items.push({name:'New item',description:'',price:'',available:true});break;case'remove-menu':list[a].items.splice(b,1);break;case'add-event':list.push({enabled:true,title:'New event',when:'',description:''});break;case'remove-event':list.splice(a,1);break;case'add-feature':list.push({label:'New facility',enabled:true});break;case'remove-feature':list.splice(a,1);break;case'add-gallery':list.push({image:'',alt:''});break;case'remove-gallery':list.splice(a,1);break}renderForm();dirty()}
-async function uploadImage(input,path){const file=input.files[0];if(!file)return;if(file.size>8*1024*1024){alert('Please choose an image smaller than 8 MB.');return}input.disabled=true;try{const data=await fileToBase64(file);const r=await run('uploadEditorImage',SITE_ID,token,{name:file.name,mimeType:file.type,data});setPath(path,r.path);renderForm();dirty()}catch(e){alert(e.message)}finally{input.disabled=false}}
+const IMAGE_SOURCE_LIMIT_BYTES=50*1024*1024, IMAGE_WEB_LIMIT_BYTES=8*1024*1024;
+async function uploadImage(input,path){
+  const file=input.files[0];if(!file)return;
+  if(file.size>IMAGE_SOURCE_LIMIT_BYTES){alert('Choose an image no larger than 50 MB.');return}
+  if(!['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(file.type)){
+    alert('Choose a JPG, PNG, WebP, GIF or AVIF image.');return
+  }
+  if(file.size>IMAGE_WEB_LIMIT_BYTES&&file.type==='image/gif'){
+    alert('Animated GIFs over 8 MB cannot be optimised safely. Choose a smaller GIF, or use a photo.');return
+  }
+  input.disabled=true;
+  try{
+    let prepared=file;
+    if(file.size>IMAGE_WEB_LIMIT_BYTES){
+      // Prepare a web copy before archiving so unsupported formats fail early.
+      setSaveState('Optimising website image…','warn');
+      prepared=await optimiseEditorImage(file);
+      setSaveState('Saving full-size original…','warn');
+      await archiveOriginalEditorImage(file);
+    }
+    setSaveState('Uploading website image…','warn');
+    const data=await fileToBase64(prepared);
+    const r=await run('uploadEditorImage',SITE_ID,token,{
+      name:prepared.name,mimeType:prepared.type,data:data
+    });
+    setPath(path,r.path);renderForm();dirty();
+  }catch(e){setSaveState('Image upload failed','warn');alert('Image upload failed. '+e.message)}
+  finally{input.disabled=false}
+}
+async function archiveOriginalEditorImage(file){
+  const upload=await run('startEditorImageArchive',SITE_ID,token,{
+    name:file.name,mimeType:file.type,size:file.size
+  });
+  let next=upload.nextOffset||0,retries=0;
+  while(next<file.size){
+    const chunk=file.slice(next,Math.min(next+upload.chunkBytes,file.size));
+    try{
+      const data=await fileToBase64(chunk);
+      const progress=await run('uploadEditorImageArchiveChunk',SITE_ID,token,upload.uploadId,next,data);
+      next=progress.nextOffset;
+      retries=0;
+      setSaveState('Archiving original… '+Math.round(next/file.size*100)+'%','warn');
+      if(progress.done)return progress;
+    }catch(err){
+      // A timeout may happen after Drive accepted a chunk. Ask Drive where it
+      // stopped rather than blindly retransmitting bytes.
+      if(++retries>3)throw new Error('Original photo archive interrupted. '+err.message);
+      const status=await run('getEditorImageArchiveStatus',SITE_ID,token,upload.uploadId);
+      next=status.nextOffset;
+      if(status.done)return status;
+    }
+  }
+  throw new Error('Google Drive did not confirm the original photo archive.');
+}
+async function optimiseEditorImage(file){
+  let bitmap=null;
+  try{
+    if(typeof createImageBitmap==='function')bitmap=await createImageBitmap(file);
+    else{
+      const src=URL.createObjectURL(file);
+      try{
+        bitmap=await new Promise((resolve,reject)=>{
+          const img=new Image();
+          img.onload=()=>resolve(img);img.onerror=()=>reject(new Error('Could not read the selected image.'));
+          img.src=src;
+        });
+      }finally{URL.revokeObjectURL(src)}
+    }
+    const width=bitmap.width||bitmap.naturalWidth;
+    const height=bitmap.height||bitmap.naturalHeight;
+    if(!width||!height)throw new Error('Invalid image dimensions.');
+    const canvas=document.createElement('canvas');
+    const ctx=canvas.getContext('2d');
+    if(!ctx)throw new Error('Image processing is unavailable in this browser.');
+    const base=file.name.replace(/\.[^.]+$/,'').replace(/[^a-z0-9_-]+/gi,'-').slice(0,80)||'photo';
+    for(const maxEdge of [3200,2800,2400,2000,1600,1280]){
+      const scale=Math.min(1,maxEdge/Math.max(width,height));
+      canvas.width=Math.max(1,Math.round(width*scale));
+      canvas.height=Math.max(1,Math.round(height*scale));
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.drawImage(bitmap,0,0,canvas.width,canvas.height);
+      for(const quality of [.94,.88,.8,.7,.6]){
+        const blob=await new Promise(resolve=>canvas.toBlob(resolve,'image/webp',quality));
+        if(!blob||blob.type!=='image/webp')
+          throw new Error('This browser cannot prepare WebP website images. Please use an updated Chrome browser.');
+        if(blob.size<=IMAGE_WEB_LIMIT_BYTES)
+          return new File([blob],base+'.webp',{type:'image/webp'});
+      }
+    }
+    throw new Error('This picture could not be optimised under the website image limit.');
+  }finally{if(bitmap&&typeof bitmap.close==='function')bitmap.close()}
+}
 function fileToBase64(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(String(r.result).split(',')[1]);r.onerror=reject;r.readAsDataURL(file)})}
 function dirty(){restoredDraft=false;setSaveState('Saving draft…','warn');sendPreview();scheduleDraftSave()}
 function scheduleDraftSave(){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveDraftNow(false),1200)}
