@@ -4,7 +4,10 @@ const EDITOR_CONFIG = {
   SESSION_SECONDS: 21600,
   GITHUB_API: 'https://api.github.com',
   STANDARD_CONTENT_FILES: ['site','hours','menu','events','features','gallery','drinks','theme'],
-  DRAFT_FOLDER_NAME: 'Chip In Websites Editor Drafts'
+  DRAFT_FOLDER_NAME: 'Chip In Websites Editor Drafts',
+  IMAGE_SOURCE_LIMIT_BYTES: 50 * 1024 * 1024,
+  IMAGE_CHUNK_BYTES: 2 * 1024 * 1024,
+  IMAGE_WEB_LIMIT_BYTES: 8 * 1024 * 1024
 };
 
 function renderEditor_(e) {
@@ -301,6 +304,148 @@ function editorClientPhotosFolder_(site) {
   return DriveApp.getFolderById(matches[0].children.photos);
 }
 
+
+/**
+ * A full-size original (up to 50 MiB) is privately archived using Drive's
+ * resumable upload protocol. Keep every Apps Script request under 2 MiB.
+ * The browser independently generates a high-quality web copy, uploaded
+ * through the established small-image publishing path below.
+ */
+function startEditorImageArchive(siteId, token, asset) {
+  requireEditorSession_(siteId, token);
+  const site = getEditorSite_(siteId);
+  const size = Number(asset && asset.size);
+  const mime = String(asset && asset.mimeType || '').toLowerCase();
+  if (!asset || !asset.name || !Number.isSafeInteger(size) ||
+      size < 1 || size > EDITOR_CONFIG.IMAGE_SOURCE_LIMIT_BYTES)
+    throw new Error('Choose an image up to 50 MB.');
+  if (!['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(mime))
+    throw new Error('Choose a JPG, PNG, WebP, GIF or AVIF image.');
+  const folder = editorClientPhotosFolder_(site);
+  const stem = sanitiseAssetName_(String(asset.name).replace(/\.[^.]+$/, '')) || 'image';
+  const filename = Date.now() + '-' + stem + '-original.' + imageExtension_(asset.name, mime);
+  const response = UrlFetchApp.fetch(
+    'https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable&fields=id%2Csize%2Cparents', {
+      method:'post',contentType:'application/json',
+      payload:JSON.stringify({name:filename,mimeType:mime,parents:[folder.getId()]}),
+      muteHttpExceptions:true,followRedirects:false,
+      headers:{
+        Authorization:'Bearer ' + ScriptApp.getOAuthToken(),
+        'X-Upload-Content-Type':mime,
+        'X-Upload-Content-Length':String(size)
+      }
+    });
+  if (response.getResponseCode() !== 200)
+    throw new Error('Could not start the original photo archive (' + response.getResponseCode() + ').');
+  const headers = response.getAllHeaders();
+  const location = editorUploadHeader_(headers, 'location');
+  if (!/^https:\/\/www\.googleapis\.com\/upload\/drive\/v3\/files\?/.test(location) ||
+      !/[?&]upload_id=/.test(location))
+    throw new Error('Google Drive did not return a valid archive upload session.');
+  const uploadId = Utilities.getUuid();
+  const state = {
+    siteId:String(site.site_id),name:filename,mime:mime,size:size,
+    next:0,folderId:folder.getId(),location:location,
+    startedAt:Date.now(),sessionHash:hashPassword_(token, uploadId)
+  };
+  PropertiesService.getScriptProperties().setProperty('chipin-image-upload:' + uploadId, JSON.stringify(state));
+  return {uploadId:uploadId,chunkBytes:EDITOR_CONFIG.IMAGE_CHUNK_BYTES,nextOffset:0,maxBytes:EDITOR_CONFIG.IMAGE_SOURCE_LIMIT_BYTES};
+}
+
+function editorUploadHeader_(headers, name) {
+  const key = Object.keys(headers || {}).find(k=>k.toLowerCase()===name.toLowerCase());
+  return key ? String(headers[key]) : '';
+}
+
+function editorArchiveSession_(siteId, token, uploadId) {
+  requireEditorSession_(siteId, token);
+  if (!/^[0-9a-f-]{36}$/i.test(String(uploadId||''))) throw new Error('Invalid photo upload session.');
+  const key = 'chipin-image-upload:' + uploadId;
+  const props = PropertiesService.getScriptProperties();
+  const raw = props.getProperty(key);
+  if (!raw) throw new Error('Photo upload session expired. Choose the image again.');
+  const state = JSON.parse(raw);
+  if (state.siteId !== String(siteId) || state.sessionHash !== hashPassword_(token,uploadId))
+    throw new Error('Photo upload session does not belong to this editor login.');
+  if (Date.now()-state.startedAt > 6*60*60*1000) {
+    props.deleteProperty(key);
+    throw new Error('Photo upload session expired. Choose the image again.');
+  }
+  return {key:key,props:props,state:state};
+}
+
+function editorDriveUploadStatus_(state) {
+  const response = UrlFetchApp.fetch(state.location, {
+    method:'put',payload:[],muteHttpExceptions:true,followRedirects:false,
+    headers:{
+      Authorization:'Bearer ' + ScriptApp.getOAuthToken(),
+      'Content-Range':'bytes */' + state.size
+    }
+  });
+  return editorDriveUploadResponse_(response, state);
+}
+
+function editorDriveUploadResponse_(response, state) {
+  const status = response.getResponseCode();
+  if (status === 308) {
+    const range = editorUploadHeader_(response.getAllHeaders(),'range');
+    const match = /^bytes=0-(\d+)$/.exec(range);
+    const next = match ? Number(match[1]) + 1 : 0;
+    if (!Number.isSafeInteger(next) || next > state.size)
+      throw new Error('Invalid Google Drive upload position.');
+    return {done:false,nextOffset:next};
+  }
+  if (status === 200 || status === 201) {
+    const result = JSON.parse(response.getContentText());
+    if (!result || !result.id || Number(result.size) !== state.size ||
+        !Array.isArray(result.parents) || !result.parents.includes(state.folderId))
+      throw new Error('The original photo archive could not be verified.');
+    return {done:true,nextOffset:state.size,driveFileId:String(result.id),backedUp:true};
+  }
+  throw new Error('Google Drive photo upload failed ('+status+').');
+}
+
+function getEditorImageArchiveStatus(siteId, token, uploadId) {
+  const session=editorArchiveSession_(siteId, token, uploadId);
+  const answer=editorDriveUploadStatus_(session.state);
+  if (answer.done) session.props.deleteProperty(session.key);
+  else {
+    session.state.next=answer.nextOffset;
+    session.props.setProperty(session.key,JSON.stringify(session.state));
+  }
+  return answer;
+}
+
+function uploadEditorImageArchiveChunk(siteId, token, uploadId, offset, encoded) {
+  const session=editorArchiveSession_(siteId, token, uploadId);
+  const state=session.state;
+  if (!Number.isSafeInteger(offset) || offset !== state.next)
+    throw new Error('Image upload position changed. Resume the upload.');
+  if (typeof encoded !== 'string' || !encoded ||
+      encoded.length > Math.ceil(EDITOR_CONFIG.IMAGE_CHUNK_BYTES*4/3)+4)
+    throw new Error('Invalid photo upload chunk.');
+  const bytes=Utilities.base64Decode(encoded);
+  if (!bytes.length || bytes.length > EDITOR_CONFIG.IMAGE_CHUNK_BYTES ||
+      offset+bytes.length > state.size ||
+      (offset+bytes.length < state.size && bytes.length % (256*1024) !== 0))
+    throw new Error('Photo upload chunk size is invalid.');
+  const response=UrlFetchApp.fetch(state.location, {
+    method:'put',payload:bytes,muteHttpExceptions:true,followRedirects:false,
+    contentType:state.mime,
+    headers:{
+      Authorization:'Bearer ' + ScriptApp.getOAuthToken(),
+      'Content-Range':'bytes '+offset+'-'+(offset+bytes.length-1)+'/'+state.size
+    }
+  });
+  const answer=editorDriveUploadResponse_(response,state);
+  if (answer.done) session.props.deleteProperty(session.key);
+  else {
+    state.next=answer.nextOffset;
+    session.props.setProperty(session.key,JSON.stringify(state));
+  }
+  return answer;
+}
+
 function uploadEditorImage(siteId, token, asset) {
   requireEditorSession_(siteId, token);
   const site = getEditorSite_(siteId);
@@ -309,8 +454,8 @@ function uploadEditorImage(siteId, token, asset) {
   if (!['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(mime))
     throw new Error('Choose a JPG, PNG, WebP, GIF or AVIF image.');
   const bytes = Utilities.base64Decode(asset.data);
-  if (!bytes.length || bytes.length > 8 * 1024 * 1024)
-    throw new Error('Images must be 8 MB or smaller.');
+  if (!bytes.length || bytes.length > EDITOR_CONFIG.IMAGE_WEB_LIMIT_BYTES)
+    throw new Error('The website image must be optimised below 8 MB before publishing.');
   const ext = imageExtension_(asset.name, mime);
   const stem = sanitiseAssetName_(asset.name.replace(/\.[^.]+$/, '')) || 'image';
   const filename = `${Date.now()}-${stem}.${ext}`;
