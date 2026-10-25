@@ -18,6 +18,22 @@ on:
       - 'scripts/test-client-onboarding.cjs'
       - 'scripts/test-editor-atomic-publish.cjs'
       - '.github/workflows/hospo-apps-script-deploy.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'apps-script/ClientOnboarding.gs'
+      - 'apps-script/ClientOnboardingAdmin.html'
+      - 'apps-script/ClientOnboardingUpload.html'
+      - 'apps-script/ClientReviewService.gs'
+      - 'apps-script/ClientWebsiteReview.html'
+      - 'apps-script/ClientHandover.gs'
+      - 'apps-script/Editor.gs'
+      - 'apps-script/EditorUI.html'
+      - 'scripts/prepare-apps-script-deployment.cjs'
+      - 'scripts/test-apps-script-deployment.cjs'
+      - 'scripts/test-client-onboarding.cjs'
+      - 'scripts/test-editor-atomic-publish.cjs'
+      - '.github/workflows/hospo-apps-script-deploy.yml'
 
 # Auto-deploy only after both test suites pass. Every deploy clones live code,
 # checks the exact file inventory, snapshots a rollback version, and updates
