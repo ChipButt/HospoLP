@@ -41,7 +41,7 @@
 <p class="hint">Link an existing client website and its working editor. This does not create or overwrite any website.</p>
 <div class="grid"><label>Business name <input id="previewBusiness"></label>
 <label>GitHub repository <input id="previewRepo" placeholder="ChipButt/BusinessWebsite"></label>
-<label>Editor site ID <input id="previewSiteId" placeholder="client-site-id"></label></div>
+<label>Editor site ID <input id="previewSiteId" placeholder="client-site-id"></label><label>Existing Cloudflare Pages project <input id="previewPagesProject" placeholder="chipin-example"></label></div>
 <div class="buttons"><button type="button" id="registerPreview">Add prepared client website</button></div>
 <div id="registerPreviewStatus" class="status" role="status"></div></details>
 </div>
@@ -269,7 +269,7 @@ $('registerPreview').onclick=async()=>{
  try{
    const r=await gas('clientOnboardingRegisterPreviewProject',session,{
      business:$('previewBusiness').value.trim(),repository:$('previewRepo').value.trim(),
-     editorSiteId:$('previewSiteId').value.trim()});
+     editorSiteId:$('previewSiteId').value.trim(),pagesProject:$('previewPagesProject').value.trim()});
    status('registerPreviewStatus',r.created?'Prepared website registered. Open the Meeting Builder from its client card.':'This prepared website is already registered.');
    await refreshPreviewPicker();await refreshHub();
  }catch(e){status('registerPreviewStatus',e.message||String(e),true)}
