@@ -67,7 +67,7 @@
 <div class="card"><h2>Step 3 — Check client assets</h2><p class="hint">Use Refresh to see which clients have sent files and marked their upload complete.</p><button id="refresh" type="button" class="alt">Refresh client statuses</button><div id="workspaces" style="margin-top:15px"></div><div id="checkStatus" class="status" role="status"></div></div>
 <div class="card" id="siteProvisioning">
 <h2>Step 4 — Create each client's website hosting (£0)</h2>
-<p class="hint">For each quote-approved workspace below, create a <strong>private GitHub client repository</strong> and a <strong>Cloudflare Pages</strong> project inside Chip In's existing Cloudflare account. This is a one-time owner action, separate from sending the assets-upload link. It creates a generic holding page, <strong>not the client’s finished or approved website</strong>.</p>
+<p class="hint">For each approved client, first create a <strong>private GitHub repository</strong>, then connect <strong>Cloudflare Pages</strong> separately. If a repository already exists, only the Cloudflare connection is needed. These steps do not activate a customer domain or replace their finished website.</p>
 <div id="siteSetupStatus" class="status" role="status">Checking hosting connection…</div>
 <p class="hint"><strong>One-time setup:</strong> The owner must configure three secret Script Properties in the existing Google Apps Script project: <code>CHIPIN_GITHUB_PROVISION_TOKEN</code>, <code>CHIPIN_CLOUDFLARE_API_TOKEN</code> and <code>CHIPIN_CLOUDFLARE_ACCOUNT_ID</code>. Never share tokens in client briefs, screenshots or GitHub source. Cloudflare must also be authorised to access newly created private repositories through its GitHub integration.</p>
 <div class="buttons"><button id="checkHosting" class="alt" type="button">Check hosting connection</button></div>
@@ -333,7 +333,7 @@ $('refreshHub').onclick=refreshHub;
 async function checkHosting(){
  try{
   const r=await gas('clientOnboardingSiteSetupStatus',session);
-  status('siteSetupStatus',r.configured?'Hosting credentials configured. Eligible clients may be provisioned using the action below.':'Configuration needed in Script Properties: '+r.missing.join(', ')+'. No infrastructure can be created until these are configured.',!r.configured);
+  status('siteSetupStatus',r.configured?'Required hosting credentials are stored. This check does not create anything or confirm that Cloudflare has accepted a deployment.':'Configuration needed in Script Properties: '+r.missing.join(', ')+'. No infrastructure can be created until these are configured.',!r.configured);
  }catch(err){status('siteSetupStatus',err.message||String(err),true);}
 }
 async function refresh(){
@@ -359,23 +359,28 @@ async function refresh(){
    }
    item.append(line);
    const buttons=document.createElement('div');buttons.className='buttons';
-   const button=document.createElement('button');button.type='button';
-   button.textContent=site.configured?'Hosting already provisioned':'Create private GitHub repo + Cloudflare Pages (£0)';
-   button.disabled=Boolean(site.configured);
+   const repoButton=document.createElement('button');repoButton.type='button';
+   repoButton.textContent=site.repositoryUrl?'GitHub repository exists':'1. Create private GitHub repository';
+   repoButton.disabled=Boolean(site.repositoryUrl);
+   const pagesButton=document.createElement('button');pagesButton.type='button';
+   pagesButton.textContent=site.configured?'Cloudflare Pages connected':'2. Connect Cloudflare Pages';
+   pagesButton.disabled=Boolean(site.configured||!site.repositoryUrl);
    const feedback=document.createElement('div');feedback.className='status';feedback.setAttribute('role','status');
-   button.onclick=async()=>{
-    if(!confirm('Create separate PRIVATE GitHub repo and Cloudflare Pages staging project for '+r.business+'? This does NOT attach the client domain or publish approved website content.'))return;
-    button.disabled=true;feedback.textContent='Provisioning site infrastructure in your existing accounts…';
-    try{
-     const done=await gas('clientOnboardingProvisionClientSite',session,r.id);
-     feedback.textContent='Site infrastructure created: '+done.repositoryUrl+' · '+done.pagesUrl+'. Domain remains unconnected until final approval.';
-     await refresh();
-    }catch(err){
-     feedback.textContent='Provisioning not completed: '+(err.message||String(err))+'. Any completed step will be retained for safe retry.';
-     feedback.classList.add('error');button.disabled=false;
-    }
+   repoButton.onclick=async()=>{
+    if(!confirm('Create a new private GitHub repository for '+r.business+'? This does not create Cloudflare hosting or connect a domain.'))return;
+    repoButton.disabled=true;feedback.textContent='Creating private repository…';
+    try{const done=await gas('clientOnboardingCreatePrivateRepository',session,r.id);
+      feedback.textContent='GitHub repository created: '+done.repositoryUrl+'. You can now connect Cloudflare Pages.';await refresh();
+    }catch(err){feedback.textContent='Repository not created: '+(err.message||String(err));feedback.classList.add('error');repoButton.disabled=false}
    };
-   buttons.append(button);item.append(buttons,feedback);box.append(item);
+   pagesButton.onclick=async()=>{
+    if(!confirm('Connect the EXISTING repository for '+r.business+' to Cloudflare Pages? No new GitHub repository or customer domain will be created.'))return;
+    pagesButton.disabled=true;feedback.textContent='Connecting existing repository to Cloudflare Pages…';
+    try{const done=await gas('clientOnboardingConnectCloudflarePages',session,r.id);
+      feedback.textContent='Cloudflare Pages connected: '+done.pagesUrl+'. The custom domain remains unchanged.';await refresh();
+    }catch(err){feedback.textContent='Cloudflare connection not completed: '+(err.message||String(err));feedback.classList.add('error');pagesButton.disabled=false}
+   };
+   buttons.append(repoButton,pagesButton);item.append(buttons,feedback);box.append(item);
   }
   status('checkStatus',all.length+' approved client workspace(s) checked.');
  }catch(e){status('checkStatus',e.message||String(e),true);}
