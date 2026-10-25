@@ -728,6 +728,14 @@ function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
   if(secret.length<12||secret.length>128||/^(password|12345|qwerty)/i.test(secret))
     throw new Error('Choose a unique editor password of at least 12 characters.');
   return clientOnboardingWithLock_(()=>{
+    // Once the existing demonstration editor has been handed to the customer,
+    // the owner must not reset the customer's password via demo controls.
+    const project=clientProjectEnsureBullsHead_();
+    if(project&&project.workspaceId){
+      const workspace=clientOnboardingRecord_(project.workspaceId);
+      if(workspace.editorHandover&&workspace.editorHandover.siteId===siteId)
+        throw new Error('This website editor belongs to the customer now. Use the customer password-recovery process.');
+    }
     const config={repo_full_name:repo};
     const schema=JSON.parse(githubReadText_(config,'editor.schema.json'));
     if(!schema||!Array.isArray(schema.pages)||schema.pages.length<7)
