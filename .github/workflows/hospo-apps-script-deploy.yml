@@ -16,6 +16,7 @@ on:
       - 'scripts/prepare-apps-script-deployment.cjs'
       - 'scripts/test-apps-script-deployment.cjs'
       - 'scripts/test-client-onboarding.cjs'
+      - 'scripts/test-editor-atomic-publish.cjs'
       - '.github/workflows/hospo-apps-script-deploy.yml'
 
 # Auto-deploy only after both test suites pass. Every deploy clones live code,
@@ -38,6 +39,7 @@ jobs:
         with:
           node-version: '24'
       - run: node scripts/test-client-onboarding.cjs
+      - run: node scripts/test-editor-atomic-publish.cjs
       - run: node scripts/test-apps-script-deployment.cjs
 
   deploy:
