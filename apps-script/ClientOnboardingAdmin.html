@@ -48,6 +48,10 @@
 <div class="buttons"><button id="enableBullDemo" type="button">Activate or update Bulls Head editor login</button></div>
 <div id="bullDemoStatus" class="status" role="status"></div>
 <div id="bullDemoLinks"></div>
+<h3>Restore the website after testing</h3>
+<p class="hint">Before your customer meeting, restore the original Bull's Head text and photographs in one click. This publishes the saved clean content back to the real website and clears its draft. Uploaded images remain safely stored. The login is not changed; use the editor login fields above if the customer needs different credentials.</p>
+<div class="buttons"><button id="restoreBullClean" type="button" class="alt">Restore clean website content</button></div>
+<div id="bullRestoreStatus" class="status" role="status"></div>
 <h3>Change the public website address after launch</h3>
 <p class="hint">Once the customer's HTTPS domain serves this same Bull's Head repository, enter it here. The editor will open and publish against that address automatically. Its site ID, GitHub repository, content and password stay the same. No Cloudflare connection is required for the current GitHub Pages version.</p>
 <label>Customer's new website HTTPS address <input id="bullDomainUrl" type="url" autocomplete="url" placeholder="https://www.example.co.uk/"></label>
@@ -426,5 +430,21 @@ $('updateBullDomain').onclick=async()=>{
    }
  }catch(err){status('bullDomainStatus',err.message||String(err),true)}
  finally{button.disabled=false}
+};
+
+$('restoreBullClean').onclick=async()=>{
+ if(!session){status('bullRestoreStatus','Unlock the owner dashboard first.',true);return}
+ if(!confirm('Restore the original Bull\'s Head page text and picture choices? This publishes the clean saved baseline to the live site and clears any saved draft. Uploaded files and passwords remain untouched.'))return;
+ const button=$('restoreBullClean');
+ button.disabled=true;
+ status('bullRestoreStatus','Restoring the clean starting content to GitHub…');
+ try{
+  const result=await gas('ownerRestoreBullsHeadCleanContent',session);
+  status('bullRestoreStatus',result.contentRestored?
+    'Clean starting content restored. GitHub Pages will publish it; the draft has been cleared.':
+    'The live content was already clean. Any previous saved draft has been cleared.');
+ }catch(err){
+  status('bullRestoreStatus','Could not restore the site: '+(err.message||String(err)),true);
+ }finally{button.disabled=false}
 };
 </script></body></html>
