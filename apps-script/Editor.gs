@@ -42,7 +42,7 @@ function loginEditor(siteId, email, password) {
     throw new Error('Email or password is incorrect.');
   }
   const token = Utilities.getUuid() + Utilities.getUuid();
-  CacheService.getScriptCache().put(`editor-session:${token}`, JSON.stringify({siteId:site.site_id,email:cleanEmail}), EDITOR_CONFIG.SESSION_SECONDS);
+  CacheService.getScriptCache().put(`editor-session:${token}`, JSON.stringify({siteId:site.site_id,email:cleanEmail,authVersion:PropertiesService.getScriptProperties().getProperty('chipin-editor-auth-version:'+site.site_id)||''}), EDITOR_CONFIG.SESSION_SECONDS);
   // Only mark a client editor as verified after we have ALSO loaded its
   // own website content and editable schema. Valid credentials alone are not
   // evidence that the editor can actually open.
@@ -326,6 +326,9 @@ function requireEditorSession_(siteId, token) {
   if (!value) throw new Error('Your editor session has expired. Please sign in again.');
   const session = JSON.parse(value);
   if (session.siteId !== String(siteId)) throw new Error('This session cannot edit that website.');
+  const authVersion=PropertiesService.getScriptProperties().getProperty('chipin-editor-auth-version:'+String(siteId))||'';
+  if (authVersion && session.authVersion !== authVersion)
+    throw new Error('The editor account credentials have been updated. Please sign in again.');
   return session;
 }
 
@@ -340,8 +343,9 @@ function githubToken_() {
   return token;
 }
 
-function githubRequest_(site, path, method, payload) {
-  const url = `${EDITOR_CONFIG.GITHUB_API}/repos/${site.repo_full_name}/contents/${path.split('/').map(encodeURIComponent).join('/')}`;
+function githubRequest_(site, path, method, payload, ref) {
+  const url = `${EDITOR_CONFIG.GITHUB_API}/repos/${site.repo_full_name}/contents/${path.split('/').map(encodeURIComponent).join('/')}` +
+    (ref ? '?ref=' + encodeURIComponent(ref) : '');
   const options = {
     method: method || 'get',
     muteHttpExceptions: true,
@@ -363,8 +367,8 @@ function githubRequest_(site, path, method, payload) {
   return text ? JSON.parse(text) : {};
 }
 
-function githubReadText_(site, path) {
-  const result = githubRequest_(site, path, 'get');
+function githubReadText_(site, path, ref) {
+  const result = githubRequest_(site, path, 'get', null, ref);
   if (!result.content) throw new Error(`Could not read ${path}.`);
   return Utilities.newBlob(Utilities.base64Decode(String(result.content).replace(/\s/g,''))).getDataAsString();
 }
@@ -489,6 +493,8 @@ function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
     if(existing>=0)sheet.getRange(existing+2,1,1,mapped.length).setValues([mapped]);
     else sheet.appendRow(mapped);
     props.setProperty('chipin-owner-demo:'+siteId,'yes');
+    // Revoke any former owner test sessions when login changes for Tuesday.
+    props.setProperty('chipin-editor-auth-version:'+siteId,Utilities.getUuid());
     const folder=editorClientPhotosFolder_(getEditorSite_(siteId));
     return {success:true,editorUrl:registeredUrl+'edit/',websiteUrl:registeredUrl,
       photosFolderUrl:folder.getUrl(),loginEmail:email};
@@ -534,5 +540,39 @@ function ownerUpdateBullsHeadEditorPublicUrl(ownerSession, candidateUrl) {
     sheet.getRange(site._row,col).setValue(url);
     return {success:true,websiteUrl:url,editorUrl:url+'edit/',repository:site.repo_full_name,
       siteId:site.site_id,unchangedLogin:site.login_email};
+  });
+}
+
+/**
+ * Owner-only restoration of the Bull's Head's clean pre-test content.
+ * Reverts only the editor-controlled site JSON from a fixed snapshot branch.
+ * Never removes uploaded image files, archives, domains, schema or credentials.
+ */
+function ownerRestoreBullsHeadCleanContent(ownerSession) {
+  clientOnboardingRequireAdmin_(ownerSession);
+  return clientOnboardingWithLock_(()=>{
+    const siteId='bulls-head-bidford';
+    const site=getEditorSite_(siteId);
+    if(site.repo_full_name!=='ChipButt/TheBullsHeadBidford' ||
+       PropertiesService.getScriptProperties().getProperty('chipin-owner-demo:'+siteId)!=='yes')
+      throw new Error('This reset is only available for the owner-controlled Bull\'s Head editor.');
+    const path='content/site.json';
+    const snapshot='tuesday-editor-clean-baseline-2026-10-25';
+    const baseline=githubReadText_(site,path,snapshot);
+    const parsed=JSON.parse(baseline);
+    if(!parsed || typeof parsed!=='object' || !parsed.editorPages ||
+       !parsed.editorPages.index || !parsed.editorPages.drinks)
+      throw new Error('The clean baseline is invalid. No website changes were made.');
+    const current=githubReadText_(site,path);
+    let changed=false;
+    if(current!==baseline){
+      githubWriteText_(site,path,baseline,'Restore Bulls Head editor text and photos to clean owner-test baseline');
+      changed=true;
+    }
+    // Remove any abandoned autosaved draft that would otherwise reintroduce
+    // old test values when the client opens the editor on Tuesday.
+    deleteEditorDraft_(siteId);
+    return {success:true,contentRestored:changed,siteUrl:site.public_url,
+      siteId:siteId,baseline:snapshot,archivedImagesPreserved:true,draftCleared:true};
   });
 }
