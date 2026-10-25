@@ -482,12 +482,16 @@ function clientSiteStarterHtml_(){
     '<style>body{font:17px system-ui,sans-serif;min-height:100vh;margin:0;display:grid;place-items:center;background:#f5f9f7;color:#173b35;text-align:center}main{padding:32px;max-width:520px}h1{font-size:clamp(32px,6vw,56px)}p{line-height:1.6}</style>'+
     '</head><body><main><h1>Website in preparation</h1><p>This site has not yet been approved for launch.</p></main></body></html>\n';
 }
-function clientOnboardingProvisionClientSite(session,workspaceId){
+function clientOnboardingProvisionClientSite(session,workspaceId,stage){
   clientOnboardingRequireAdmin_(session);
-  const cfg=clientSiteSettings_(true);
+  const step=stage||'all';
+  if(!['all','repo','pages'].includes(step))throw new Error('Invalid hosting setup step.');
+  const cfg=clientSiteSettings_(step!=='repo');
+  if(!cfg.gitToken)throw new Error('GitHub setup needs CHIPIN_GITHUB_PROVISION_TOKEN in Script Properties.');
   return clientOnboardingWithLock_(()=>{
     const r=clientOnboardingRecord_(workspaceId);
     if(!r.meetingId||!r.business||!r.email)throw new Error('A quote-approved client workspace is required before creating website infrastructure.');
+    if(step==='pages'&&!(r.siteProvision&&r.siteProvision.repository))throw new Error('Create the GitHub repository first, then connect Cloudflare Pages.');
     if(r.siteProvision&&r.siteProvision.pagesProject){
       return clientSitePublicStatus_(r);
     }
@@ -532,6 +536,7 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
       r.siteProvision=provision;
       clientOnboardingSave_(r);
     }
+    if(step==='repo')return clientSitePublicStatus_(r);
     if(!provision.pagesProject){
       const body={
         name:slug,production_branch:provision.branch,
@@ -579,6 +584,12 @@ function clientOnboardingProvisionClientSite(session,workspaceId){
     }
     return clientSitePublicStatus_(r);
   });
+}
+function clientOnboardingCreatePrivateRepository(session,workspaceId) {
+  return clientOnboardingProvisionClientSite(session,workspaceId,'repo');
+}
+function clientOnboardingConnectCloudflarePages(session,workspaceId) {
+  return clientOnboardingProvisionClientSite(session,workspaceId,'pages');
 }
 function clientSitePublicStatus_(r){
   const p=r.siteProvision||{};
