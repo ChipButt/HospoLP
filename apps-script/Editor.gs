@@ -446,11 +446,11 @@ function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
   clientOnboardingRequireAdmin_(ownerSession);
   const siteId='bulls-head-bidford';
   const repo='ChipButt/TheBullsHeadBidford';
-  const publicUrl='https://chipbutt.github.io/TheBullsHeadBidford/';
+  const initialPublicUrl='https://chipbutt.github.io/TheBullsHeadBidford/';
   const email=clientOnboardingEmail_(loginEmail);
   const secret=String(password||'');
   if(secret.length<12||secret.length>128||/^(password|12345|qwerty)/i.test(secret))
-    throw new Error('Choose a unique demonstration password of at least 12 characters.');
+    throw new Error('Choose a unique editor password of at least 12 characters.');
   return clientOnboardingWithLock_(()=>{
     const config={repo_full_name:repo};
     const schema=JSON.parse(githubReadText_(config,'editor.schema.json'));
@@ -477,9 +477,10 @@ function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
         throw new Error('The existing demo account points to a different repository.');
     }
     const salt=Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,'');
+    const registeredUrl=existing>=0?String(values[existing+1][headers.indexOf('public_url')]||initialPublicUrl):initialPublicUrl;
     const row={
-      site_id:siteId,business_name:'The Bulls Head — Chip In demonstration',
-      public_url:publicUrl,login_email:email,password_salt:salt,
+      site_id:siteId,business_name:'The Bulls Head',
+      public_url:registeredUrl,login_email:email,password_salt:salt,
       password_hash:hashPassword_(secret,salt),password_is_temporary:false,
       active:true,repo_full_name:repo,content_root:'content',
       media_root:'media/editor',schema_path:'editor.schema.json'
@@ -489,7 +490,49 @@ function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
     else sheet.appendRow(mapped);
     props.setProperty('chipin-owner-demo:'+siteId,'yes');
     const folder=editorClientPhotosFolder_(getEditorSite_(siteId));
-    return {success:true,editorUrl:publicUrl+'edit/',websiteUrl:publicUrl,
+    return {success:true,editorUrl:registeredUrl+'edit/',websiteUrl:registeredUrl,
       photosFolderUrl:folder.getUrl(),loginEmail:email};
+  });
+}
+
+/**
+ * Owner-only update of the public preview address for the existing Bull's Head
+ * editor. The site ID, credentials, content, image assets and GitHub repo stay
+ * unchanged. Refuse unknown or incorrectly-hosted sites.
+ */
+function ownerUpdateBullsHeadEditorPublicUrl(ownerSession, candidateUrl) {
+  clientOnboardingRequireAdmin_(ownerSession);
+  const url=clientHubSafeLiveUrl_(candidateUrl);
+  // Confirm the address serves the *actual Bull's Head editor-enabled* site.
+  // The redirect and page both remain at the same origin for iframe preview.
+  let response;
+  try {
+    response=UrlFetchApp.fetch(url,{muteHttpExceptions:true,followRedirects:true,headers:{'User-Agent':'Chip-In-Editor-Domain-Check'}});
+  } catch (err) {
+    throw new Error('The custom domain is not reachable yet. Finish hosting and DNS before updating the editor.');
+  }
+  if(response.getResponseCode()!==200 ||
+     !response.getContentText().includes('assets/chipin-live-content.js') ||
+     !response.getContentText().includes('The Bulls Head'))
+    throw new Error('That address does not serve the Bull\'s Head live-editable website. No changes were made.');
+  // The editor redirect must exist too; otherwise updating would strand users.
+  const editorResponse=UrlFetchApp.fetch(url+'edit/',{muteHttpExceptions:true,followRedirects:false});
+  if(editorResponse.getResponseCode()!==200 ||
+     !editorResponse.getContentText().includes('bulls-head-bidford'))
+    throw new Error('The new website does not include its Bull\'s Head editor shortcut. No changes were made.');
+  return clientOnboardingWithLock_(()=>{
+    const site=getEditorSite_('bulls-head-bidford');
+    if(site.repo_full_name!=='ChipButt/TheBullsHeadBidford')
+      throw new Error('The editor is registered to a different GitHub repository.');
+    if(PropertiesService.getScriptProperties().getProperty('chipin-owner-demo:bulls-head-bidford')!=='yes')
+      throw new Error('This Bull\'s Head site is not registered as owner-controlled. Use the approved handover process.');
+    const sheet=SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID)
+      .getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
+    const headers=sheet.getRange(1,1,1,sheet.getLastColumn()).getValues()[0].map(String);
+    const col=headers.indexOf('public_url')+1;
+    if(!col)throw new Error('The website registry is missing its public URL field.');
+    sheet.getRange(site._row,col).setValue(url);
+    return {success:true,websiteUrl:url,editorUrl:url+'edit/',repository:site.repo_full_name,
+      siteId:site.site_id,unchangedLogin:site.login_email};
   });
 }
