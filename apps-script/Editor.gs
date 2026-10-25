@@ -154,8 +154,23 @@ function editorClientPhotosFolder_(site) {
       record.siteProvision.repository === String(site.repo_full_name) &&
       record.editorHandover && record.editorHandover.siteId === String(site.site_id) &&
       String(record.email || '').toLowerCase() === String(site.login_email || '').toLowerCase());
-  if (matches.length !== 1 || !matches[0].children || !matches[0].children.photos)
+  if (matches.length !== 1 || !matches[0].children || !matches[0].children.photos) {
+    // The Bull's Head is an owner-controlled pre-contract demonstration.
+    // Keep its uploaded images privately in Drive until a client workspace exists.
+    const props=PropertiesService.getScriptProperties();
+    if (String(site.site_id)==='bulls-head-bidford' &&
+        String(site.repo_full_name)==='ChipButt/TheBullsHeadBidford' &&
+        props.getProperty('chipin-owner-demo:bulls-head-bidford')==='yes') {
+      const key='CHIPIN_BULLS_HEAD_DEMO_PHOTOS_FOLDER_ID';
+      const existing=props.getProperty(key);
+      if(existing) return DriveApp.getFolderById(existing);
+      const parent=DriveApp.getFolderById(CLIENT_ONBOARDING.parentFolderId);
+      const folder=parent.createFolder('Bulls Head — Owner Demo Editor Images');
+      props.setProperty(key,folder.getId());
+      return folder;
+    }
     throw new Error('The client photos archive is not connected. Ask Chip In to check this website in the Client Project Hub.');
+  }
   return DriveApp.getFolderById(matches[0].children.photos);
 }
 
@@ -420,4 +435,61 @@ function sanitiseEditorPayload_(payload) {
   if (p.drinks) out.drinks = p.drinks;
   if (p.theme) out.theme = p.theme;
   return out;
+}
+
+/**
+ * Explicitly owner-controlled, pre-contract demo setup for the ONE existing
+ * Bull's Head showcase. Does not bypass normal client handover or register
+ * arbitrary client repositories. Never hardcodes or emails a password.
+ */
+function ownerActivateBullsHeadDemoEditor(ownerSession, loginEmail, password) {
+  clientOnboardingRequireAdmin_(ownerSession);
+  const siteId='bulls-head-bidford';
+  const repo='ChipButt/TheBullsHeadBidford';
+  const publicUrl='https://chipbutt.github.io/TheBullsHeadBidford/';
+  const email=clientOnboardingEmail_(loginEmail);
+  const secret=String(password||'');
+  if(secret.length<12||secret.length>128||/^(password|12345|qwerty)/i.test(secret))
+    throw new Error('Choose a unique demonstration password of at least 12 characters.');
+  return clientOnboardingWithLock_(()=>{
+    const config={repo_full_name:repo};
+    const schema=JSON.parse(githubReadText_(config,'editor.schema.json'));
+    if(!schema||!Array.isArray(schema.pages)||schema.pages.length<7)
+      throw new Error('The Bull\'s Head does not have a valid live editor schema.');
+    for(const name of EDITOR_CONFIG.STANDARD_CONTENT_FILES)
+      githubReadText_(config,'content/'+name+'.json');
+    const bridge=githubReadText_(config,'assets/chipin-live-content.js');
+    if(!bridge.includes('hospolp-preview')||!bridge.includes('content/site.json'))
+      throw new Error('The Bull\'s Head live editor bridge is incomplete.');
+    const sheet=SpreadsheetApp.openById(EDITOR_CONFIG.REGISTRY_SPREADSHEET_ID)
+      .getSheetByName(EDITOR_CONFIG.REGISTRY_SHEET);
+    if(!sheet)throw new Error('The private editor client registry is unavailable.');
+    ensureRegistryColumn_(sheet,'password_is_temporary');
+    const values=sheet.getDataRange().getValues();
+    const headers=values[0].map(String);
+    const existing=values.slice(1).findIndex(row=>String(row[headers.indexOf('site_id')]).trim()===siteId);
+    const props=PropertiesService.getScriptProperties();
+    if(existing>=0){
+      if(props.getProperty('chipin-owner-demo:'+siteId)!=='yes')
+        throw new Error('This site ID has already been registered outside the internal demo. Refusing to reset its credentials.');
+      const row=values[existing+1];
+      if(String(row[headers.indexOf('repo_full_name')])!==repo)
+        throw new Error('The existing demo account points to a different repository.');
+    }
+    const salt=Utilities.getUuid().replace(/-/g,'')+Utilities.getUuid().replace(/-/g,'');
+    const row={
+      site_id:siteId,business_name:'The Bulls Head — Chip In demonstration',
+      public_url:publicUrl,login_email:email,password_salt:salt,
+      password_hash:hashPassword_(secret,salt),password_is_temporary:false,
+      active:true,repo_full_name:repo,content_root:'content',
+      media_root:'media/editor',schema_path:'editor.schema.json'
+    };
+    const mapped=headers.map(h=>Object.prototype.hasOwnProperty.call(row,h)?row[h]:'');
+    if(existing>=0)sheet.getRange(existing+2,1,1,mapped.length).setValues([mapped]);
+    else sheet.appendRow(mapped);
+    props.setProperty('chipin-owner-demo:'+siteId,'yes');
+    const folder=editorClientPhotosFolder_(getEditorSite_(siteId));
+    return {success:true,editorUrl:publicUrl+'edit/',websiteUrl:publicUrl,
+      photosFolderUrl:folder.getUrl(),loginEmail:email};
+  });
 }
