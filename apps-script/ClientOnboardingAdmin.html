@@ -57,6 +57,10 @@
 <label>Customer's new website HTTPS address <input id="bullDomainUrl" type="url" autocomplete="url" placeholder="https://www.example.co.uk/"></label>
 <div class="buttons"><button id="updateBullDomain" type="button">Connect editor to new website address</button></div>
 <div id="bullDomainStatus" class="status" role="status"></div>
+<h3>Cloudflare Pages hosting — existing Bull's Head repository</h3>
+<p class="hint">Use the existing <strong>ChipButt/TheBullsHeadBidford</strong> repository. This action creates or verifies its Cloudflare Pages project without creating another repo, making it private, changing DNS, or interrupting the current GitHub Pages site.</p>
+<div class="buttons"><button id="connectBullPages" type="button">Connect existing Bulls Head repository to Cloudflare Pages</button></div>
+<div id="bullPagesStatus" class="status" role="status"></div>
 </div>
 <div class="card"><h2>Step 2 — Activate an approved client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
 <div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
@@ -451,5 +455,21 @@ $('restoreBullClean').onclick=async()=>{
  }catch(err){
   status('bullRestoreStatus','Could not restore the site: '+(err.message||String(err)),true);
  }finally{button.disabled=false}
+};
+
+$('connectBullPages').onclick=async()=>{
+ if(!session){status('bullPagesStatus','Sign in to the owner dashboard first.',true);return}
+ if(!confirm('Connect the existing Bulls Head GitHub repository to a new Cloudflare Pages project? No second GitHub repository will be created. The current live site stays unchanged.'))return;
+ const button=$('connectBullPages');button.disabled=true;
+ status('bullPagesStatus','Checking GitHub and Cloudflare connections and provisioning Pages…');
+ try{
+  const result=await gas('ownerConnectBullsHeadCloudflarePages',session);
+  const panel=$('bullPagesStatus');panel.replaceChildren();
+  panel.className='status good';
+  panel.append(document.createTextNode('Cloudflare project connected to '+result.repository+'. '));
+  const a=document.createElement('a');a.href=result.pagesUrl;a.target='_blank';a.rel='noopener';a.textContent='Open Cloudflare staging site';
+  panel.append(a,document.createTextNode('. Check that this URL loads before switching hosting or changing GitHub visibility.'));
+ }catch(err){status('bullPagesStatus','Cloudflare setup did not complete: '+(err.message||String(err)),true)}
+ finally{button.disabled=false}
 };
 </script></body></html>
