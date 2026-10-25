@@ -38,6 +38,17 @@
 <div id="hubProjects" class="hub-projects"></div>
 </div>
 
+<div class="card" id="bullsHeadOwnerDemo">
+<h2>Tuesday demonstration — The Bulls Head live editor</h2>
+<p class="hint">Owner-only setup for the existing Bulls Head demonstration website. This is a real editor: Publish writes to its GitHub repository. It does not activate a customer account or bypass final client handover approval.</p>
+<div class="grid">
+<label>Owner demonstration login email <input id="bullDemoEmail" type="email" autocomplete="email"></label>
+<label>Choose a strong demo password (12+ characters) <input id="bullDemoPassword" type="password" minlength="12" autocomplete="new-password"></label>
+</div>
+<div class="buttons"><button id="enableBullDemo" type="button">Activate Bulls Head live editor</button></div>
+<div id="bullDemoStatus" class="status" role="status"></div>
+<div id="bullDemoLinks"></div>
+</div>
 <div class="card"><h2>Step 2 — Activate an approved client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
 <div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
 <details style="margin-top:16px"><summary>Meeting specification</summary><p class="hint">If you're opening this independently, paste exported meeting JSON here. The specification is saved in the private client folder.</p><textarea id="briefJson" spellcheck="false" placeholder='{"fields":{"business":"Example","email":"owner@example.com"}}'></textarea></details>
@@ -374,4 +385,22 @@ $('create').onclick=async()=>{const b=$('create');b.disabled=true;$('created').c
  }catch(e){status('createStatus',e.message||String(e),true);}finally{b.disabled=false;}};
 $('copyLink').onclick=async()=>{if(!lastCreated)return;try{await navigator.clipboard.writeText(lastCreated.uploadUrl);status('emailStatus','Client upload link copied.');}catch(e){status('emailStatus','Copy unavailable. Select and copy the visible URL.',true);}};
 $('sendInvite').onclick=async()=>{if(!lastCreated)return;const b=$('sendInvite');b.disabled=true;status('emailStatus','Sending client invitation…');try{const r=await gas('clientOnboardingEmailInvitation',session,lastCreated.id);status('emailStatus','Invitation sent to '+r.email);}catch(e){status('emailStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+
+$('enableBullDemo').onclick=async()=>{
+ const button=$('enableBullDemo'),email=$('bullDemoEmail').value.trim(),password=$('bullDemoPassword').value;
+ if(!session){status('bullDemoStatus','Unlock the owner dashboard first.',true);return}
+ if(!email||password.length<12){status('bullDemoStatus','Enter your login email and a unique password of at least 12 characters.',true);return}
+ button.disabled=true;status('bullDemoStatus','Checking the site and activating your owner-only editor…');
+ try{
+  const result=await gas('ownerActivateBullsHeadDemoEditor',session,email,password);
+  $('bullDemoPassword').value='';
+  status('bullDemoStatus','Bull\'s Head editor registered for your owner login. It publishes real website changes.');
+  const target=$('bullDemoLinks');target.replaceChildren();
+  for(const [label,url] of [['Open Bull\'s Head live editor',result.editorUrl],['View live Bull\'s Head website',result.websiteUrl],['Open demonstration image archive in Google Drive',result.photosFolderUrl]]){
+    const p=document.createElement('p'),a=document.createElement('a');
+    a.href=url;a.textContent=label;a.target='_blank';a.rel='noopener';p.append(a);target.append(p);
+  }
+ }catch(err){$('bullDemoPassword').value='';status('bullDemoStatus',err.message||String(err),true)}
+ finally{button.disabled=false}
+};
 </script></body></html>
