@@ -264,6 +264,44 @@ function clientHandoverSheet_(){
   }
   return {sheet,headers,rows};
 }
+
+/** At final approved handover, claim the existing prepared editor in place. */
+function clientOnboardingRegisterExistingEditor_(r){
+ const p=clientProjectLookup_(r.previewProjectId),site=r.siteProvision||{};
+ if(p.workspaceId!==r.id||site.repository!==p.repository||!p.editorSiteId||
+    !p.pagesProject||site.pagesProject!==p.pagesProject)
+   throw new Error('Prepared website link does not match this approved client.');
+ const current=getEditorSite_(p.editorSiteId);
+ if(String(current.repo_full_name)!==p.repository)
+   throw new Error('Existing editor belongs to a different website repository.');
+ const schema=JSON.parse(githubReadText_({repo_full_name:p.repository},'editor.schema.json'));
+ if(!schema||!Array.isArray(schema.pages)||!schema.pages.length)
+   throw new Error('Existing website has no valid editor schema.');
+ githubReadText_({repo_full_name:p.repository},'content/site.json');
+ const siteId=p.editorSiteId,editorUrl=clientHandoverEditorLink_(siteId);
+ if(r.editorHandover&&r.editorHandover.siteId===siteId)return clientHubOne_(r);
+ if(r.editorHandover)throw new Error('This client already has a different editor.');
+ const reg=clientHandoverSheet_(),row=current._row;
+ const col=name=>{const i=reg.headers.indexOf(name)+1;if(!i)throw new Error('Editor field missing: '+name);return i;};
+ if(String(reg.rows[row-1][col('repo_full_name')-1])!==p.repository)
+   throw new Error('Editor registry was changed. Handover stopped.');
+ // Rotate demo credentials only after signed approval and confirmed live domain.
+ const salt=Utilities.getUuid()+Utilities.getUuid();
+ const neverShared=Utilities.getUuid()+Utilities.getUuid()+Utilities.getUuid();
+ reg.sheet.getRange(row,col('login_email')).setValue(r.email);
+ reg.sheet.getRange(row,col('public_url')).setValue(r.siteLaunch.url);
+ reg.sheet.getRange(row,col('password_salt')).setValue(salt);
+ reg.sheet.getRange(row,col('password_hash')).setValue(hashPassword_(neverShared,salt));
+ reg.sheet.getRange(row,col('password_is_temporary')).setValue(true);
+ const props=PropertiesService.getScriptProperties();
+ props.deleteProperty(CHIPIN_EDITOR_STATUS_PREFIX+siteId);
+ props.deleteProperty(CHIPIN_EDITOR_LOGIN_PREFIX+siteId);
+ props.setProperty('chipin-editor-auth-version:'+siteId,Utilities.getUuid());
+ r.editorHandover={siteId,editorUrl,registeredAt:new Date().toISOString(),reusedExistingDemo:true};
+ clientOnboardingSave_(r);
+ return clientHubOne_(r);
+}
+
 function clientOnboardingRegisterEditor(session,id){
   clientOnboardingRequireAdmin_(session);
   const cfg=clientSiteSettings_(true);
@@ -271,6 +309,7 @@ function clientOnboardingRegisterEditor(session,id){
     const r=clientOnboardingRecord_(id);
     if(clientHubReview_(r).status!=='approved')throw new Error('Written final approval is required before client editor handover.');
     if(!r.siteLaunch||!r.siteLaunch.confirmedAt)throw new Error('Confirm the custom-domain website is live before editor handover.');
+    if(r.previewProjectId)return clientOnboardingRegisterExistingEditor_(r);
     const site=r.siteProvision;
     if(!site||!site.repository||!site.pagesProject||!/^ChipButt\/chipin-[a-z0-9-]+$/.test(site.repository))
       throw new Error('An approved private ChipButt client repository is required.');
