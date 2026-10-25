@@ -156,7 +156,11 @@ function clientHubOne_(r){
     {name:'Client editor login verified',done:editor.loginVerified},
     {name:'Handover email sent',done:Boolean(editor.handoverSentAt)}
   ];
-  return {id:r.id,business:r.business,email:r.email,contact:r.contact||'',
+  const preview=r.previewProjectId?clientProjectLookup_(r.previewProjectId):null;
+  return {id:r.id,projectId:r.projectId||'',previewOnly:false,
+    demoEditorUrl:preview?clientHandoverEditorLink_(preview.editorSiteId):'',
+    demoWebsiteUrl:preview?preview.pagesUrl||'':'',
+    business:r.business,email:r.email,contact:r.contact||'',
     meetingId:r.meetingId,createdAt:r.createdAt,
     assets:{status:r.status,fileCount:r.fileCount||0,lastUploadAt:r.lastUploadAt||'',folderUrl:r.folderUrl,uploadUrl:clientOnboardingPublicUrl_(r)},
     contract:{assetDeadline:String(b.contentDue||''),buildCalendarDays:String(b.buildDays||''),approvalContact:String(b.launchApprover||b.approver||'')},
@@ -170,9 +174,28 @@ function clientOnboardingProjectHub(session){
   const items=[];
   for(const key of Object.keys(props)){
     if(key.indexOf(CLIENT_ONBOARDING.projectPrefix)!==0)continue;
-    try{const r=JSON.parse(props[key]);items.push(clientHubOne_(r));}catch(err){/* skip corrupt record */ }
+    try{const r=JSON.parse(props[key]);if(!r.archivedAt)items.push(clientHubOne_(r));}catch(err){/* skip corrupt record */ }
   }
-  return items.sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,100);
+  // An owner may demonstrate and edit a fully built website before the quote.
+  // It is displayed alongside client projects, not in a Bulls Head-specific box.
+  clientProjectEnsureBullsHead_();
+  const previews=PropertiesService.getScriptProperties().getProperties();
+  Object.keys(previews).filter(k=>k.indexOf(CHIPIN_PREVIEW_PROJECT_PREFIX)===0)
+    .forEach(k=>{
+      try{
+        const p=JSON.parse(previews[k]);
+        if(p.archivedAt||p.workspaceId)return;
+        items.push({
+          id:p.id,projectId:p.id,previewOnly:true,completed:false,
+          business:p.business,contact:'',email:'',createdAt:p.createdAt,
+          demoEditorUrl:clientHandoverEditorLink_(p.editorSiteId),
+          demoWebsiteUrl:p.pagesUrl||'',repoUrl:'https://github.com/'+p.repository,
+          hosting:{repository:p.repository,pagesUrl:p.pagesUrl||''},
+          steps:[],stage:'Website demo ready'
+        });
+      }catch(_){}
+    });
+  return items.sort((a,b)=>String(b.createdAt).localeCompare(String(a.createdAt))).slice(0,100);
 }
 function clientHubSafeLiveUrl_(value){
   const url=String(value||'').trim();
