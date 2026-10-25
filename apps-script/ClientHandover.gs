@@ -87,10 +87,10 @@ function clientOnboardingRegisterPreviewProject(session,payload){
   const githubRepo=clientSiteApi_('github','https://api.github.com/repos/'+repository,'get',null,cfg.gitToken);
   const cfUrl='https://api.cloudflare.com/client/v4/accounts/'+encodeURIComponent(cfg.account)+'/pages/projects/'+encodeURIComponent(projectName);
   const cfReply=clientSiteApi_('cloudflare',cfUrl,'get',null,cfg.cloudToken);
-  const cf=cfReply.result||cfReply,source=cf.source||{},src=source.config||{};
+  const cf=cfReply.result||cfReply,source=cf.source||{},cloudSourceCfg=source.config||{};
   if(cf.name!==projectName||source.type!=='github'||
-     src.owner!==repoParts[0]||src.repo_name!==repoParts[1]||
-     String(src.repo_id)!==String(githubRepo.id))
+     cloudSourceCfg.owner!==repoParts[0]||cloudSourceCfg.repo_name!==repoParts[1]||
+     String(cloudSourceCfg.repo_id)!==String(githubRepo.id))
     throw new Error('Cloudflare project is not connected to the selected GitHub repository. No site link was created.');
   const pagesUrl='https://'+String(cf.subdomain||projectName+'.pages.dev').replace(/^https?:\/\//,'').replace(/\/$/,'')+'/';
   return clientOnboardingWithLock_(()=>{
