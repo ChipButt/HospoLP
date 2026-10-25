@@ -133,6 +133,7 @@ function clientOnboardingCreateWorkspace(session,payload){
   const email=clientOnboardingEmail_(p.email);
   const contact=clientOnboardingClean_(p.contact,110);
   const meetingId=clientOnboardingClean_(p.meetingId,120);
+  const projectId=String(p.projectId||'').trim();
   if(!meetingId)throw new Error('A unique meeting reference is required.');
   const brief=p.brief&&typeof p.brief==='object'&&!Array.isArray(p.brief)?p.brief:{};
   const briefText=JSON.stringify(brief,null,2);
@@ -141,9 +142,27 @@ function clientOnboardingCreateWorkspace(session,payload){
     const props=PropertiesService.getScriptProperties();
     const key=CLIENT_ONBOARDING.meetingPrefix+meetingId;
     const existingId=props.getProperty(key);
+    let preview=null;
+    if(projectId){
+      preview=clientProjectLookup_(projectId);
+      if(preview.archivedAt)throw new Error('This website project is archived.');
+      if(clientProjectNormaliseName_(preview.business)!==clientProjectNormaliseName_(business))
+        throw new Error('The selected website project belongs to '+preview.business+'. Correct the business name or choose another project.');
+      if(preview.workspaceId&&preview.workspaceId!==existingId)
+        throw new Error('This website already belongs to an approved client project. Open that project instead of creating another.');
+    }else{
+      // Never silently merge by name. Equally, never create a duplicate site
+      // where an unlinked preview record already exists.
+      clientProjectEnsureBullsHead_();
+      const records=props.getProperties();
+      const found=Object.keys(records).filter(k=>k.indexOf(CHIPIN_PREVIEW_PROJECT_PREFIX)===0)
+        .map(k=>JSON.parse(records[k])).find(r=>!r.archivedAt&&
+          clientProjectNormaliseName_(r.business)===clientProjectNormaliseName_(business));
+      if(found)throw new Error('An existing website project already exists for '+found.business+'. Open its Meeting Builder from the Client Project Hub to link it safely.');
+    }
     if(existingId){
       const old=clientOnboardingRecord_(existingId);
-      if(old.email!==email||old.business!==business)throw new Error('This meeting reference already belongs to another client.');
+      if(old.email!==email||old.business!==business||(projectId&&old.projectId!==projectId))throw new Error('This meeting reference already belongs to another client.');
       return {created:false,id:old.id,business:old.business,email:old.email,folderUrl:old.folderUrl,uploadUrl:clientOnboardingPublicUrl_(old),status:old.status};
     }
     const parent=DriveApp.getFolderById(CLIENT_ONBOARDING.parentFolderId);
@@ -155,16 +174,33 @@ function clientOnboardingCreateWorkspace(session,payload){
       children[category]=folder.createFolder(CLIENT_ONBOARDING.categories[category]).getId();
     });
     const record={
-      id,meetingId,business,email,contact,createdAt:new Date().toISOString(),
+      id,meetingId,business,email,contact,projectId:projectId||'',createdAt:new Date().toISOString(),
       updatedAt:new Date().toISOString(),
       expiresAt:new Date(Date.now()+CLIENT_ONBOARDING.expiryDays*86400000).toISOString(),
       folderId:folder.getId(),folderUrl:folder.getUrl(),children,
       uploadToken:clientOnboardingToken_(),status:'awaiting_files',fileCount:0,totalBytes:0,lastUploadAt:null
     };
+    if(preview){
+      // This is the EXACT pre-existing website, not a new blank staging repo.
+      record.previewProjectId=preview.id;
+      record.previewEditorSiteId=preview.editorSiteId;
+      record.siteProvision={
+        slug:preview.pagesProject||'',
+        repository:preview.repository,
+        repositoryUrl:'https://github.com/'+preview.repository,
+        branch:'main',pagesProject:preview.pagesProject||'',
+        pagesUrl:preview.pagesUrl||'',starterAdded:true,
+        preexisting:true,hostingFeeGBP:0
+      };
+    }
     folder.createFile('approved-website-brief.json',briefText,MimeType.PLAIN_TEXT);
     folder.createFile('upload-status.json',JSON.stringify({status:'awaiting_files',fileCount:0,createdAt:record.createdAt},null,2),MimeType.PLAIN_TEXT);
     clientOnboardingSave_(record);
     props.setProperty(key,id);
+    if(preview){
+      preview.workspaceId=id;preview.stage='quote_accepted';
+      props.setProperty(CHIPIN_PREVIEW_PROJECT_PREFIX+preview.id,JSON.stringify(preview));
+    }
     return {created:true,id,business,email,folderUrl:record.folderUrl,uploadUrl:clientOnboardingPublicUrl_(record),status:record.status};
   });
 }
@@ -174,7 +210,8 @@ function clientOnboardingListWorkspaces(session){
   return Object.keys(p).filter(k=>k.indexOf(CLIENT_ONBOARDING.projectPrefix)===0)
     .map(k=>{try{
       const r=JSON.parse(p[k]);
-      return {id:r.id,business:r.business,email:r.email,status:r.status,fileCount:r.fileCount,lastUploadAt:r.lastUploadAt,createdAt:r.createdAt,folderUrl:r.folderUrl,uploadUrl:clientOnboardingPublicUrl_(r),site:clientSitePublicStatus_(r)};
+      if(r.archivedAt)return null;
+      return {id:r.id,projectId:r.projectId||'',business:r.business,email:r.email,status:r.status,fileCount:r.fileCount,lastUploadAt:r.lastUploadAt,createdAt:r.createdAt,folderUrl:r.folderUrl,uploadUrl:clientOnboardingPublicUrl_(r),site:clientSitePublicStatus_(r)};
     }catch(e){return null;}}).filter(Boolean).sort((a,b)=>b.createdAt.localeCompare(a.createdAt)).slice(0,100);
 }
 function clientOnboardingWorkspaceStatus(session,id){
@@ -490,6 +527,8 @@ function clientOnboardingProvisionClientSite(session,workspaceId,stage){
   if(!cfg.gitToken)throw new Error('GitHub setup needs CHIPIN_GITHUB_PROVISION_TOKEN in Script Properties.');
   return clientOnboardingWithLock_(()=>{
     const r=clientOnboardingRecord_(workspaceId);
+    if(r.previewProjectId&&r.siteProvision&&!r.siteProvision.pagesProject)
+      throw new Error('This client already has a prepared demo website. Connect its EXISTING Cloudflare Pages project in the Client Project Hub; do not create duplicate hosting.');
     if(!r.meetingId||!r.business||!r.email)throw new Error('A quote-approved client workspace is required before creating website infrastructure.');
     if(step==='pages'&&!(r.siteProvision&&r.siteProvision.repository))throw new Error('Create the GitHub repository first, then connect Cloudflare Pages.');
     if(r.siteProvision&&r.siteProvision.pagesProject){

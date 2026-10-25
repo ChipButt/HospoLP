@@ -505,4 +505,91 @@ const adminHtml=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8')
 const uploadHtml=fs.readFileSync('apps-script/ClientOnboardingUpload.html','utf8');
 assert.match(adminHtml,/ownerKey/);
 assert.match(uploadHtml,/Original camera|Original files|original/i);
+
+// Existing pre-contract website: same site+editor must be reused when the
+// explicitly linked meeting is accepted, with NO second repository.
+properties.set('chipin-owner-demo:bulls-head-bidford','yes');
+properties.set('CHIPIN_BULLS_HEAD_PAGES_PROJECT','chipin-bulls-head-bidford');
+properties.set('CHIPIN_BULLS_HEAD_PAGES_URL','https://chipin-bulls-head-bidford.pages.dev/');
+const demoProjects=invoke('clientOnboardingListPreviewProjects(session)');
+assert.equal(demoProjects.length,1);
+assert.equal(demoProjects[0].id,'bulls-head-bidford');
+assert.equal(demoProjects[0].repository,'ChipButt/TheBullsHeadBidford');
+const hubWithDemo=invoke('clientOnboardingProjectHub(session)');
+assert.ok(hubWithDemo.some(p=>p.projectId==='bulls-head-bidford'&&p.previewOnly));
+assert.throws(()=>invoke("clientOnboardingCreateWorkspace(session,{business:'The Bulls Head',email:'pub@example.com',approved:true,meetingId:'unlinked-meeting'})"),/existing website project/i);
+const existingDemoPayload={projectId:'bulls-head-bidford',business:'The Bulls Head',email:'pub@example.com',
+  contact:'Landlord',meetingId:'bulls-head-meeting-1',approved:true,brief:{fields:{business:'The Bulls Head'}}};
+context.existingDemoPayload=existingDemoPayload;
+assert.throws(()=>invoke("clientOnboardingCreateWorkspace(session,{...existingDemoPayload,business:'Other Business'})"),/belongs to/i);
+const repoBefore=repoCreateCount,headBefore=editorRows.length;
+const adopted=invoke('clientOnboardingCreateWorkspace(session,existingDemoPayload)');
+assert.equal(adopted.created,true);
+const adoptedRecord=JSON.parse(properties.get('chipin-onboard-workspace:'+adopted.id));
+assert.equal(adoptedRecord.projectId,'bulls-head-bidford');
+assert.equal(adoptedRecord.siteProvision.repository,'ChipButt/TheBullsHeadBidford');
+assert.equal(adoptedRecord.siteProvision.pagesProject,'chipin-bulls-head-bidford');
+assert.equal(repoCreateCount,repoBefore);
+assert.equal(editorRows.length,headBefore);
+assert.equal(invoke('clientOnboardingCreateWorkspace(session,existingDemoPayload)').created,false);
+assert.equal(invoke('clientOnboardingListPreviewProjects(session)')[0].workspaceId,adopted.id);
+assert.throws(()=>invoke("clientOnboardingCreateWorkspace(session,{...existingDemoPayload,meetingId:'another-meeting'})"),/already belongs/i);
+assert.equal(invoke('clientOnboardingProjectHub(session)').filter(p=>p.projectId==='bulls-head-bidford').length,1);
+assert.equal(invoke('clientOnboardingProjectHub(session)').find(p=>p.projectId==='bulls-head-bidford').demoEditorUrl.includes('bulls-head-bidford'),true);
+
+// Legacy test records disappear without deleting any files, folders or
+// possibly live client records.
+for(const [id,business]of [['old-mum','Mum’s Test'],['old-chip','Chip In Test Business']]){
+ const row={...adoptedRecord,id,business,siteLaunch:null,editorHandover:null,projectId:''};
+ properties.set('chipin-onboard-workspace:'+id,JSON.stringify(row));
+}
+const oldFolderCount=root.children.length;
+const archive=invoke('clientOnboardingArchiveLegacyTestWorkspaces(session)');
+assert.equal(archive.removedFromActiveList,2);
+assert.equal(archive.filesDeleted,false);
+assert.equal(root.children.length,oldFolderCount);
+assert.equal(invoke('clientOnboardingArchiveLegacyTestWorkspaces(session)').removedFromActiveList,0);
+assert.equal(invoke('clientOnboardingListWorkspaces(session)').some(r=>/Mum|Chip In Test/.test(r.business)),false);
+assert.equal(invoke('clientOnboardingProjectHub(session)').some(r=>/Mum|Chip In Test/.test(r.business)),false);
+assert.equal(properties.has('chipin-onboard-workspace:old-mum'),true);
+
+// Only after final approval may the existing editor identity be transferred.
+// Simulate a signed-off website with a verified custom domain.
+adoptedRecord.siteLaunch={url:'https://bullshead.example/',confirmedAt:'2026-10-25T22:00:00.000Z'};
+properties.set('chipin-onboard-workspace:'+adopted.id,JSON.stringify(adoptedRecord));
+context.clientHubReview_=r=>({status:r.id===adopted.id?'approved':'not_started'});
+const currentHeaders=editorRows[0].slice();
+const demoRow={site_id:'bulls-head-bidford',business_name:'The Bulls Head',
+ public_url:'https://chipin-bulls-head-bidford.pages.dev/',login_email:'demo@chipin.example',
+ password_salt:'demo-salt',password_hash:'demo-owner-hash',password_is_temporary:false,
+ active:true,repo_full_name:'ChipButt/TheBullsHeadBidford',
+ content_root:'content',media_root:'media/editor',schema_path:'editor.schema.json'};
+editorRows.push(currentHeaders.map(h=>demoRow[h]??''));
+const demoRowsBefore=editorRows.length;
+properties.set('chipin-client-editor-active:bulls-head-bidford','yes');
+properties.set('chipin-client-editor-login:bulls-head-bidford','owner-login');
+context.githubReadText_=(site,path)=>{
+ assert.equal(site.repo_full_name,'ChipButt/TheBullsHeadBidford');
+ if(path==='editor.schema.json')return JSON.stringify({pages:[{id:'index',label:'Home'}]});
+ if(path==='content/site.json')return JSON.stringify({editorPages:{index:{t01:'Example'}}});
+ throw Error('Unexpected file '+path);
+};
+context.bullsWorkspaceId=adopted.id;
+const adoptedEditor=invoke('clientOnboardingRegisterEditor(session,bullsWorkspaceId)');
+assert.equal(adoptedEditor.editor.siteId,'bulls-head-bidford');
+assert.equal(adoptedEditor.editor.registered,true);
+assert.equal(adoptedEditor.editor.activated,false);
+assert.equal(editorRows.length,demoRowsBefore);
+assert.equal(invoke("getEditorSite_('bulls-head-bidford')").login_email,'pub@example.com');
+assert.equal(invoke("getEditorSite_('bulls-head-bidford')").public_url,'https://bullshead.example/');
+assert.equal(properties.has('chipin-client-editor-active:bulls-head-bidford'),false);
+assert.equal(properties.has('chipin-client-editor-login:bulls-head-bidford'),false);
+assert.throws(()=>invoke("ownerActivateBullsHeadDemoEditor(session,'demo@chipin.example','ValidDemoPassword12!')"),/customer now/i);
+assert.equal(invoke('clientOnboardingRegisterEditor(session,bullsWorkspaceId)').editor.siteId,'bulls-head-bidford');
+assert.equal(editorRows.length,demoRowsBefore);
+assert.match(adminHtml,/linkedProject/);
+assert.match(adminHtml,/hubMeetingUrl/);
+assert.match(adminHtml,/registerPreview/);
+console.log('PASS: linked pre-contract Bulls Head project, duplicate prevention, archive-only test cleanup and safe customer editor handover.');
+
 console.log('PASS: full client project hub, private upload, Cloudflare Pages, draft feedback, signed approval, manually verified domain, own GitHub-backed editor, secure client password activation/login and final handover.');
