@@ -17,6 +17,7 @@ on:
       - 'scripts/test-apps-script-deployment.cjs'
       - 'scripts/test-client-onboarding.cjs'
       - 'scripts/test-editor-atomic-publish.cjs'
+      - 'scripts/test-editor-image-upload.cjs'
       - '.github/workflows/hospo-apps-script-deploy.yml'
   pull_request:
     branches: [main]
@@ -33,6 +34,7 @@ on:
       - 'scripts/test-apps-script-deployment.cjs'
       - 'scripts/test-client-onboarding.cjs'
       - 'scripts/test-editor-atomic-publish.cjs'
+      - 'scripts/test-editor-image-upload.cjs'
       - '.github/workflows/hospo-apps-script-deploy.yml'
 
 # Auto-deploy only after both test suites pass. Every deploy clones live code,
@@ -56,6 +58,7 @@ jobs:
           node-version: '24'
       - run: node scripts/test-client-onboarding.cjs
       - run: node scripts/test-editor-atomic-publish.cjs
+      - run: node scripts/test-editor-image-upload.cjs
       - run: node scripts/test-apps-script-deployment.cjs
 
   deploy:
