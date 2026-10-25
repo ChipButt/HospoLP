@@ -316,7 +316,9 @@ assert.equal(invoke('clientOnboardingListWorkspaces(session)')[0].site.status,'s
 assert.equal(JSON.stringify(repeated).includes('github-private-test-token'),false);
 assert.equal(JSON.stringify(repeated).includes('cloudflare-test-token'),false);
 const adminScript=fs.readFileSync('apps-script/ClientOnboardingAdmin.html','utf8');
-assert.match(adminScript,/clientOnboardingProvisionClientSite/);
+assert.match(adminScript,/clientOnboardingCreatePrivateRepository/);
+assert.match(adminScript,/clientOnboardingConnectCloudflarePages/);
+assert.match(adminScript,/ownerConnectBullsHeadCloudflarePages/);
 assert.match(adminScript,/CHIPIN_CLOUDFLARE_API_TOKEN/);
 const adminScriptMatch=[...adminScript.matchAll(/<script>([\s\S]*?)<\/script>/g)];
 assert.equal(adminScriptMatch.length,1);
