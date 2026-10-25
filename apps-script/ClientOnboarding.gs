@@ -603,3 +603,56 @@ function clientOnboardingSiteStatus(session,workspaceId){
   clientOnboardingRequireAdmin_(session);
   return clientSitePublicStatus_(clientOnboardingRecord_(workspaceId));
 }
+
+/**
+ * Connect the EXISTING Bull's Head GitHub repository to a separate
+ * Cloudflare Pages staging project. Owner only; never creates a repository,
+ * changes repo visibility, changes DNS, or redirects GitHub Pages.
+ */
+function ownerConnectBullsHeadCloudflarePages(ownerSession) {
+  clientOnboardingRequireAdmin_(ownerSession);
+  const cfg=clientSiteSettings_(true);
+  const repoName='TheBullsHeadBidford';
+  const projectName='chipin-bulls-head-bidford';
+  const gitUrl='https://api.github.com';
+  const cloudUrl='https://api.cloudflare.com/client/v4/accounts/'+encodeURIComponent(cfg.account)+'/pages/projects';
+  return clientOnboardingWithLock_(()=>{
+    const user=clientSiteApi_('github',gitUrl+'/user','get',null,cfg.gitToken);
+    if(user.login!=='ChipButt')throw new Error('The GitHub token must belong to ChipButt. No Cloudflare changes made.');
+    const repo=clientSiteApi_('github',gitUrl+'/repos/ChipButt/'+repoName,'get',null,cfg.gitToken);
+    if(!repo.id||repo.full_name!=='ChipButt/'+repoName||repo.owner.login!=='ChipButt'||
+       repo.default_branch!=='main'||repo.archived)
+      throw new Error('Could not confirm the existing Bull\'s Head GitHub repository and main branch.');
+    const existing=clientSiteApi_('cloudflare',cloudUrl+'/'+projectName,'get',null,cfg.cloudToken,[404]);
+    let project;
+    if(existing.status===404){
+      const body={
+        name:projectName,
+        production_branch:'main',
+        build_config:{build_command:'exit 0',destination_dir:'.'},
+        source:{type:'github',config:{
+          owner:'ChipButt',owner_id:String(user.id),repo_name:repoName,repo_id:String(repo.id),
+          production_branch:'main',production_deployments_enabled:true,
+          preview_deployment_setting:'none',pr_comments_enabled:false
+        }}
+      };
+      const created=clientSiteApi_('cloudflare',cloudUrl,'post',body,cfg.cloudToken);
+      project=created.result||created;
+    } else {
+      project=existing.result||existing;
+    }
+    const source=project.source||{},config=source.config||{};
+    if(project.name!==projectName||source.type!=='github'||
+      String(config.repo_id)!==String(repo.id)||config.owner!=='ChipButt'||
+      config.repo_name!==repoName)
+      throw new Error('Cloudflare project name is already in use for a different repository. No project was adopted.');
+    const url='https://'+String(project.subdomain||projectName+'.pages.dev')
+      .replace(/^https?:\/\//,'').replace(/\/$/,'')+'/';
+    const props=PropertiesService.getScriptProperties();
+    props.setProperty('CHIPIN_BULLS_HEAD_PAGES_PROJECT',projectName);
+    props.setProperty('CHIPIN_BULLS_HEAD_PAGES_URL',url);
+    return {connected:true,repository:repo.full_name,cloudflareProject:projectName,
+      pagesUrl:url,githubPagesUnchanged:true,repositoryVisibilityUnchanged:true,
+      deploymentMayBePending:true};
+  });
+}
