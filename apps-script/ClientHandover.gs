@@ -66,9 +66,11 @@ function clientOnboardingRegisterPreviewProject(session,payload){
   const business=clientOnboardingClean_(p.business,110);
   const repository=String(p.repository||'').trim();
   const siteId=String(p.editorSiteId||'').trim();
+  const projectName=String(p.pagesProject||'').trim();
   if(!business||clientProjectIsLegacyTest_(business))throw new Error('Enter the actual business name.');
   if(!/^ChipButt\/[A-Za-z0-9_.-]{2,100}$/.test(repository)||
-     !/^[a-z0-9-]{6,100}$/.test(siteId))
+     !/^[a-z0-9-]{6,100}$/.test(siteId)||
+     !/^[a-z0-9-]{5,58}$/.test(projectName))
     throw new Error('Enter the exact ChipButt GitHub repository and existing editor site ID.');
   // Authentication comes from the owner session; the repository and registry
   // must already exist. Do NOT create/overwrite either one here.
@@ -79,6 +81,18 @@ function clientOnboardingRegisterPreviewProject(session,payload){
   if(!src||!Array.isArray(src.pages)||!src.pages.length)
     throw new Error('The prepared website is missing a working editor schema.');
   githubReadText_({repo_full_name:repository},'content/site.json');
+  // Verify this exact existing Cloudflare project is connected to this exact
+  // GitHub repository; never adopt by a guessed project name.
+  const cfg=clientSiteSettings_(true),repoParts=repository.split('/');
+  const githubRepo=clientSiteApi_('github','https://api.github.com/repos/'+repository,'get',null,cfg.gitToken);
+  const cfUrl='https://api.cloudflare.com/client/v4/accounts/'+encodeURIComponent(cfg.account)+'/pages/projects/'+encodeURIComponent(projectName);
+  const cfReply=clientSiteApi_('cloudflare',cfUrl,'get',null,cfg.cloudToken);
+  const cf=cfReply.result||cfReply,source=cf.source||{},src=source.config||{};
+  if(cf.name!==projectName||source.type!=='github'||
+     src.owner!==repoParts[0]||src.repo_name!==repoParts[1]||
+     String(src.repo_id)!==String(githubRepo.id))
+    throw new Error('Cloudflare project is not connected to the selected GitHub repository. No site link was created.');
+  const pagesUrl='https://'+String(cf.subdomain||projectName+'.pages.dev').replace(/^https?:\/\//,'').replace(/\/$/,'')+'/';
   return clientOnboardingWithLock_(()=>{
     const props=PropertiesService.getScriptProperties(),all=props.getProperties();
     const matches=Object.keys(all).filter(k=>k.indexOf(CHIPIN_PREVIEW_PROJECT_PREFIX)===0)
@@ -88,11 +102,17 @@ function clientOnboardingRegisterPreviewProject(session,payload){
       const old=matches[0];
       if(old.repository!==repository||old.editorSiteId!==siteId)
         throw new Error('This GitHub repository or editor belongs to another client project.');
+      if(old.pagesProject&&old.pagesProject!==projectName)
+        throw new Error('This website is already connected to another Cloudflare project.');
+      if(!old.pagesProject){
+        old.pagesProject=projectName;old.pagesUrl=pagesUrl;
+        props.setProperty(CHIPIN_PREVIEW_PROJECT_PREFIX+old.id,JSON.stringify(old));
+      }
       return {created:false,id:old.id,business:old.business,editorSiteId:old.editorSiteId};
     }
     const id='preview-'+Utilities.getUuid();
-    const record={id,business,repository,editorSiteId,pagesUrl:String(editor.public_url||''),
-      pagesProject:'',workspaceId:'',createdAt:new Date().toISOString(),stage:'demo_ready'};
+    const record={id,business,repository,editorSiteId,pagesUrl:pagesUrl,
+      pagesProject:projectName,workspaceId:'',createdAt:new Date().toISOString(),stage:'demo_ready'};
     props.setProperty(CHIPIN_PREVIEW_PROJECT_PREFIX+id,JSON.stringify(record));
     return {created:true,id,business,editorSiteId:siteId};
   });
