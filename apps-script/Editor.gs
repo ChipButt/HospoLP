@@ -143,21 +143,46 @@ function publishEditorData(siteId, token, payload) {
   return {success:true,publishedAt:new Date().toISOString(),data:getEditorData_(siteId)};
 }
 
+function editorClientPhotosFolder_(site) {
+  // Locate exactly this registered customer in the private onboarding workspaces.
+  // Never rely on a caller-supplied Drive ID or on a public upload token.
+  const properties = PropertiesService.getScriptProperties().getProperties();
+  const prefix = CLIENT_ONBOARDING.projectPrefix;
+  const matches = Object.keys(properties).filter(key => key.indexOf(prefix) === 0)
+    .map(key => { try { return JSON.parse(properties[key]); } catch (_) { return null; } })
+    .filter(record => record && record.siteProvision &&
+      record.siteProvision.repository === String(site.repo_full_name) &&
+      record.editorHandover && record.editorHandover.siteId === String(site.site_id) &&
+      String(record.email || '').toLowerCase() === String(site.login_email || '').toLowerCase());
+  if (matches.length !== 1 || !matches[0].children || !matches[0].children.photos)
+    throw new Error('The client photos archive is not connected. Ask Chip In to check this website in the Client Project Hub.');
+  return DriveApp.getFolderById(matches[0].children.photos);
+}
+
 function uploadEditorImage(siteId, token, asset) {
   requireEditorSession_(siteId, token);
   const site = getEditorSite_(siteId);
   if (!asset || !asset.data || !asset.name) throw new Error('Choose an image first.');
   const mime = String(asset.mimeType || '').toLowerCase();
-  if (!mime.startsWith('image/')) throw new Error('Only image files are allowed.');
+  if (!['image/jpeg','image/png','image/webp','image/gif','image/avif'].includes(mime))
+    throw new Error('Choose a JPG, PNG, WebP, GIF or AVIF image.');
   const bytes = Utilities.base64Decode(asset.data);
-  if (bytes.length > 8 * 1024 * 1024) throw new Error('Images must be 8 MB or smaller.');
+  if (!bytes.length || bytes.length > 8 * 1024 * 1024)
+    throw new Error('Images must be 8 MB or smaller.');
   const ext = imageExtension_(asset.name, mime);
   const stem = sanitiseAssetName_(asset.name.replace(/\.[^.]+$/, '')) || 'image';
   const filename = `${Date.now()}-${stem}.${ext}`;
   const mediaRoot = site.media_root || 'media/editor';
   const path = `${mediaRoot}/${filename}`;
-  githubWriteBase64_(site, path, asset.data, `Upload ${filename} from Chip In Websites editor`);
-  return {path:path,name:filename};
+  // Store the original bytes in this customer's established Google Drive Photos
+  // folder before publishing to GitHub. If GitHub fails, the image is still archived.
+  const archive = editorClientPhotosFolder_(site).createFile(Utilities.newBlob(bytes, mime, filename));
+  try {
+    githubWriteBase64_(site, path, asset.data, `Upload ${filename} from Chip In Websites editor`);
+  } catch (err) {
+    throw new Error('Image preserved in the client Google Drive folder, but website upload failed: ' + err.message);
+  }
+  return {path:path,name:filename,backedUp:true,driveFileId:archive.getId()};
 }
 
 function getEditorDraft_(siteId) {
