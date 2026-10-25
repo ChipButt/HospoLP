@@ -20,7 +20,7 @@ const CHIPIN_EDITOR_INVITE_HOURS=48;
 const CHIPIN_PREVIEW_PROJECT_PREFIX='chipin-preview-project:';
 function clientProjectNormaliseName_(value){
   return String(value||'').toLowerCase().normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+    .replace(/[\u0300-\u036f]/g,'').replace(/['’‘]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 }
 function clientProjectIsLegacyTest_(business){
   return ['mums test','chip in test business'].includes(clientProjectNormaliseName_(business));
