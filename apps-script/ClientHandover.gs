@@ -11,6 +11,110 @@ const CHIPIN_EDITOR_STATUS_PREFIX='chipin-client-editor-active:';
 const CHIPIN_EDITOR_LOGIN_PREFIX='chipin-client-editor-login:';
 const CHIPIN_EDITOR_INVITE_HOURS=48;
 
+
+/**
+ * Stable pre-contract website identities. A prebuilt demo is linked to an
+ * approved workspace ONLY by explicit project ID, never by guessing from
+ * business name or creating a second repository.
+ */
+const CHIPIN_PREVIEW_PROJECT_PREFIX='chipin-preview-project:';
+function clientProjectNormaliseName_(value){
+  return String(value||'').toLowerCase().normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
+}
+function clientProjectIsLegacyTest_(business){
+  return ['mums test','chip in test business'].includes(clientProjectNormaliseName_(business));
+}
+function clientProjectEnsureBullsHead_(){
+  const props=PropertiesService.getScriptProperties();
+  const id='bulls-head-bidford',key=CHIPIN_PREVIEW_PROJECT_PREFIX+id;
+  const existing=props.getProperty(key);
+  if(existing)return JSON.parse(existing);
+  if(props.getProperty('chipin-owner-demo:'+id)!=='yes')return null;
+  const record={
+    id:id,business:'The Bulls Head',repository:'ChipButt/TheBullsHeadBidford',
+    editorSiteId:id,pagesProject:props.getProperty('CHIPIN_BULLS_HEAD_PAGES_PROJECT')||'',
+    pagesUrl:props.getProperty('CHIPIN_BULLS_HEAD_PAGES_URL')||'',
+    createdAt:new Date().toISOString(),workspaceId:'',stage:'demo_ready'
+  };
+  props.setProperty(key,JSON.stringify(record));return record;
+}
+function clientProjectLookup_(projectId){
+  const id=String(projectId||'');
+  if(!/^[a-z0-9-]{6,100}$/.test(id))throw new Error('Invalid existing website project ID.');
+  if(id==='bulls-head-bidford')clientProjectEnsureBullsHead_();
+  const raw=PropertiesService.getScriptProperties().getProperty(CHIPIN_PREVIEW_PROJECT_PREFIX+id);
+  if(!raw)throw new Error('The selected website project was not found. Open the meeting from its Client Project Hub card.');
+  return JSON.parse(raw);
+}
+function clientOnboardingListPreviewProjects(session){
+  clientOnboardingRequireAdmin_(session);
+  clientProjectEnsureBullsHead_();
+  const props=PropertiesService.getScriptProperties().getProperties();
+  return Object.keys(props).filter(k=>k.indexOf(CHIPIN_PREVIEW_PROJECT_PREFIX)===0)
+    .map(k=>{try{return JSON.parse(props[k])}catch(_){return null}})
+    .filter(r=>r&&!r.archivedAt).map(r=>({
+      id:r.id,business:r.business,stage:r.stage,workspaceId:r.workspaceId||'',
+      repository:r.repository,editorSiteId:r.editorSiteId,
+      pagesUrl:r.pagesUrl||'',editorUrl:clientHandoverEditorLink_(r.editorSiteId)
+    })).sort((a,b)=>a.business.localeCompare(b.business));
+}
+/** Owner registers another ALREADY BUILT, editor-enabled client demo. */
+function clientOnboardingRegisterPreviewProject(session,payload){
+  clientOnboardingRequireAdmin_(session);
+  const p=payload||{};
+  const business=clientOnboardingClean_(p.business,110);
+  const repository=String(p.repository||'').trim();
+  const siteId=String(p.editorSiteId||'').trim();
+  if(!business||clientProjectIsLegacyTest_(business))throw new Error('Enter the actual business name.');
+  if(!/^ChipButt\/[A-Za-z0-9_.-]{2,100}$/.test(repository)||
+     !/^[a-z0-9-]{6,100}$/.test(siteId))
+    throw new Error('Enter the exact ChipButt GitHub repository and existing editor site ID.');
+  // Authentication comes from the owner session; the repository and registry
+  // must already exist. Do NOT create/overwrite either one here.
+  const editor=getEditorSite_(siteId);
+  if(editor.repo_full_name!==repository||!editor.active)
+    throw new Error('This editor site ID is not registered to the specified website repository.');
+  const src=JSON.parse(githubReadText_({repo_full_name:repository},'editor.schema.json'));
+  if(!src||!Array.isArray(src.pages)||!src.pages.length)
+    throw new Error('The prepared website is missing a working editor schema.');
+  githubReadText_({repo_full_name:repository},'content/site.json');
+  return clientOnboardingWithLock_(()=>{
+    const props=PropertiesService.getScriptProperties(),all=props.getProperties();
+    const matches=Object.keys(all).filter(k=>k.indexOf(CHIPIN_PREVIEW_PROJECT_PREFIX)===0)
+      .map(k=>JSON.parse(all[k]))
+      .filter(r=>r.repository===repository||r.editorSiteId===siteId);
+    if(matches.length){
+      const old=matches[0];
+      if(old.repository!==repository||old.editorSiteId!==siteId)
+        throw new Error('This GitHub repository or editor belongs to another client project.');
+      return {created:false,id:old.id,business:old.business,editorSiteId:old.editorSiteId};
+    }
+    const id='preview-'+Utilities.getUuid();
+    const record={id,business,repository,editorSiteId,pagesUrl:String(editor.public_url||''),
+      pagesProject:'',workspaceId:'',createdAt:new Date().toISOString(),stage:'demo_ready'};
+    props.setProperty(CHIPIN_PREVIEW_PROJECT_PREFIX+id,JSON.stringify(record));
+    return {created:true,id,business,editorSiteId:siteId};
+  });
+}
+/** Archive exact legacy test workspaces only; keep their Drive data and GitHub sites. */
+function clientOnboardingArchiveLegacyTestWorkspaces(session){
+  clientOnboardingRequireAdmin_(session);
+  return clientOnboardingWithLock_(()=>{
+    const props=PropertiesService.getScriptProperties(),all=props.getProperties(),archived=[];
+    for(const key of Object.keys(all)){
+      if(key.indexOf(CLIENT_ONBOARDING.projectPrefix)!==0)continue;
+      let record;try{record=JSON.parse(all[key])}catch(_){continue}
+      if(!clientProjectIsLegacyTest_(record.business)||record.archivedAt||
+         record.siteLaunch?.confirmedAt||record.editorHandover?.handoverSentAt)continue;
+      record.archivedAt=new Date().toISOString();
+      props.setProperty(key,JSON.stringify(record));archived.push(record.business);
+    }
+    return {archived:archived,removedFromActiveList:archived.length,
+      filesDeleted:false,hostingDeleted:false};
+  });
+}
+
 function clientHubBrief_(r){
   try{
     const files=DriveApp.getFolderById(r.folderId).getFilesByName('approved-website-brief.json');
