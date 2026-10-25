@@ -39,15 +39,20 @@
 </div>
 
 <div class="card" id="bullsHeadOwnerDemo">
-<h2>Tuesday demonstration — The Bulls Head live editor</h2>
-<p class="hint">Owner-only setup for the existing Bulls Head demonstration website. This is a real editor: Publish writes to its GitHub repository. It does not activate a customer account or bypass final client handover approval.</p>
+<h2>The Bulls Head — Live Website Editor</h2>
+<p class="hint">This is the real editor for the existing Bull's Head GitHub repository, not a simulated demonstration. Use your own email and a unique password to test live publishing. You can change the editor login when the client takes over; final customer handover still requires the normal approval process.</p>
 <div class="grid">
-<label>Owner demonstration login email <input id="bullDemoEmail" type="email" autocomplete="email"></label>
-<label>Choose a strong demo password (12+ characters) <input id="bullDemoPassword" type="password" minlength="12" autocomplete="new-password"></label>
+<label>Editor login email <input id="bullDemoEmail" type="email" autocomplete="email"></label>
+<label>Set editor password (12+ characters) <input id="bullDemoPassword" type="password" minlength="12" autocomplete="new-password"></label>
 </div>
-<div class="buttons"><button id="enableBullDemo" type="button">Activate Bulls Head live editor</button></div>
+<div class="buttons"><button id="enableBullDemo" type="button">Activate or update Bulls Head editor login</button></div>
 <div id="bullDemoStatus" class="status" role="status"></div>
 <div id="bullDemoLinks"></div>
+<h3>Change the public website address after launch</h3>
+<p class="hint">Once the customer's HTTPS domain serves this same Bull's Head repository, enter it here. The editor will open and publish against that address automatically. Its site ID, GitHub repository, content and password stay the same. No Cloudflare connection is required for the current GitHub Pages version.</p>
+<label>Customer's new website HTTPS address <input id="bullDomainUrl" type="url" autocomplete="url" placeholder="https://www.example.co.uk/"></label>
+<div class="buttons"><button id="updateBullDomain" type="button">Connect editor to new website address</button></div>
+<div id="bullDomainStatus" class="status" role="status"></div>
 </div>
 <div class="card"><h2>Step 2 — Activate an approved client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
 <div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
@@ -390,17 +395,36 @@ $('enableBullDemo').onclick=async()=>{
  const button=$('enableBullDemo'),email=$('bullDemoEmail').value.trim(),password=$('bullDemoPassword').value;
  if(!session){status('bullDemoStatus','Unlock the owner dashboard first.',true);return}
  if(!email||password.length<12){status('bullDemoStatus','Enter your login email and a unique password of at least 12 characters.',true);return}
- button.disabled=true;status('bullDemoStatus','Checking the site and activating your owner-only editor…');
+ button.disabled=true;status('bullDemoStatus','Checking the website and configuring its real editor…');
  try{
   const result=await gas('ownerActivateBullsHeadDemoEditor',session,email,password);
   $('bullDemoPassword').value='';
-  status('bullDemoStatus','Bull\'s Head editor registered for your owner login. It publishes real website changes.');
+  status('bullDemoStatus','Bull\'s Head editor login configured. Publishing writes to its real website repository.');
   const target=$('bullDemoLinks');target.replaceChildren();
-  for(const [label,url] of [['Open Bull\'s Head live editor',result.editorUrl],['View live Bull\'s Head website',result.websiteUrl],['Open demonstration image archive in Google Drive',result.photosFolderUrl]]){
+  for(const [label,url] of [['Open Bull\'s Head live editor',result.editorUrl],['View live Bull\'s Head website',result.websiteUrl],['Open original editor images in Google Drive',result.photosFolderUrl]]){
     const p=document.createElement('p'),a=document.createElement('a');
     a.href=url;a.textContent=label;a.target='_blank';a.rel='noopener';p.append(a);target.append(p);
   }
  }catch(err){$('bullDemoPassword').value='';status('bullDemoStatus',err.message||String(err),true)}
+ finally{button.disabled=false}
+};
+
+$('updateBullDomain').onclick=async()=>{
+ const button=$('updateBullDomain'),url=$('bullDomainUrl').value.trim();
+ if(!session){status('bullDomainStatus','Sign in to the owner dashboard first.',true);return}
+ if(!/^https:\/\//i.test(url)){status('bullDomainStatus','Enter the complete HTTPS website address.',true);return}
+ if(!confirm('The new address must already serve the live Bulls Head website. Update only the editor preview address, keeping this same GitHub repository and login?'))return;
+ button.disabled=true;
+ status('bullDomainStatus','Checking the live site and its editor shortcut before updating…');
+ try{
+   const updated=await gas('ownerUpdateBullsHeadEditorPublicUrl',session,url);
+   status('bullDomainStatus','Updated. The existing editor now previews '+updated.websiteUrl+' and still publishes to '+updated.repository+'.');
+   $('bullDemoLinks').replaceChildren();
+   for(const [label,target] of [['Open Bulls Head editor',updated.editorUrl],['Open customer website',updated.websiteUrl]]){
+     const p=document.createElement('p'),a=document.createElement('a');
+     a.textContent=label;a.href=target;a.target='_blank';a.rel='noopener';p.append(a);$('bullDemoLinks').append(p);
+   }
+ }catch(err){status('bullDomainStatus',err.message||String(err),true)}
  finally{button.disabled=false}
 };
 </script></body></html>
