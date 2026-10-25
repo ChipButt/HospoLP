@@ -135,12 +135,139 @@ function publishEditorData(siteId, token, payload) {
   const site = getEditorSite_(siteId);
   const cleaned = sanitiseEditorPayload_(payload || {});
   const root = site.content_root || 'content';
-  Object.keys(cleaned).forEach(name => {
-    if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
-    githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from Chip In Websites editor`);
-  });
+  if (site.site_id === 'bulls-head-bidford' &&
+      site.repo_full_name === 'ChipButt/TheBullsHeadBidford') {
+    // Publish all changed JSON and the resulting static HTML in one Git commit.
+    // A visitor must never first see the old hard-coded HTML followed by an
+    // asynchronous client-side replacement from content/site.json.
+    publishBullsHeadAtomically_(site, root, cleaned);
+  } else {
+    Object.keys(cleaned).forEach(name => {
+      if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
+      githubWriteText_(site, `${root}/${name}.json`, JSON.stringify(cleaned[name], null, 2) + '\n', `Update ${name} from Chip In Websites editor`);
+    });
+  }
   deleteEditorDraft_(siteId);
   return {success:true,publishedAt:new Date().toISOString(),data:getEditorData_(siteId)};
+}
+
+
+/**
+ * The Bull's Head uses static HTML plus JSON-driven editor content.
+ * Publishing only content/site.json leaves stale HTML visible on first paint.
+ * Stage JSON and matching HTML in the SAME Git commit so neither the Pages
+ * deployment nor a browser can see mismatched published content.
+ */
+function publishBullsHeadAtomically_(site, root, cleaned) {
+  const head = githubGitRequest_(site, '/git/ref/heads/main', 'get');
+  const oldHeadSha = head && head.object && head.object.sha;
+  if (!oldHeadSha) throw new Error('Could not resolve the website publishing branch.');
+  const oldCommit = githubGitRequest_(site, '/git/commits/' + oldHeadSha, 'get');
+  const fileUpdates = {};
+
+  Object.keys(cleaned).forEach(name => {
+    if (!EDITOR_CONFIG.STANDARD_CONTENT_FILES.includes(name)) return;
+    fileUpdates[root + '/' + name + '.json'] = JSON.stringify(cleaned[name], null, 2) + '\n';
+  });
+
+  // Only site.json includes the editor-controlled page text and pictures.
+  if (cleaned.site && cleaned.site.editorPages) {
+    const pages = cleaned.site.editorPages;
+    Object.keys(pages).forEach(page => {
+      if (!/^[a-z][a-z0-9-]*$/.test(page)) throw new Error('Invalid editor page name.');
+      const path = page + '.html';
+      const original = githubReadText_(site, path, oldHeadSha);
+      const updated = renderBullsHeadHtml_(original, pages[page], page,
+        cleaned.site.editorBrand && cleaned.site.editorBrand.logo);
+      if (updated !== original) fileUpdates[path] = updated;
+    });
+  }
+
+  const tree = [];
+  Object.keys(fileUpdates).forEach(path => {
+    if (githubReadText_(site, path, oldHeadSha) === fileUpdates[path]) return;
+    const blob = githubGitRequest_(site, '/git/blobs', 'post', {
+      content: fileUpdates[path],
+      encoding: 'utf-8'
+    });
+    if (!blob.sha) throw new Error('Could not stage website file ' + path);
+    tree.push({path:path,mode:'100644',type:'blob',sha:blob.sha});
+  });
+  if (!tree.length) return {unchanged:true};
+  const newTree = githubGitRequest_(site, '/git/trees', 'post', {
+    base_tree: oldCommit.tree.sha,tree:tree
+  });
+  const commit = githubGitRequest_(site, '/git/commits', 'post', {
+    message:'Publish Bull\'s Head editor content and static pages together',
+    tree:newTree.sha,parents:[oldHeadSha]
+  });
+  // Fast-forward only: if another publisher has changed main, fail without
+  // altering public content. The retained editor draft can be retried.
+  githubGitRequest_(site, '/git/refs/heads/main', 'patch', {
+    sha:commit.sha,force:false
+  });
+  return {commitSha:commit.sha,updatedPaths:tree.map(entry=>entry.path)};
+}
+
+/** Replace only explicitly tagged, plain-text editor nodes and image srcs. */
+function renderBullsHeadHtml_(html, page, name, logo) {
+  if (!page || typeof page !== 'object') throw new Error('Missing editor content for ' + name);
+  const escapeText = value => String(value == null ? '' : value)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const escapeAttr = value => escapeText(value).replace(/"/g,'&quot;');
+  Object.keys(page).forEach(key => {
+    const value = page[key];
+    if (typeof value !== 'string') return;
+    if (/^t\d+$/.test(key)) {
+      const re = new RegExp('(<([a-z][\\w-]*)\\b[^>]*\\bdata-chipin-text="' + key +
+        '"[^>]*>)([\\s\\S]*?)(<\\/\\2>)', 'g');
+      let count = 0;
+      html = html.replace(re, (match, open, tag, existing, close) => {
+        count++;
+        if (/<[a-z][^>]*>/i.test(existing)) throw new Error('Complex HTML requires review: ' + name + ' ' + key);
+        return open + escapeText(value) + close;
+      });
+      if (count !== 1) throw new Error('Editor text marker missing or duplicated: ' + name + ' ' + key);
+    } else if (/^img\d+$/.test(key)) {
+      const re = new RegExp('<img\\b[^>]*\\bdata-chipin-image="' + key + '"[^>]*>', 'g');
+      let count = 0;
+      html = html.replace(re, match => {
+        count++;
+        if (!/\bsrc="[^"]*"/.test(match)) throw new Error('Missing image source for ' + name + ' ' + key);
+        return match.replace(/\bsrc="[^"]*"/, 'src="' + escapeAttr(value) + '"');
+      });
+      if (count !== 1) throw new Error('Editor image marker missing or duplicated: ' + name + ' ' + key);
+    }
+  });
+  if (typeof logo === 'string' && logo) {
+    html = html.replace(/<img\b[^>]*\bdata-chipin-brand-image[^>]*>/g, match =>
+      match.replace(/\bsrc="[^"]*"/, 'src="' + escapeAttr(logo) + '"'));
+  }
+  return html;
+}
+
+/** Scoped Git Data API; does not allow callers to choose a repository. */
+function githubGitRequest_(site, path, method, payload) {
+  const url = EDITOR_CONFIG.GITHUB_API + '/repos/' + site.repo_full_name + path;
+  const options = {
+    method:method,
+    muteHttpExceptions:true,
+    headers:{
+      Authorization:'Bearer ' + githubToken_(),
+      Accept:'application/vnd.github+json',
+      'X-GitHub-Api-Version':'2022-11-28',
+      'User-Agent':'Chip-In-Websites-Editor'
+    }
+  };
+  if (payload) {
+    options.contentType='application/json';
+    options.payload=JSON.stringify(payload);
+  }
+  const response=UrlFetchApp.fetch(url,options);
+  const code=response.getResponseCode();
+  const body=response.getContentText();
+  if (code<200 || code>=300) throw new Error('Atomic GitHub publishing error (' + code + '): ' + safeGithubError_(body));
+  return body ? JSON.parse(body) : {};
 }
 
 function editorClientPhotosFolder_(site) {
