@@ -836,6 +836,12 @@ function ownerRestoreBullsHeadCleanContent(ownerSession) {
     if(site.repo_full_name!=='ChipButt/TheBullsHeadBidford' ||
        PropertiesService.getScriptProperties().getProperty('chipin-owner-demo:'+siteId)!=='yes')
       throw new Error('This reset is only available for the owner-controlled Bull\'s Head editor.');
+    const project=clientProjectEnsureBullsHead_();
+    if(project&&project.workspaceId){
+      const workspace=clientOnboardingRecord_(project.workspaceId);
+      if(workspace.editorHandover&&workspace.editorHandover.siteId===siteId)
+        throw new Error('This editor has been handed over to the customer. Owner demo reset is disabled.');
+    }
     const path='content/site.json';
     const snapshot='tuesday-editor-clean-baseline-2026-10-25';
     const baseline=githubReadText_(site,path,snapshot);
@@ -843,12 +849,10 @@ function ownerRestoreBullsHeadCleanContent(ownerSession) {
     if(!parsed || typeof parsed!=='object' || !parsed.editorPages ||
        !parsed.editorPages.index || !parsed.editorPages.drinks)
       throw new Error('The clean baseline is invalid. No website changes were made.');
-    const current=githubReadText_(site,path);
-    let changed=false;
-    if(current!==baseline){
-      githubWriteText_(site,path,baseline,'Restore Bulls Head editor text and photos to clean owner-test baseline');
-      changed=true;
-    }
+    // Restore the static HTML and saved JSON together in one Git commit.
+    // This preserves the no-flicker publishing guarantee for test resets too.
+    const published=publishBullsHeadAtomically_(site,'content',{site:parsed});
+    const changed=!published.unchanged;
     // Remove any abandoned autosaved draft that would otherwise reintroduce
     // old test values when the client opens the editor on Tuesday.
     deleteEditorDraft_(siteId);
