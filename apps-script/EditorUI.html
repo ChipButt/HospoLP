@@ -102,7 +102,31 @@ async function saveDraftNow(manual){if(!draft||!token)return;if(saveInFlight){sa
 function sendPreview(){try{$('#preview').contentWindow.postMessage({type:'hospolp-preview',data:draft},'*')}catch(e){}}
 function sendHighlight(key){try{$('#preview').contentWindow.postMessage({type:'hospolp-highlight',key:key||null},'*')}catch(e){}}
 function highlightField(key){document.querySelectorAll('.field.partner').forEach(x=>x.classList.remove('partner'));if(!key)return;const el=document.querySelector(`.field[data-editor-key="${CSS.escape(key)}"]`);if(el){el.classList.add('partner');el.scrollIntoView({block:'nearest',behavior:'smooth'})}}
-window.addEventListener('message',e=>{if(e.data?.type==='hospolp-preview-hover')highlightField(e.data.key||null);if(e.data?.type==='hospolp-preview-page')syncEditorToPreview(e.data.pathname)});
+window.addEventListener('message',e=>{
+ const preview=$('#preview');
+ if(e.source!==preview.contentWindow)return;
+ if(e.origin!==new URL(PUBLIC_URL).origin)return;
+ const msg=e.data||{};
+ if(msg.type==='hospolp-preview-hover')highlightField(msg.key||null);
+ if(msg.type==='hospolp-preview-page')syncEditorToPreview(msg.pathname);
+ const selected=typeof msg.key==='string'&&schema?.pages?.some(page=>
+   page.groups?.some(group=>group.fields?.some(field=>field.path===msg.key)));
+ if(!selected)return;
+ if(msg.type==='hospolp-preview-select')highlightField(msg.key);
+ if(msg.type==='hospolp-preview-image-select'){
+   highlightField(msg.key);
+   const input=document.querySelector('input[data-upload="'+CSS.escape(msg.key)+'"]');
+   if(input){try{input.click()}catch(_){}}
+ }
+ if(msg.type==='hospolp-preview-change'&&draft&&typeof msg.value==='string'){
+   const value=msg.value.slice(0,5000);
+   setPath(msg.key,value);
+   const field=document.querySelector('.field[data-editor-key="'+CSS.escape(msg.key)+'"]');
+   const input=field?.querySelector('input[data-path],textarea[data-path]');
+   if(input)input.value=value;
+   dirty();
+ }
+});
 $('#saveDraft').onclick=async()=>{const b=$('#saveDraft');b.disabled=true;try{await saveDraftNow(true)}finally{b.disabled=false}};
 $('#publish').onclick=async()=>{const b=$('#publish');try{clearTimeout(saveTimer);b.disabled=true;b.textContent='Publishing…';const r=await run('publishEditorData',SITE_ID,token,draft);draft=clone(r.data);restoredDraft=false;setSaveState('Published','ok');renderForm();sendPreview()}catch(e){alert(e.message)}finally{b.disabled=false;b.textContent='Publish changes'}};
 $('#completeFirstPassword').onclick=async()=>{const b=$('#completeFirstPassword'),n=$('#firstNewPassword').value,c=$('#firstConfirmPassword').value,e=$('#firstPasswordError');e.hidden=true;if(n!==c){e.textContent='The passwords do not match.';e.hidden=false;return}try{b.disabled=true;b.textContent='Saving…';const r=await run('completeInitialPasswordChange',SITE_ID,token,n);$('#firstNewPassword').value=$('#firstConfirmPassword').value='';start(r)}catch(err){e.textContent=err.message;e.hidden=false}finally{b.disabled=false;b.textContent='Save password & continue'}};
