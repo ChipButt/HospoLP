@@ -36,10 +36,18 @@
 <div class="buttons"><button id="refreshHub" class="alt" type="button">Refresh all client projects</button></div>
 <div id="hubStatus" class="status" role="status"></div>
 <div id="hubProjects" class="hub-projects"></div>
+<details class="workspace" style="margin-top:16px">
+<summary><strong>Register another prepared demonstration website</strong></summary>
+<p class="hint">Link an existing client website and its working editor. This does not create or overwrite any website.</p>
+<div class="grid"><label>Business name <input id="previewBusiness"></label>
+<label>GitHub repository <input id="previewRepo" placeholder="ChipButt/BusinessWebsite"></label>
+<label>Editor site ID <input id="previewSiteId" placeholder="client-site-id"></label></div>
+<div class="buttons"><button type="button" id="registerPreview">Add prepared client website</button></div>
+<div id="registerPreviewStatus" class="status" role="status"></div></details>
 </div>
 
 <div class="card" id="bullsHeadOwnerDemo">
-<h2>The Bulls Head — Live Website Editor</h2>
+<h2>Website editor and hosting — The Bulls Head</h2>
 <p class="hint">This is the real editor for the existing Bull's Head GitHub repository, not a simulated demonstration. Use your own email and a unique password to test live publishing. You can change the editor login when the client takes over; final customer handover still requires the normal approval process.</p>
 <div class="grid">
 <label>Editor login email <input id="bullDemoEmail" type="email" autocomplete="email"></label>
@@ -63,6 +71,7 @@
 <div id="bullPagesStatus" class="status" role="status"></div>
 </div>
 <div class="card"><h2>Step 2 — Activate an approved client</h2><p id="importNote" class="hint">Client meeting details can be passed directly from the Chip In Meeting Builder, or entered here.</p>
+<label>Existing website project (optional) <select id="linkedProject"><option value="">New website — no prepared demo linked</option></select></label>
 <div class="grid"><label>Business name <input id="business" autocomplete="organization"></label><label>Client email <input type="email" id="email" autocomplete="off"></label><label>Contact name <input id="contact" autocomplete="off"></label><label>Unique meeting reference <input id="meetingId" placeholder="Automatically supplied by Meeting Builder"></label></div>
 <details style="margin-top:16px"><summary>Meeting specification</summary><p class="hint">If you're opening this independently, paste exported meeting JSON here. The specification is saved in the private client folder.</p><textarea id="briefJson" spellcheck="false" placeholder='{"fields":{"business":"Example","email":"owner@example.com"}}'></textarea></details>
 <label style="display:flex;gap:10px;align-items:flex-start"><input id="approved" type="checkbox" style="width:auto;margin:4px 0"> I have confirmed that the client has approved the quotation and instructed Chip In to start this project.</label>
@@ -86,7 +95,7 @@
 <div id="reviewStatus" class="status" role="status"></div>
 </div></section></main>
 <script>
-let session='',lastCreated=null,initialBrief=null;
+let session='',lastCreated=null,initialBrief=null,selectedProjectId='';
 const $=id=>document.getElementById(id);
 function status(id,message,error){const e=$(id);e.textContent=message;e.className='status '+(error?'error':'');}
 function gas(name,...args){return new Promise((ok,no)=>google.script.run.withSuccessHandler(ok).withFailureHandler(no)[name](...args));}
@@ -100,6 +109,8 @@ function fillFromBrief(p){
  $('email').value=f.email||p.email||'';
  $('contact').value=f.contact||p.contact||'';
  $('meetingId').value=p.meetingId||f.meetingId||'';
+ selectedProjectId=String(p.projectId||f.projectId||'');
+ $('linkedProject').value=selectedProjectId;
  $('briefJson').value=JSON.stringify(initialBrief,null,2);
  $('importNote').textContent='Meeting details imported. Confirm the price was accepted before activating.';
 }
@@ -108,7 +119,7 @@ function loadHash(){
  if(typeof google!=='undefined'&&google.script&&google.script.url&&google.script.url.getLocation){google.script.url.getLocation(loc=>accept(loc.hash||''));}
  else accept(window.location.hash||'');
 }
-$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');loadHash();await checkHosting();await refresh();await refreshReviews();await refreshHub();await refreshHub();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
+$('signIn').onclick=async()=>{const b=$('signIn');b.disabled=true;status('loginStatus','Checking owner access…');try{const r=await gas('onboardingAuthenticate',$('ownerKey').value);session=r.session;$('ownerKey').value='';$('loginPanel').classList.add('hidden');$('adminPanel').classList.remove('hidden');await gas('clientOnboardingArchiveLegacyTestWorkspaces',session);await refreshPreviewPicker();loadHash();await checkHosting();await refresh();await refreshReviews();await refreshHub();}catch(e){status('loginStatus',e.message||String(e),true);}finally{b.disabled=false;}};
 function addReviewCard(r,data){
  const box=$('reviews'),card=document.createElement('div');card.className='workspace';
  const title=document.createElement('h3');title.textContent=r.business;card.append(title);
