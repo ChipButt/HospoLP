@@ -245,8 +245,50 @@ function hubAction(parent,label,func,messageEl,enabled=true){
  };
  parent.append(b);return b;
 }
+
+function hubMeetingUrl(c){
+ const u=new URL('https://chipinworks.co.uk/client-meeting/');
+ if(c.projectId){u.searchParams.set('projectId',c.projectId);u.searchParams.set('business',c.business);}
+ return u.href;
+}
+async function refreshPreviewPicker(){
+ const projects=await gas('clientOnboardingListPreviewProjects',session);
+ const picker=$('linkedProject'),previous=selectedProjectId||picker.value;
+ picker.replaceChildren();
+ const blank=document.createElement('option');blank.value='';blank.textContent='New website — no prepared demo linked';picker.append(blank);
+ projects.forEach(p=>{const opt=document.createElement('option');opt.value=p.id;
+   opt.textContent=p.business+(p.workspaceId?' (already approved)':' (prepared demo)');picker.append(opt)});
+ picker.value=previous;
+ if(picker.value!==previous)picker.value='';
+ picker.onchange=()=>{selectedProjectId=picker.value;const match=projects.find(p=>p.id===selectedProjectId);
+   if(match)$('business').value=match.business;};
+}
+$('registerPreview').onclick=async()=>{
+ const button=$('registerPreview');button.disabled=true;
+ status('registerPreviewStatus','Checking existing website and editor…');
+ try{
+   const r=await gas('clientOnboardingRegisterPreviewProject',session,{
+     business:$('previewBusiness').value.trim(),repository:$('previewRepo').value.trim(),
+     editorSiteId:$('previewSiteId').value.trim()});
+   status('registerPreviewStatus',r.created?'Prepared website registered. Open the Meeting Builder from its client card.':'This prepared website is already registered.');
+   await refreshPreviewPicker();await refreshHub();
+ }catch(e){status('registerPreviewStatus',e.message||String(e),true)}
+ finally{button.disabled=false}
+};
 function hubClientCard(c){
  const el=document.createElement('article');el.className='hub-card';
+ if(c.previewOnly){
+   const heading=document.createElement('h3');heading.textContent=c.business;el.append(heading);
+   const note=document.createElement('p');note.className='hub-note';
+   note.textContent='Prepared website · Meeting / quotation not yet accepted. Its existing website and editor will be reused.';
+   el.append(note);
+   const links=document.createElement('nav');links.className='hub-links';
+   hubLink(links,'Open this client in Meeting Builder',hubMeetingUrl(c));
+   hubLink(links,'Open demonstration website',c.demoWebsiteUrl);
+   hubLink(links,'Open website editor',c.demoEditorUrl);
+   hubLink(links,'Website source (owner only)',c.repoUrl);
+   el.append(links);return el;
+ }
  const top=document.createElement('div');top.className='hub-top';
  const heading=document.createElement('div');const h=document.createElement('h3');h.textContent=c.business;heading.append(h);
  const sub=document.createElement('div');sub.className='hub-meta';
@@ -267,7 +309,9 @@ function hubClientCard(c){
  }
  el.append(steps);
  const links=document.createElement('nav');links.className='hub-links';links.setAttribute('aria-label','Project links for '+c.business);
- hubLink(links,'Client Meeting Builder','https://chipinworks.co.uk/client-meeting/');
+ hubLink(links,c.projectId?'Open linked Client Meeting Builder':'Client Meeting Builder',hubMeetingUrl(c));
+ hubLink(links,'Prepared website',c.demoWebsiteUrl);
+ hubLink(links,'Prepared website editor',c.demoEditorUrl);
  hubLink(links,'Private assets folder',c.assets.folderUrl);
  hubLink(links,'Client upload link',c.assets.uploadUrl);
  hubLink(links,'Client source (owner only)',c.hosting.repositoryUrl);
@@ -339,9 +383,24 @@ async function refreshHub(){
  hubNotice($('hubStatus'),'Checking all client milestones…');
  try{
   const items=await gas('clientOnboardingProjectHub',session),box=$('hubProjects');
-  box.replaceChildren();for(const item of items)box.append(hubClientCard(item));
+  // Move, don't duplicate or rewrite, the working Bulls Head owner controls.
+  const bullsControls=$('bullsHeadOwnerDemo');
+  box.replaceChildren();
+  for(const item of items){
+    const card=hubClientCard(item);
+    if(item.projectId==='bulls-head-bidford'&&bullsControls){
+      const details=document.createElement('details');details.className='workspace';
+      const summary=document.createElement('summary');
+      summary.textContent='Manage this website editor, restore and hosting';
+      details.append(summary,bullsControls);card.append(details);
+    }
+    box.append(card);
+  }
+  if(bullsControls&&!bullsControls.isConnected){
+    bullsControls.classList.add('hidden');$('adminPanel').append(bullsControls);
+  }else if(bullsControls)bullsControls.classList.remove('hidden');
   if(!items.length)box.textContent='No approved client projects yet. Start at the Client Meeting Builder.';
-  hubNotice($('hubStatus'),items.length+' approved client project(s) · '+items.filter(x=>x.completed).length+' handed over.');
+  hubNotice($('hubStatus'),items.length+' client project(s) · '+items.filter(x=>x.previewOnly).length+' demonstrations · '+items.filter(x=>x.completed).length+' handed over.');
  }catch(e){hubNotice($('hubStatus'),e.message||String(e),true);}
 }
 $('refreshHub').onclick=refreshHub;
@@ -404,7 +463,7 @@ $('refresh').onclick=refresh;
 $('checkHosting').onclick=checkHosting;
 $('create').onclick=async()=>{const b=$('create');b.disabled=true;$('created').classList.add('hidden');status('createStatus','Creating private client folder…');try{
  let brief={};const raw=$('briefJson').value.trim();if(raw)brief=JSON.parse(raw);else if(initialBrief)brief=initialBrief;
- const payload={business:$('business').value.trim(),email:$('email').value.trim(),contact:$('contact').value.trim(),meetingId:$('meetingId').value.trim(),approved:$('approved').checked,brief};
+ const payload={business:$('business').value.trim(),email:$('email').value.trim(),contact:$('contact').value.trim(),meetingId:$('meetingId').value.trim(),projectId:$('linkedProject').value,approved:$('approved').checked,brief};
  const result=await gas('clientOnboardingCreateWorkspace',session,payload);
  lastCreated=result;$('created').classList.remove('hidden');
  $('clientUrl').href=result.uploadUrl;$('clientUrl').textContent=result.uploadUrl;
