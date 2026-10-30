@@ -452,3 +452,10 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
   .stay-room-grid > .stay-room{flex-basis:100%;max-width:480px}
   .stay-photo-grid > .stay-gallery-photo{flex-basis:100%;max-width:480px}
 }
+
+
+/* Room content stretches naturally so booking buttons stay aligned */
+.stay-room{display:flex;flex-direction:column}
+.stay-room>img{flex:0 0 230px}
+.stay-room>div{flex:1;height:auto}
+.stay-room-price{margin-top:14px}
