@@ -1,0 +1,52 @@
+name: College Arms – archive genuine community photograph
+on:
+  push:
+    paths:
+      - .github/workflows/college-arms-community-photo.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet Pillow requests
+      - name: Download community photo from College Arms 2016 reopening
+        run: |
+          python - <<'PY'
+          from PIL import Image
+          import requests,io
+          from pathlib import Path
+          sources=[
+            'https://www.widerview-visual.media/web/image/964-e10062b2/CollegeArms-Quinton-07Aug2016--slice-03.jpg',
+            'https://images.openai.com/static-rsc-4/mqnQ8JMzT8wE2bk-fLY5-_iVm4RmPU7ySvR-3coxkWesY5H-gkFqucxeddg1IgZqMIPM2PU-rktEKlLFvffNJHvgOrXPG3xXtiIcr8Q7qj0YN9qR97knAlztNHN7mr58h_8ZvfSKZX5JpzvejRKokbY0hB6pICuOAu8a-l4POX0?purpose=inline'
+          ]
+          target=Path('samples/college-arms/assets/photos/community-2016.jpg')
+          for url in sources:
+            try:
+              response=requests.get(url,timeout=20,headers={'User-Agent':'Mozilla/5.0'})
+              response.raise_for_status()
+              im=Image.open(io.BytesIO(response.content))
+              im.load()
+              if im.width<250 or im.height<250: raise ValueError('photo dimensions too small')
+              im.convert('RGB').save(target,'JPEG',quality=87,optimize=True)
+              print('Saved',target,im.size,flush=True)
+              break
+            except Exception as e:
+              print('Unable to fetch',type(e).__name__,str(e)[:140],flush=True)
+          else:
+            raise SystemExit('No genuine College Arms customers photograph could be downloaded')
+          PY
+      - name: Commit self-hosted genuine community photograph
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add samples/college-arms/assets/photos/community-2016.jpg
+          if ! git diff --cached --quiet; then
+            git commit -m "Archive genuine 2016 College Arms customers outside the pub"
+            git push
+          fi
