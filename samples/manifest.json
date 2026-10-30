@@ -100,6 +100,13 @@
       "name": "The Village Cafe",
       "type": "prospect-demo",
       "visible": true
+    },
+    {
+      "slug": "county-borders",
+      "name": "County Borders Property Maintenance",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/county-borders/"
     }
   ]
 }
