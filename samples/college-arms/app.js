@@ -1,0 +1,1 @@
+const b=document.querySelector('.hamb'),n=document.querySelector('.nav');if(b)b.addEventListener('click',()=>{const open=n.classList.toggle('open');b.setAttribute('aria-expanded',open);b.textContent=open?'×':'☰'});document.querySelectorAll('[data-year]').forEach(x=>x.textContent=new Date().getFullYear());
