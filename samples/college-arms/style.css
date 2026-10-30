@@ -321,3 +321,30 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
  .visit-opening-grid>.visit-time-panel>.visit-time-panel-header{min-height:0}
 }
 @media(max-width:420px){.visit-opening-grid>.visit-time-panel{padding:23px 20px}}
+
+
+/* Keep the last dish centred whenever a two-column course has an odd number of items */
+.menu-course-items > .menu-item:last-child:nth-child(odd){
+  grid-column:1 / -1;
+  justify-self:center;
+  width:min(100%,490px);
+  justify-content:center;
+  text-align:center;
+  gap:24px;
+}
+.menu-course-items > .menu-item:last-child:nth-child(odd) span{
+  min-width:0;
+  flex:0 1 auto;
+}
+.menu-course-items > .menu-item:last-child:nth-child(odd) strong{
+  flex:0 0 auto;
+}
+@media(max-width:800px){
+  .menu-course-items > .menu-item:last-child:nth-child(odd){
+    grid-column:auto;
+    justify-self:stretch;
+    width:100%;
+    justify-content:space-between;
+    text-align:left;
+  }
+}
