@@ -297,3 +297,27 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
  .menu-course--drinks{padding:67px 0}
  .menu-drink-group{padding:25px 23px}
 }
+
+
+/* Visit: lock both hours panels to the exact same visual treatment */
+.visit-opening-grid{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;grid-auto-flow:row}
+.visit-opening-grid>.visit-time-panel{
+  display:flex;flex-direction:column;
+  width:100%;min-width:0;min-height:360px;
+  padding:32px 34px 39px;
+  background:#fff8ed;
+  border:0;border-top:4px solid #a44333;
+  border-radius:0;box-shadow:none;
+}
+.visit-opening-grid>.visit-time-panel>.visit-time-panel-header{min-height:76px;flex:none}
+.visit-opening-grid>.visit-time-panel>.visit-time-table{width:100%;flex:1}
+@media(max-width:1000px){
+ .visit-opening-grid>.visit-time-panel{padding:25px;min-height:370px}
+ .visit-opening-grid>.visit-time-panel>.visit-time-panel-header{min-height:92px}
+}
+@media(max-width:720px){
+ .visit-opening-grid{grid-template-columns:1fr}
+ .visit-opening-grid>.visit-time-panel{min-height:0;padding:27px 25px}
+ .visit-opening-grid>.visit-time-panel>.visit-time-panel-header{min-height:0}
+}
+@media(max-width:420px){.visit-opening-grid>.visit-time-panel{padding:23px 20px}}
