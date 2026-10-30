@@ -40,3 +40,18 @@ figure.image-unavailable,img.image-unavailable{display:none!important}.welcome-i
 /* Keep the green and the entire frontage visible in the homepage hero */
 @media(min-width:701px){.newhero .newhero-photo{object-position:center 73%}}
 @media(max-width:700px){.newhero .newhero-photo{object-position:53% center}}
+
+
+/* Keep Stay at the same height as Story, Food, Events and Visit */
+.stay-hero{height:470px;min-height:470px}
+.stay-hero h1{font-size:clamp(53px,7vw,97px)}
+.stay-hero .stay-hero-content{padding-top:45px;padding-bottom:45px}
+@media(max-width:720px){
+ .stay-hero{height:370px;min-height:370px}
+ .stay-hero h1{font-size:clamp(44px,10.5vw,65px);margin:10px 0 14px}
+ .stay-hero p:not(.eyebrow){font-size:15px;line-height:1.5}
+ .stay-hero .btn{margin-top:9px}
+ .stay-hero .stay-hero-content{padding-top:20px;padding-bottom:20px}
+}
+/* Show the Village Green and whole frontage on Visit, not a window detail */
+body:has(a[aria-current="page"][href="visit.html"]) .photo-page-hero{background-position:center 44%}
