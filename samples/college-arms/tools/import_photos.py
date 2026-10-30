@@ -3,7 +3,7 @@
 This job deliberately fails before modifying pages if any required photo cannot be obtained.
 """
 from __future__ import annotations
-import hashlib, io, os, re, sys, time
+import hashlib, io, os, re, sys, time, json
 from pathlib import Path
 from urllib.parse import urlparse
 import requests
@@ -86,6 +86,7 @@ def download(name,urls):
 
 for name,(urls,credit) in SOURCES.items():download(name,urls)
 
+(ROOT/"assets"/"photo-fetch-report.json").write_text(json.dumps({"available":list(verified),"failed":errors,"details":{name:list(data) for name,data in verified.items()}},indent=2)+"\n",encoding="utf-8")
 mandatory={"home-front","story-green","visit-outside","restaurant","lounge","room-seymour"}
 if mandatory.intersection(errors):
     print("REQUIRED PHOTOS UNAVAILABLE",sorted(mandatory.intersection(errors)),flush=True)
