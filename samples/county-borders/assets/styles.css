@@ -9,3 +9,9 @@
 .contact-icon{width:1.15em;height:1.15em;display:inline-block;flex:none;vertical-align:-.18em;margin-right:.4em;color:inherit}
 .contact-head strong .contact-icon{vertical-align:-.12em}
 .mobile-call .contact-icon{width:1.05em;height:1.05em;vertical-align:-.17em}
+
+/* Fixed-size, accessible mobile call action. Explicit SVG sizing also lives in HTML for cached CSS. */
+@media(max-width:760px){
+.mobile-call{display:flex;align-items:center;justify-content:center;gap:5px;box-sizing:border-box;height:52px;min-height:52px;max-height:52px;padding:8px 12px;white-space:nowrap;overflow:hidden;line-height:1.2}
+.mobile-call .contact-icon{display:inline-block;width:18px!important;height:18px!important;min-width:18px;max-width:18px;max-height:18px;flex:0 0 18px;margin:0 5px 0 0;vertical-align:middle}
+}
