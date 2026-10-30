@@ -20,8 +20,10 @@ jobs:
       - name: Install image processing requirements
         run: python -m pip install --quiet Pillow requests numpy
       - name: Download and validate photos, then update six pages atomically
+        id: import
+        continue-on-error: true
         run: python samples/college-arms/tools/import_photos.py
-      - name: Commit only after all mandatory images passed validation
+      - name: Commit downloaded assets and failure report without changing pages on failed validation
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -30,3 +32,6 @@ jobs:
             git commit -m "College Arms: self-host distinct verified page hero photos"
             git push
           fi
+      - name: Fail if all required images could not be obtained
+        if: steps.import.outcome == 'failure'
+        run: exit 1
