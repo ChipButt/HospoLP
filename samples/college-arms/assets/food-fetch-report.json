@@ -1,0 +1,11 @@
+{
+  "available": [
+    "food-dish",
+    "food-fish-chips",
+    "food-meal",
+    "food-drink",
+    "historical-menu-1",
+    "historical-menu-2"
+  ],
+  "missing": []
+}
