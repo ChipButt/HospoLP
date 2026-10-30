@@ -160,3 +160,9 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
 .food-menu-button{margin-top:25px;text-align:center}
 @media(max-width:850px){.menu-categories{grid-template-columns:1fr;gap:32px}.menu-intro,.menu-hero-grid{grid-template-columns:1fr}.menu-hero figure{display:none}.food-showcase-grid{grid-template-columns:1fr 1fr}.food-showcase-grid article:last-child{grid-column:1/-1}}
 @media(max-width:620px){.menu-hero{padding:60px 0}.menu-tabs a{padding:17px 0}.drink-cols,.food-showcase-grid{grid-template-columns:1fr}.food-showcase-grid article:last-child{grid-column:auto}.food-showcase-grid img{height:245px}.food-feature img{height:310px}}
+
+/* Two clean editorial food-and-drink photographs */
+.food-showcase-grid{grid-template-columns:repeat(2,minmax(0,1fr));max-width:1000px;margin-left:auto;margin-right:auto}
+.food-showcase-grid article:last-child{grid-column:auto}
+.food-showcase-grid img{height:350px;object-fit:cover}
+@media(max-width:620px){.food-showcase-grid{grid-template-columns:1fr}.food-showcase-grid img{height:290px}}
