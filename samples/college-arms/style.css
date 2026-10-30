@@ -368,66 +368,35 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
     text-align:left;
   }
 }
-
-
-/* Price-free centred restaurant menu, one harmonious column per course */
-.menu-course-items{
-  display:grid;
-  grid-template-columns:minmax(0,1fr);
-  width:min(100%,730px);
-  max-width:730px;
-  margin:0 auto;
-  gap:0;
-}
+ 
+/* Price-free menu: retain the original two-column grid,
+   centre each dish within its own column and the final odd item across both */
 .menu-course-items > .menu-item,
 .menu-course-items > .menu-item--centred,
 .menu-course-items > .menu-item:last-child:nth-child(odd){
-  grid-column:1 / -1;
-  justify-self:center;
-  width:100%;
-  max-width:730px;
-  display:flex;
   justify-content:center;
-  align-items:center;
   text-align:center;
-  padding:12px 0;
-  border-bottom:0;
 }
-.menu-course-items > .menu-item span,
-.menu-course-items > .menu-item--centred span{
+.menu-course-items > .menu-item span{
   display:block;
   max-width:100%;
   text-align:center;
   margin:0 auto;
-  font-size:16px;
-  line-height:1.65;
 }
-.menu-drink-prices>.menu-item{
+.menu-drink-prices > .menu-item{
   justify-content:center;
-  align-items:center;
   text-align:center;
-  border-bottom:1px solid #e4d4c5;
 }
-.menu-drink-prices>.menu-item span{
+.menu-drink-prices > .menu-item span{
   display:block;
-  width:100%;
   text-align:center;
-  line-height:1.6;
+  margin:0 auto;
 }
 @media(max-width:800px){
-  .menu-course-items > .menu-item,
-  .menu-course-items > .menu-item--centred,
-  .menu-course-items > .menu-item:last-child:nth-child(odd){
-    grid-column:1 / -1;
-    justify-self:center;
-    width:100%;
-    justify-content:center;
-    text-align:center;
-  }
-}
-@media(max-width:600px){
-  .menu-course-items > .menu-item span,
-  .menu-course-items > .menu-item--centred span{
-    font-size:15px;
-  }
+ .menu-course-items > .menu-item,
+ .menu-course-items > .menu-item--centred,
+ .menu-course-items > .menu-item:last-child:nth-child(odd){
+   justify-content:center;
+   text-align:center;
+ }
 }
