@@ -166,3 +166,77 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
 .food-showcase-grid article:last-child{grid-column:auto}
 .food-showcase-grid img{height:350px;object-fit:cover}
 @media(max-width:620px){.food-showcase-grid{grid-template-columns:1fr}.food-showcase-grid img{height:290px}}
+
+
+/* Visit page — same warm editorial visual language as the College Arms homepage */
+.visit-welcome{padding:110px 0 115px}
+.visit-welcome-grid{display:grid;grid-template-columns:minmax(0,.87fr) minmax(0,1.13fr);gap:8%;align-items:center}
+.visit-welcome-copy h2{font-size:clamp(43px,4.9vw,70px);line-height:1.19;max-width:580px;margin:19px 0 25px}
+.visit-welcome-copy h2 em{color:#a94433;font-weight:400}
+.visit-welcome-copy p{max-width:500px;font-size:16px;line-height:1.9;color:#624c41}
+.visit-welcome-copy .visit-lead{font:400 20px/1.7 'Libre Baskerville',serif;color:#3c2922}
+.visit-address{border-top:1px solid #dbc5b1;border-bottom:1px solid #dbc5b1;padding:23px 0;margin:27px 0 15px}
+.visit-address-label{font-size:11px;text-transform:uppercase;letter-spacing:.18em;font-weight:800;color:#9e3f30;display:block;margin-bottom:13px}
+.visit-address address{font-style:normal;font-size:15px;font-weight:500;line-height:1.75}
+.visit-actions{display:flex;flex-wrap:wrap;gap:11px;margin-top:17px}
+.visit-actions .btn{margin:0;font-size:13px;text-align:center}
+.visit-actions .btn.ghost{color:var(--ink);background:transparent;border-color:#957467}
+.visit-green-photo{margin:0;position:relative;background:#dac6af;min-width:0}
+.visit-green-photo img{display:block;width:100%;height:600px;object-fit:cover;object-position:center center}
+.visit-green-photo figcaption{position:absolute;bottom:0;left:0;background:#842f25;color:#fff5e7;padding:16px 25px;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;max-width:95%}
+.visit-opening{background:#ead7c3;padding:105px 0 110px}
+.visit-opening-heading{display:flex;align-items:end;justify-content:space-between;gap:50px;margin-bottom:40px}
+.visit-opening-heading h2{font-size:clamp(42px,5vw,72px);line-height:1.15;margin:14px 0 0}
+.visit-opening-heading p{max-width:390px;margin:0 0 4px;color:#624e45;font-size:16px;line-height:1.8}
+.visit-opening-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:23px;align-items:stretch}
+.visit-time-panel{background:#fff8ed;border-top:4px solid #a44333;padding:32px 34px 39px;min-width:0}
+.visit-time-panel-header{display:flex;align-items:end;justify-content:space-between;gap:20px;min-height:72px;padding-bottom:21px;border-bottom:1px solid #d8bcaa}
+.visit-time-panel h3{font-size:clamp(23px,2.55vw,32px);line-height:1.25;margin:0}
+.visit-time-panel-header span{font-size:10px;letter-spacing:.11em;font-weight:800;text-transform:uppercase;color:#995345;text-align:right;white-space:nowrap;padding-bottom:3px}
+.visit-time-table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.visit-time-table tr+tr{border-top:1px solid #ebdac8}
+.visit-time-table th,.visit-time-table td{font-family:'DM Sans',sans-serif;font-size:14px;line-height:1.65;padding:17px 0;vertical-align:top}
+.visit-time-table th{text-align:left;font-weight:600;padding-right:12px;color:#49332c}
+.visit-time-table td{text-align:right;font-weight:700;white-space:nowrap;color:#793b2f}
+.visit-hours-note{font-size:13px!important;line-height:1.7!important;color:#70594d!important;margin:22px 0 0}
+.visit-more{padding:112px 0 115px}
+.visit-more-heading{display:flex;align-items:end;justify-content:space-between;gap:50px;margin-bottom:35px}
+.visit-more-heading h2{font-size:clamp(40px,4.6vw,65px);margin:15px 0 0}
+.visit-more-heading p{max-width:330px;font-size:16px;line-height:1.75;color:#644e44;margin:0 0 5px}
+.visit-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:23px}
+.visit-more-card{display:block;background:#f0ddc9;overflow:hidden;transition:transform .25s ease}
+.visit-more-card:hover,.visit-more-card:focus-visible{transform:translateY(-4px)}
+.visit-more-card:focus-visible{outline:3px solid #a64434;outline-offset:3px}
+.visit-more-card img{display:block;width:100%;height:330px;object-fit:cover;background:#e0cdb7}
+.visit-more-card-copy{padding:29px 33px 35px}
+.visit-more-card-copy span{display:block;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;color:#9c3d30;margin-bottom:13px}
+.visit-more-card-copy h3{font-size:clamp(27px,2.8vw,39px);line-height:1.24;margin:0 0 24px;max-width:450px}
+.visit-more-card-copy strong{display:inline-block;font-size:13px;font-weight:700;border-bottom:2px solid #a44736;padding-bottom:7px}
+@media(max-width:1000px){
+ .visit-welcome-grid{grid-template-columns:1fr;gap:40px}
+ .visit-welcome-copy{max-width:730px}
+ .visit-green-photo img{height:510px}
+ .visit-opening-heading,.visit-more-heading{align-items:start;flex-direction:column;gap:10px}
+ .visit-opening-heading p,.visit-more-heading p{max-width:630px}
+ .visit-time-panel{padding:25px}
+ .visit-time-panel-header{align-items:start;flex-direction:column;gap:5px;min-height:92px}
+}
+@media(max-width:720px){
+ .visit-welcome,.visit-opening,.visit-more{padding:72px 0}
+ .visit-welcome-copy h2{font-size:clamp(39px,10vw,56px)}
+ .visit-welcome-copy .visit-lead{font-size:18px}
+ .visit-green-photo img{height:340px}
+ .visit-opening-grid,.visit-more-grid{grid-template-columns:1fr;gap:17px}
+ .visit-time-panel-header{min-height:0;flex-direction:row;align-items:center;padding-bottom:16px}
+ .visit-time-panel-header span{white-space:normal}
+ .visit-more-card img{height:255px}
+ .visit-more-card-copy{padding:23px 25px 28px}
+}
+@media(max-width:420px){
+ .visit-actions{flex-direction:column}
+ .visit-actions .btn{width:100%}
+ .visit-time-panel{padding:23px 20px}
+ .visit-time-table th,.visit-time-table td{font-size:12.5px}
+ .visit-time-panel h3{font-size:25px}
+ .visit-time-panel-header span{font-size:9px}
+}
