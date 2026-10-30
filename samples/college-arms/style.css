@@ -112,3 +112,51 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
 .food-photos{grid-template-columns:repeat(2,minmax(0,1fr))}
 .food-photos img{height:420px;object-fit:cover}
 @media(max-width:700px){.food-photos{grid-template-columns:1fr}.food-photos img{height:320px}}
+
+
+/* College Arms menu and editorial Food & Drink layout */
+.menu-hero{background:#482820;color:#fff8ee;padding:77px 0 0;overflow:hidden}
+.menu-hero-grid{display:grid;grid-template-columns:1fr .8fr;gap:8%;align-items:center}
+.menu-hero h1{font-size:clamp(54px,7vw,104px);margin:15px 0 20px;line-height:1.08}
+.menu-hero p{font-size:18px;line-height:1.75;max-width:520px;color:#f0dcd1}
+.menu-hero .tag{color:#f9c799}
+.menu-hero figure{margin:0;height:330px;align-self:end;overflow:hidden}
+.menu-hero figure img{width:100%;height:100%;object-fit:cover;object-position:center 60%}
+.menu-tabs{background:#ebd3bb;border-bottom:1px solid #d8bca7}
+.menu-tabs>.wrap{display:flex;gap:26px;align-items:center;overflow-x:auto;white-space:nowrap;scrollbar-width:thin}
+.menu-tabs a{display:inline-block;font-size:12px;font-weight:800;padding:22px 0;text-transform:uppercase;letter-spacing:.065em}
+.menu-tabs a:hover{color:#a63e2d}
+.menu-intro{display:grid;grid-template-columns:1fr .8fr;gap:6%;align-items:end;padding-bottom:30px}
+.menu-intro h2{margin:8px 0}
+.menu-accuracy{font-size:13px!important;line-height:1.75!important;color:#6d5147!important}
+.menu-categories{display:grid;grid-template-columns:1fr 1fr;gap:52px 76px;margin-top:36px}
+.menu-category{scroll-margin-top:145px;break-inside:avoid}
+.menu-heading{display:flex;justify-content:space-between;align-items:center;border-bottom:2px solid #a03d2f;gap:8px;margin-bottom:11px}
+.menu-heading h3{font-size:29px;margin:0;padding-bottom:15px}
+.menu-heading span{font-size:11px;color:#856e5e}
+.menu-item{display:flex;gap:18px;align-items:baseline;justify-content:space-between;padding:11px 0;border-bottom:1px solid #e7d9ca;font-size:14px;line-height:1.55}
+.menu-item span{max-width:85%}
+.menu-item strong{font-size:14px;font-weight:700;white-space:nowrap;color:#703023}
+.menu-drinks{background:#ecdbc9}
+.menu-drinks h2{margin:10px 0 35px}
+.drink-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+.drink-cols section{padding:27px;background:#fff7eb;border-top:3px solid #a23d2d}
+.drink-cols h3{font-size:26px;margin:0 0 18px}
+.drink-cols ul{margin:0;padding:0;list-style:none}
+.drink-cols li{padding:8px 0;border-bottom:1px solid #ead9c9;font-size:14px}
+.menu-cta{background:#a64434;padding:68px 0;color:#fff7ed;text-align:center}
+.menu-cta h2{font-size:clamp(33px,4vw,54px);margin:5px 0 18px}
+.menu-cta p{font-size:16px;color:#f6e2d2}
+.food-feature{margin:0;overflow:hidden}
+.food-feature img{width:100%;height:440px;object-fit:cover}
+.food-showcase{background:#ebd8c4}
+.food-showcase h2{margin-top:15px}
+.food-showcase-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:19px;margin-top:36px}
+.food-showcase-grid article{background:#fff8ee}
+.food-showcase-grid img{width:100%;height:295px;object-fit:cover}
+.food-showcase-grid article>div{padding:20px 24px 26px}
+.food-showcase-grid h3{font-size:24px;margin:0 0 10px}
+.food-showcase-grid p{font-size:14px;line-height:1.6;margin:0}
+.food-menu-button{margin-top:25px;text-align:center}
+@media(max-width:850px){.menu-categories{grid-template-columns:1fr;gap:32px}.menu-intro,.menu-hero-grid{grid-template-columns:1fr}.menu-hero figure{display:none}.food-showcase-grid{grid-template-columns:1fr 1fr}.food-showcase-grid article:last-child{grid-column:1/-1}}
+@media(max-width:620px){.menu-hero{padding:60px 0}.menu-tabs a{padding:17px 0}.drink-cols,.food-showcase-grid{grid-template-columns:1fr}.food-showcase-grid article:last-child{grid-column:auto}.food-showcase-grid img{height:245px}.food-feature img{height:310px}}
