@@ -107,6 +107,13 @@
       "type": "prospect-demo",
       "visible": true,
       "url": "samples/county-borders/"
+    },
+    {
+      "slug": "college-arms",
+      "name": "The College Arms",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/college-arms/"
     }
   ]
 }
