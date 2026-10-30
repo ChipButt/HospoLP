@@ -55,3 +55,23 @@ figure.image-unavailable,img.image-unavailable{display:none!important}.welcome-i
 }
 /* Show the Village Green and whole frontage on Visit, not a window detail */
 body:has(a[aria-current="page"][href="visit.html"]) .photo-page-hero{background-position:center 44%}
+
+
+/* Genuine community photography, readable without cropping away the guests */
+.community-heading{display:grid;grid-template-columns:1fr 1fr;gap:9%;align-items:center}
+.community-heading h2{max-width:660px}
+.community-heading p,.events-intro p{line-height:1.85;color:var(--muted)}
+.community-panorama{margin:46px 0 0}
+.community-panorama img{display:block;width:100%;height:auto;object-fit:contain}
+.community-panorama figcaption{font-size:12px;color:var(--muted);margin-top:12px}
+.events-intro{display:grid;grid-template-columns:1fr .7fr;align-items:end;gap:8%}
+.events-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:48px}
+.events-options>div{border-top:3px solid var(--brick);background:#f2e5d6;padding:28px}
+.events-options h3{font-size:29px;margin:4px 0 12px}
+.events-options p,.events-facebook p{line-height:1.7;color:var(--muted);font-size:15px}
+.events-facebook{margin-top:60px;padding:38px 45px;background:#e9d2be;display:flex;justify-content:space-between;align-items:center;gap:35px}
+.events-facebook h3{font-size:34px;margin:0 0 12px}
+.events-facebook p{margin:0}
+.events-facebook .btn{white-space:nowrap}
+body:has(a[aria-current="page"][href="events.html"]) .photo-page-hero{background-position:center center}
+@media(max-width:760px){.community-heading,.events-intro{grid-template-columns:1fr;gap:16px}.events-options{grid-template-columns:1fr}.events-facebook{padding:28px;flex-direction:column;align-items:start}}
