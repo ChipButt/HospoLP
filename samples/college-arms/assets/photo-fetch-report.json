@@ -1,0 +1,81 @@
+{
+  "available": [
+    "restaurant",
+    "lounge",
+    "room-seymour",
+    "room-arragon",
+    "room-boleyn",
+    "room-cleaves",
+    "room-classic",
+    "exterior-hotel",
+    "courtyard-hotel",
+    "front-hotel"
+  ],
+  "failed": [
+    "home-front",
+    "story-green",
+    "visit-outside"
+  ],
+  "details": {
+    "restaurant": [
+      1200,
+      800,
+      215273,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/41d2ac9a.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "lounge": [
+      1200,
+      800,
+      279145,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/aaa24ae7.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "room-seymour": [
+      1200,
+      800,
+      284126,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/25065652.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "room-arragon": [
+      1200,
+      800,
+      179822,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/e1e0083b.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "room-boleyn": [
+      1200,
+      800,
+      191525,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/85b56610.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "room-cleaves": [
+      1200,
+      800,
+      108816,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/b46cf1e7.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "room-classic": [
+      1200,
+      800,
+      196105,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/bad04af5.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "exterior-hotel": [
+      1200,
+      800,
+      271782,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/416f416d.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "courtyard-hotel": [
+      1200,
+      800,
+      292250,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/bf6a0b6a.jpg?impolicy=fcrop&w=1200&h=800"
+    ],
+    "front-hotel": [
+      1200,
+      800,
+      150259,
+      "https://images.trvl-media.com/lodging/18000000/17750000/17743200/17743106/26b7e91d.jpg?impolicy=fcrop&w=1200&h=800"
+    ]
+  }
+}
