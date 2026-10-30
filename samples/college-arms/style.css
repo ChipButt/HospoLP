@@ -348,3 +348,23 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
     text-align:left;
   }
 }
+
+
+/* Explicit fallback for an unpaired menu dish */
+.menu-course-items > .menu-item--centred{
+  grid-column:1 / -1;
+  justify-self:center;
+  width:min(100%,490px);
+  justify-content:center;
+  text-align:center;
+  gap:24px;
+}
+@media(max-width:800px){
+  .menu-course-items > .menu-item--centred{
+    grid-column:auto;
+    width:100%;
+    justify-self:stretch;
+    justify-content:space-between;
+    text-align:left;
+  }
+}
