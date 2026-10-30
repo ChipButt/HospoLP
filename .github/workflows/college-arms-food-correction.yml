@@ -1,0 +1,59 @@
+name: College Arms – correct food photography and menu labels
+on:
+  push:
+    paths:
+      - .github/workflows/college-arms-food-correction.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  correct:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet Pillow
+      - name: Crop genuine dishes and remove false menus
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+          import re
+          root=Path("samples/college-arms")
+          photos=root/"assets/photos"
+          source=Image.open(photos/"food-fish-chips.jpg").convert("RGB")
+          w,h=source.size
+          # Original is a four-part user-uploaded food collage. Use its upper-left
+          # photograph of plated fish and chips, excluding the other panels.
+          fish=source.crop((0,0,w//2-2,h//2-2))
+          fish.resize((1100,1400),Image.Resampling.LANCZOS).save(photos/"food-hero-fish-chips.jpg","JPEG",quality=91,optimize=True)
+          dish=Image.open(photos/"food-dish.jpg").convert("RGB")
+          dw,dh=dish.size
+          # Upper right contains a plated toasted sandwich and chips.
+          dish.crop((dw//2+3,0,dw,dh//2-2)).resize((960,1300),Image.Resampling.LANCZOS).save(photos/"food-sandwich.jpg","JPEG",quality=89,optimize=True)
+          path=root/"food.html"
+          html=path.read_text()
+          html=html.replace("assets/photos/food-fish-chips.jpg","assets/photos/food-hero-fish-chips.jpg")
+          html=html.replace("assets/photos/food-dish.jpg","assets/photos/food-sandwich.jpg")
+          # Replace entire archive with an honest menu collection link. Never
+          # mislabel the old exterior pictures as menu scans.
+          html=re.sub(r'<section class="section paper"><div class="wrap"><div class="tag">From the archives</div>.*?</section>','',html,flags=re.S)
+          html=re.sub(r'<section class="section"><div class="wrap"><div class="tag">From our kitchen</div>.*?</section>',"""<section class="section"><div class="wrap"><div class="tag">From the kitchen</div><h2>Food to look forward to.</h2><div class="food-photos"><figure><img src="assets/photos/food-hero-fish-chips.jpg" alt="Fish and chips served at The College Arms" loading="lazy"></figure><figure><img src="assets/photos/food-sandwich.jpg" alt="Toasted sandwich and chips served at The College Arms" loading="lazy"></figure></div></div></section>""",html,flags=re.S)
+          html=html.replace('Ask about today\'s menu</a>','Ask about today\'s menu</a><a class="btn ghost" style="color:var(--ink)" href="https://restaurantguru.com/College-Arms-Lower-Quinton-2/menu" target="_blank" rel="noopener noreferrer">See previously published menus</a>')
+          html=html.replace('style.css?v=real-food-20261030','style.css?v=food-correct-20261030')
+          path.write_text(html)
+          css=root/"style.css"
+          css.write_text(css.read_text()+"""\n/* Keep real plated food prominent on Food & Drink */\nbody:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-position:center 30%}\n.food-photos{grid-template-columns:repeat(2,minmax(0,1fr))}\n.food-photos img{height:420px;object-fit:cover}\n@media(max-width:700px){.food-photos{grid-template-columns:1fr}.food-photos img{height:320px}}\n""")
+          print("Corrected Food page; no false menu images or collage panels",fish.size)
+          PY
+      - name: Commit corrected food photos
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add samples/college-arms/
+          if ! git diff --cached --quiet; then
+            git commit -m "Fix food hero with plated dishes and remove false historical menu images"
+            git push
+          fi
