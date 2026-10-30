@@ -1,0 +1,53 @@
+name: College Arms – install real RGBA logo PNG
+on:
+  push:
+    paths:
+      - .github/workflows/college-arms-logo-png.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  convert-and-commit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install --quiet Pillow
+      - name: Convert embedded original College Arms logo to verified RGBA PNG
+        run: |
+          python - <<'PY'
+          import re,base64,io
+          from pathlib import Path
+          from PIL import Image
+          root=Path("samples/college-arms")
+          svg=(root/"assets/college-arms-logo.svg").read_text(encoding="utf-8")
+          match=re.search(r"data:image/png;base64,([A-Za-z0-9+/=]+)",svg)
+          assert match, "Embedded original College Arms logo not found"
+          data=base64.b64decode(match.group(1),validate=True)
+          im=Image.open(io.BytesIO(data)).convert("RGBA")
+          assert im.mode=="RGBA" and im.getchannel("A").getextrema()[0]==0, "Invalid transparency"
+          dest=root/"assets/college-arms-logo.png"
+          im.save(dest,format="PNG",optimize=True)
+          with Image.open(dest) as test:
+              assert test.mode=="RGBA"
+              assert test.getchannel("A").getextrema()[0]==0
+          for page in ["index.html","story.html","food.html","stay.html","events.html","visit.html"]:
+              path=root/page
+              text=path.read_text(encoding="utf-8")
+              assert 'src="assets/college-arms-logo.svg"' in text,page
+              path.write_text(text.replace('src="assets/college-arms-logo.svg"','src="assets/college-arms-logo.png"'),encoding="utf-8")
+          print("Installed verified RGBA logo",im.size,"transparent pixels:",sum(x==0 for x in im.getchannel("A").getdata()))
+          PY
+      - name: Commit logo and update all page headers
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add samples/college-arms/
+          if ! git diff --cached --quiet; then
+            git commit -m "Use real transparent RGBA College Arms PNG in all six site headers"
+            git push
+          fi
