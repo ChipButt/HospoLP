@@ -400,3 +400,55 @@ body:has(a[aria-current="page"][href="food.html"]) .photo-page-hero{background-p
    text-align:center;
  }
 }
+
+
+/* Stay: centre incomplete rows of three room cards and photo tiles */
+.stay-room-grid,.stay-photo-grid{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:stretch;
+}
+.stay-room-grid{gap:22px}
+.stay-room-grid > .stay-room{
+  flex:0 1 calc((100% - 44px) / 3);
+  min-width:0;
+}
+.stay-room > div{display:flex;flex-direction:column;align-items:flex-start;height:calc(100% - 230px)}
+.stay-room .btn{margin-top:auto}
+.stay-room-price{
+  font-family:'Libre Baskerville',serif;
+  color:#873b2c!important;
+  font-size:26px!important;
+  margin:12px 0 22px;
+  line-height:1.35!important;
+  font-weight:700;
+}
+.stay-room-price span{
+  font:700 12px 'DM Sans',sans-serif;
+  color:#654c43;
+  margin-right:4px;
+}
+.stay-room-price small{
+  font:500 13px 'DM Sans',sans-serif;
+  color:#654c43;
+}
+.stay-price-note{
+  color:#65534c!important;
+  font-size:12px!important;
+  line-height:1.65!important;
+  margin:20px 0 8px;
+}
+.stay-photo-grid{gap:18px}
+.stay-photo-grid > .stay-gallery-photo{
+  flex:0 1 calc((100% - 36px) / 3);
+  min-width:0;
+}
+@media(max-width:850px){
+  .stay-room-grid > .stay-room{flex-basis:calc((100% - 22px) / 2)}
+  .stay-photo-grid > .stay-gallery-photo{flex-basis:calc((100% - 18px) / 2)}
+}
+@media(max-width:550px){
+  .stay-room-grid > .stay-room{flex-basis:100%;max-width:480px}
+  .stay-photo-grid > .stay-gallery-photo{flex-basis:100%;max-width:480px}
+}
