@@ -25,9 +25,9 @@ jobs:
           w,h=source.size
           # Upper-left collage quadrant shows a Guinness pint at the College Arms green.
           # Exclude the separate menu advert, cartoon and all other quadrants.
-          crop=source.crop((0,0,(w//2)-3,(h//2)-3))
+          crop=source.crop((0,0,int(w*0.43),int(h*0.46)))
           crop=ImageEnhance.Contrast(crop).enhance(1.05)
-          crop.resize((900,1100),Image.Resampling.LANCZOS).save(root/"food-drink-guinness.jpg","JPEG",quality=90,optimize=True)
+          crop.resize((850,1200),Image.Resampling.LANCZOS).save(root/"food-drink-guinness.jpg","JPEG",quality=90,optimize=True)
           assert (root/"food-drink-guinness.jpg").stat().st_size>12000
           print("Saved distinct genuine pub pint photo",crop.size)
           PY
