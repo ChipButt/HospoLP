@@ -114,10 +114,10 @@ for page,(hero,names) in PAGES.items():
         name=names[idx] if idx<len(names) else None
         idx+=1
         if not name or not asset(name):
-            return re.sub(r"<img\\b[^>]*>", "", match.group(0),count=1)
+            return re.sub(r"<img\b[^>]*>", "", match.group(0),count=1)
         tag=match.group(0)
         return re.sub(r'src="[^"]+"', 'src="'+asset(name)+'"',tag,count=1)
-    html=re.sub(r'<img\\b[^>]*>',localise,html)
+    html=re.sub(r'<img\b[^>]*>',localise,html)
     if page=="stay.html":
         # Strict: no room image may have failed.
         for name in ("room-seymour","room-arragon","room-boleyn","room-cleaves","room-classic"):
@@ -126,15 +126,15 @@ for page,(hero,names) in PAGES.items():
                 sys.exit(1)
     if page not in ("index.html","stay.html"):
         photo=asset(hero)
-        html=html.replace('<section class="subhero">',
-            '<section class="subhero photo-page-hero" style="background-image:linear-gradient(90deg,rgba(26,13,10,.82),rgba(30,13,10,.36)),url(\\\''+photo+'\\\')">',1)
+        hero_style = "background-image:linear-gradient(90deg,rgba(26,13,10,.82),rgba(30,13,10,.36)),url('"+photo+"')"
+        html=html.replace('<section class="subhero">','<section class="subhero photo-page-hero" style="'+hero_style+'">',1)
     html=html.replace('style.css?v=identity-20261030','style.css?v=heroes-20261030')
     html=html.replace('style.css?v=story-20261030b','style.css?v=heroes-20261030')
     html=html.replace('style.css?v=stay-20261030','style.css?v=heroes-20261030')
     # Drop the invalid 2016 staff-photo reference if it cannot be downloaded and
     # avoid implying that a newer team has been verified.
     if page=="story.html":
-        html=re.sub(r'<figure class="story-photo">\\s*<img[^>]+2016[^>]*>.*?</figure>','',html,flags=re.S)
+        html=re.sub(r'<figure class="story-photo">\s*<img[^>]+2016[^>]*>.*?</figure>','',html,flags=re.S)
     path.write_text(html,encoding="utf-8")
     print("UPDATED",page,"images",idx)
 
@@ -161,5 +161,5 @@ stylesheet.write_text(css,encoding="utf-8")
 credits=["# College Arms photo provenance","", "Images for a prospect demo only. Obtain the rights holder's permission before public commercial client deployment.",""]
 for name,(urls,credit) in SOURCES.items():
     credits.append("- "+name+".jpg: "+credit+(" [not downloaded]" if name not in verified else ""))
-(ROOT/"assets"/"PHOTO-SOURCES.md").write_text("\\n".join(credits)+"\\n",encoding="utf-8")
+(ROOT/"assets"/"PHOTO-SOURCES.md").write_text("\n".join(credits)+"\n",encoding="utf-8")
 print("ASSET IMPORT COMPLETE. images:",len(verified),"missing:",errors,flush=True)
