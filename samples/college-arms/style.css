@@ -28,3 +28,11 @@ figure.image-unavailable,img.image-unavailable{display:none!important}.welcome-i
 .subhero.photo-page-hero .tag{color:#f6bc90}
 .stay-hero>img{object-fit:cover}
 @media(max-width:720px){.subhero.photo-page-hero{min-height:370px;background-position:53% center}}
+
+/* Authentic self-hosted College Arms artwork in every page header */
+.headin{min-height:132px}
+.brand{display:flex;align-items:center;flex:0 0 auto}
+.brand-logo{width:102px;height:127px;object-fit:contain;display:block}
+.brand-logo:hover{opacity:.93}
+@media(max-width:950px){.headin{min-height:108px}.brand-logo{width:82px;height:103px}}
+@media(max-width:600px){.headin{min-height:96px}.brand-logo{width:75px;height:94px}}
