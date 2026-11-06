@@ -2,3 +2,98 @@
 /* V2: supplied Smoke House branding and festive menu */
 :root{--green:#0b2e3d;--green2:#173e4d;--deep:#092631;--gold:#bf9b5e;--ink:#153541;--muted:#53636b}
 .site-header{background:#f2f2f2}.brand-logo{position:relative;display:block;width:190px;height:91px;overflow:hidden}.brand-logo img{position:absolute;width:260px;max-width:none;height:260px;left:-35px;top:-77px}.topline,.site-footer{background:#092631}.footer-brand small{font:700 11px var(--sans);letter-spacing:.3em;text-transform:uppercase}.menu-hero:after{background:linear-gradient(90deg,#092631ed,#092631b5 60%,#09263155)}.menu-hero:before{filter:none}.menu-hero .button{margin-top:12px}.festive-section{background:#f4eee2;scroll-margin-top:110px}.festive-menu{max-width:1000px;border:1px solid #bda372;padding:55px clamp(20px,5vw,70px);background:#fcf9f1}.festive-heading{text-align:center}.festive-heading h2{font-size:clamp(48px,6vw,80px)}.menu-prices{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;padding:8px 0 35px}.menu-prices span{border:1px solid #d8c7a7;padding:15px 24px;font-size:15px}.menu-prices strong{display:block;font:30px var(--serif);margin-bottom:5px}.menu-course{margin:35px 0 45px}.menu-course h3{display:flex;align-items:center;gap:20px;text-transform:uppercase;letter-spacing:.15em;font:25px var(--serif);color:#94703c;text-align:center;justify-content:center}.menu-course h3:before,.menu-course h3:after{content:'';height:1px;background:#d4bd92;flex:1}.menu-dishes{display:grid;grid-template-columns:1fr 1fr;gap:28px 45px;padding-top:16px}.menu-dish:last-child:nth-child(odd){grid-column:1/-1;max-width:500px;justify-self:center}.menu-dish{text-align:center}.menu-dish h4{font:29px/1.12 var(--serif);margin:0 0 12px}.menu-dish p{font-size:14px;line-height:1.7;margin:0}.festive-booking{text-align:center;border-top:1px solid #d8c7a7;padding-top:30px}.festive-booking p{margin:0 auto 25px}.booking-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}.food-gallery{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}.food-gallery figure{margin:0;grid-column:span 2;overflow:hidden;background:#d7c9b2}.food-gallery figure:nth-child(n+4){grid-column:span 3}.food-gallery img{width:100%;height:100%;aspect-ratio:1.12;object-fit:cover}.section .gallery-note{font-size:12px;margin-top:20px;max-width:none}.footer-columns a{overflow-wrap:anywhere}@media(max-width:840px){.nav{background:#f2f2f2}.split{gap:35px}}@media(max-width:600px){.brand-logo{width:158px;height:73px}.brand-logo img{width:210px;height:210px;left:-26px;top:-62px}.festive-menu{padding:35px 18px}.menu-dishes{grid-template-columns:1fr;gap:26px}.menu-dish:last-child:nth-child(odd){grid-column:auto}.menu-course{margin:30px 0}.menu-prices{gap:10px}.menu-prices span{padding:12px 14px;font-size:13px}.food-gallery{grid-template-columns:1fr 1fr;gap:12px}.food-gallery figure,.food-gallery figure:nth-child(n+4){grid-column:auto}.food-gallery figure:last-child{grid-column:1/-1}.booking-actions .button{width:100%;letter-spacing:.04em;padding:12px 16px}.festive-section{scroll-margin-top:90px}.menu-hero{height:540px}}
+
+/* V3: Bulls Head-inspired editorial tidy-up, without copying its brand */
+:root{--green:#0b2e3d;--green2:#173e4d;--deep:#092631;--gold:#bf9b5e;--ink:#153541;--muted:#53636b}
+.topline{height:30px;gap:10px;letter-spacing:.1em}
+.topline span{font-size:12px;color:#b89d68}
+.nav a{letter-spacing:.035em;font-size:11px}
+.nav .nav-visit{background:transparent;color:var(--ink);padding:11px 0;border-bottom:1px solid var(--gold)}
+.nav .nav-visit:hover,.nav .nav-visit[aria-current=page]{background:transparent;color:#8e6a3c}
+.nav a:focus-visible,.button:focus-visible,.underlink:focus-visible,.footer-contact a:focus-visible,.contact-list a:focus-visible,.mobile-action a:focus-visible{outline:2px solid var(--gold);outline-offset:4px}
+.button{gap:15px;padding-inline:23px}
+.underlink{gap:0}
+.hero-home h1{max-width:980px;font-size:clamp(77px,8.2vw,130px)}
+.hero-home p{max-width:500px}
+.hero-footnote{gap:18px}
+.hero-footnote span:nth-child(2){font-size:13px}
+.home-food{background:#f1ece3}
+.home-food .framed-photo{min-height:420px}
+.home-food-photo img{object-position:center 47%;filter:none}
+.home-food-photo figcaption{font-size:29px}
+.home-food h2{font-size:clamp(58px,5.5vw,85px)}
+.home-links .section-head{margin-bottom:35px}
+.home-links .section-head h2{margin-bottom:0}
+.feature-cards{border-block:1px solid #d7c6ac}
+.feature-card{min-height:222px;gap:8px;padding:37px 22px 30px 0;justify-content:center}
+.feature-card:not(:last-child){margin-right:28px;border-right:1px solid #d7c6ac}
+.feature-card h3{font:400 clamp(35px,3.4vw,46px)/1.05 var(--serif);margin:0}
+.feature-card p{font:400 14px/1.75 var(--sans);margin:7px 0 0;max-width:285px}
+.feature-card:hover h3{color:#9d7848}
+.photo-band h2{max-width:900px}
+.photo-band p{max-width:650px;line-height:1.4}
+.framed-photo:focus-within{outline:2px solid var(--gold)}
+.framed-photo figcaption{line-height:1.05}
+.contact-inline{display:flex;align-items:center;gap:22px;flex-wrap:wrap;margin-top:24px}
+.contact-inline .underlink{margin:0}
+.visit-details address{line-height:1.32}
+.contact-list{border-top:1px solid #d7c6ac;margin:26px 0}
+.contact-list a{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 2px;border-bottom:1px solid #d7c6ac;color:var(--ink);font-size:13px}
+.contact-list a span{font-weight:600;color:#746c60}
+.contact-list a strong{font-weight:600;text-align:right;overflow-wrap:anywhere}
+.contact-list a:hover strong{text-decoration:underline;text-underline-offset:4px}
+.section .contact-note{margin:12px 0 0;font-size:12px;line-height:1.65}
+.map-foot{font-size:11px;letter-spacing:0}
+.map-foot a{text-decoration:underline;text-underline-offset:4px}
+.festive-heading .eyebrow{letter-spacing:.15em}
+.menu-hero h1{font-size:clamp(70px,8vw,122px)}
+.festive-menu{box-shadow:0 16px 38px rgba(23,44,48,.04)}
+.festive-booking .button{min-width:190px;justify-content:center}
+.section .gallery-note{display:none}
+.credits{max-width:850px}
+.credits h2{font:400 clamp(32px,4vw,45px)/1.1 var(--serif);margin:0 0 20px}
+.credits h2:not(:first-child){margin-top:50px}
+.credits p{line-height:1.8}
+.credits li{padding:17px 0}
+.credits a{text-decoration:underline;text-underline-offset:3px}
+.site-footer{background:#092631;padding:54px 0 18px}
+.footer-main{display:flex;flex-direction:column;align-items:center;text-align:center}
+.footer-wordmark{font:400 44px/.98 var(--serif);color:#fff}
+.footer-wordmark small{display:block;font:600 10px/1.6 var(--sans);letter-spacing:.22em;text-transform:uppercase;color:#cbb58c;margin-top:8px}
+.footer-main p{font-size:13px;line-height:1.5;color:#d4d2c9;margin:20px 0 23px}
+.footer-contact{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:15px 35px}
+.footer-contact a{font-size:12px;font-weight:600;color:#f6f3e9}
+.footer-contact a:hover{text-decoration:underline;text-underline-offset:4px}
+.footer-bottom{display:flex;justify-content:space-between;align-items:center;gap:15px;border-top:1px solid rgba(255,255,255,.16);margin-top:36px;padding-top:19px;font-size:11px;letter-spacing:.02em;color:#b4c0b7}
+.footer-bottom a{color:#d8c79d}
+.footer-bottom a:hover{text-decoration:underline}
+.mobile-action{display:none}
+@media(max-width:900px){
+ .nav .nav-visit{padding:15px;color:var(--ink);background:transparent;border-bottom:1px solid #ded3c4;text-align:left}
+ .nav .nav-visit:hover,.nav .nav-visit[aria-current=page]{background:transparent;color:#8e6a3c}
+}
+@media(max-width:600px){
+ .topline{font-size:8px;gap:7px}
+ .hero-home{min-height:635px;height:calc(86svh - 80px)}
+ .hero-home h1{font-size:clamp(65px,14vw,84px);max-width:100%;line-height:.91}
+ .hero-content{padding-bottom:75px}
+ .hero-footnote{height:49px;gap:9px;font-size:7px;letter-spacing:.08em}
+ .home-food .framed-photo{min-height:340px;aspect-ratio:1.15}
+ .feature-card{min-height:0;padding:29px 0}
+ .feature-card:not(:last-child){margin-right:0;border-right:0;border-bottom:1px solid #d7c6ac}
+ .feature-card h3{font-size:40px}
+ .feature-card p{max-width:100%}
+ .photo-band h2{font-size:clamp(51px,11vw,67px)}
+ .history-stat-inner div{font-size:120px}
+ .history-stat-inner p{font-size:26px;line-height:1.1}
+ .contact-list a{display:block}
+ .contact-list a span{display:block;margin-bottom:5px}
+ .contact-list a strong{display:block;text-align:left;font-size:13px}
+ .visit-details h2{font-size:clamp(58px,12vw,70px)}
+ .footer-wordmark{font-size:39px}
+ .footer-contact{gap:17px 25px}
+ .footer-bottom{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 20px;text-align:center}
+ .mobile-action{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));position:fixed;bottom:0;left:0;right:0;z-index:60;background:#f7f0e4;border-top:1px solid #dbcaae;padding:0 0 env(safe-area-inset-bottom);box-shadow:0 -4px 18px rgba(0,0,0,.08)}
+ .mobile-action a{min-height:54px;display:flex;align-items:center;justify-content:center;text-align:center;color:#092631;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
+ .mobile-action a+a{border-left:1px solid #dbcaae}
+}
