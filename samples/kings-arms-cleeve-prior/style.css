@@ -97,3 +97,118 @@
  .mobile-action a{min-height:54px;display:flex;align-items:center;justify-content:center;text-align:center;color:#092631;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
  .mobile-action a+a{border-left:1px solid #dbcaae}
 }
+
+
+/* V4: supplied photographs, compact pages, complete menu */
+.section{padding:clamp(48px,5.7vw,80px) 0}
+.section h2{margin:15px 0 22px}
+.section .serif-lead{margin-bottom:16px}
+.section p{margin-bottom:13px;line-height:1.7}
+.page-hero{height:clamp(290px,32vw,405px)}
+.page-hero-inner{padding:38px 0}
+.page-hero h1{font-size:clamp(65px,7vw,102px);margin:16px 0}
+.page-hero p{font-size:clamp(21px,2vw,28px);margin:0}
+.hero-home{height:clamp(550px,72vh,710px);min-height:530px}
+.hero-content{padding:35px 0 70px}
+.hero-home h1{margin:23px 0}
+.hero-home p{margin-bottom:24px}
+.heritage-ribbon .shell{min-height:65px}
+.feature-card{min-height:170px;padding:26px 15px 24px 0}
+.feature-card:not(:last-child){margin-right:20px}
+.feature-card p{font-size:13px;line-height:1.5}
+.framed-photo{min-height:360px;aspect-ratio:1.1}
+.framed-photo.landscape{min-height:300px}
+.photo-band{min-height:390px}
+.photo-band-inner{padding:55px 0}
+.end-cta{padding:48px 0}
+.end-cta h2{margin:12px 0}
+.menu-hero{height:390px}
+.menu-hero:before{background-position:center 48%;filter:saturate(.91)}
+.menu-tabs{display:flex;align-items:stretch;gap:0;border-bottom:1px solid #c7baa9;margin:0 0 33px;position:sticky;top:92px;z-index:20;background:var(--paper)}
+.menu-tabs button{flex:1;min-width:0;cursor:pointer;background:transparent;border:0;border-bottom:3px solid transparent;padding:17px 14px 14px;font:700 12px var(--sans);color:#597078;letter-spacing:.04em}
+.menu-tabs button[aria-selected="true"]{color:#0b2e3d;border-color:var(--gold);background:#f3ede2}
+.menu-tabs button:hover{background:#f4eee6}
+.menu-tabs button:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+.menu-panel[hidden]{display:none!important}
+.menu-panel{max-width:1000px;margin:0 auto}
+.menu-intro{text-align:center;padding:8px 0 12px}
+.menu-intro h2{font:400 clamp(56px,6vw,77px)/1 var(--serif);margin:9px 0 15px}
+.menu-intro h2 em{color:#a17d4a}
+.menu-course-v4{padding:20px 0 18px;border-bottom:1px solid #d7c8b1;scroll-margin-top:175px}
+.menu-course-v4:last-child{border-bottom:0}
+.menu-course-v4 h3{font:400 39px/1.05 var(--serif);color:var(--green);margin:0 0 22px;border-bottom:1px solid #d5c2a2;padding-bottom:12px}
+.menu-course-v4 .course-note{font:15px/1.7 var(--sans);color:#5b6664;max-width:850px;margin:-10px 0 25px}
+.dish-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:23px 55px}
+.dish{min-width:0}
+.dish-top{display:flex;justify-content:space-between;gap:14px;align-items:baseline}
+.dish-top h4{font:600 16px/1.35 var(--sans);margin:0;color:var(--green);max-width:90%}
+.dish-top h4 small{font:700 11px var(--sans);color:#927347}
+.dish-price{font:600 15px/1.3 var(--sans);color:#163b46;white-space:nowrap}
+.dish p{font:400 13px/1.5 var(--sans);color:#656a64;margin:5px 0 0;max-width:420px}
+.food-menu-page{padding-top:36px;padding-bottom:55px}
+.food-menu-page .festive-menu{box-shadow:none;margin:0 auto;padding:30px clamp(18px,5vw,65px)}
+.menu-service{border-top:1px solid #c6b99f;margin:35px 0 0;padding:24px 0 0;display:flex;align-items:center;justify-content:space-between;gap:22px}
+.menu-service p{font:13px/1.65 var(--sans);color:#66706c;margin:0;max-width:540px}
+.menu-service-links{display:flex;flex-wrap:wrap;gap:10px}
+.menu-service-links a{display:inline-flex;align-items:center;justify-content:center;background:var(--green);color:#fff;padding:13px 17px;font:700 11px var(--sans);white-space:nowrap}
+.menu-service-links a:hover{background:#285063}
+.food-photo-section .section-head{margin-bottom:30px}
+.food-gallery{grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.food-gallery figure,.food-gallery figure:nth-child(n+4){grid-column:auto}
+.food-gallery figure:first-child,.food-gallery figure:nth-child(6){grid-column:span 2}
+.food-gallery img{aspect-ratio:1.25;height:100%;max-height:340px;object-fit:cover}
+.contact-list{margin:16px 0}
+.contact-list a{padding:13px 2px}
+.visit-layout{gap:36px}
+.map-holder{min-height:440px}
+.map-holder iframe{min-height:370px}
+.footer-main p{margin:12px 0 15px}
+.site-footer{padding:43px 0 16px}
+.footer-bottom{margin-top:24px}
+@media(max-width:840px){
+ .menu-tabs{top:75px}
+ .dish-grid{gap:22px 26px}
+ .food-gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .food-gallery figure:first-child,.food-gallery figure:nth-child(6){grid-column:auto}
+ .food-gallery figure:first-child{grid-column:span 2}
+ .section{padding:57px 0}
+ .map-holder{min-height:390px}
+}
+@media(max-width:600px){
+ .section{padding:44px 0}
+ .section h2{font-size:clamp(48px,11vw,67px);margin:11px 0 20px}
+ .page-hero,.menu-hero{height:325px;min-height:0}
+ .page-hero h1{font-size:clamp(57px,12vw,78px);margin:16px 0}
+ .page-hero p{font-size:23px}
+ .hero-home{height:600px;min-height:540px}
+ .hero-home h1{font-size:clamp(59px,13vw,76px)}
+ .hero-content{padding:25px 0 70px}
+ .hero-home p{font-size:23px}
+ .framed-photo{min-height:340px}
+ .framed-photo.landscape{min-height:255px}
+ .photo-band{min-height:375px}
+ .feature-card{padding:21px 0}
+ .feature-card h3{font-size:35px}
+ .feature-card p{font-size:13px}
+ .end-cta{padding:36px 0}
+ .menu-tabs{top:75px;margin:0 -19px 25px;box-shadow:0 3px 6px #00000007}
+ .menu-tabs button{font-size:11px;letter-spacing:0;padding:15px 4px 12px}
+ .food-menu-page{padding-top:24px}
+ .menu-intro h2{font-size:57px}
+ .menu-course-v4{padding:14px 0 20px}
+ .menu-course-v4 h3{font-size:33px;margin:0 0 16px;padding-bottom:9px}
+ .dish-grid{grid-template-columns:1fr;gap:15px}
+ .dish-top h4{font-size:15px}
+ .dish-price{font-size:14px}
+ .dish p{font-size:12px}
+ .menu-service{display:block}
+ .menu-service-links{margin-top:18px}
+ .menu-service-links a{flex:1}
+ .food-gallery{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ .food-gallery figure:first-child,.food-gallery figure:nth-child(n+4){grid-column:auto}
+ .food-gallery img{aspect-ratio:1;height:auto;max-height:none}
+ .map-holder{min-height:340px}
+ .map-holder iframe{min-height:290px}
+ .footer-main p{margin:12px 0}
+ .footer-contact{gap:10px 20px}
+}
