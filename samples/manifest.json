@@ -114,6 +114,13 @@
       "type": "prospect-demo",
       "visible": true,
       "url": "samples/college-arms/"
+    },
+    {
+      "slug": "kings-arms-cleeve-prior",
+      "name": "The Kings Arms · Cleeve Prior",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/kings-arms-cleeve-prior/"
     }
   ]
 }
