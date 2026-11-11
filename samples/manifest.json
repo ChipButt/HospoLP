@@ -121,6 +121,13 @@
       "type": "prospect-demo",
       "visible": true,
       "url": "samples/kings-arms-cleeve-prior/"
+    },
+    {
+      "slug": "joseph-arch-barford",
+      "name": "The Joseph Arch · Barford",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/joseph-arch-barford/"
     }
   ]
 }
