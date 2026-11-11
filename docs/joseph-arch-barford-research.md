@@ -68,6 +68,16 @@ https://www.warwickshireworld.com/news/people/barford-pub-invites-community-to-p
 Licence: https://creativecommons.org/licenses/by-sa/2.0/
 Attribution text for those three should contain author name, image title, link to image source and licence, plus any modifications to the photo. These are not photos of the 2026 renovation; the signage/building appearance may have changed.
 
+**Higher-resolution CC BY-SA 2.0 photographs (preferred for sharp responsive web layouts, 2021, still pre-reopening):**
+4. **Exterior, landscape, 5,456 × 3,632**, Ian S, 26 July 2021, CC BY-SA 2.0:
+   - Source and licensing: https://commons.wikimedia.org/wiki/File:Joseph_Arch_public_house,_Barford_-_geograph.org.uk_-_6936317.jpg
+   - Original Geograph record: https://www.geograph.org.uk/photo/6936317
+5. **Exterior/sign, portrait, 2,636 × 3,387**, Ian S, 26 July 2021, CC BY-SA 2.0:
+   - Source and licensing: https://commons.wikimedia.org/wiki/File:Joseph_Arch_public_house,_Barford_-_geograph.org.uk_-_6936319.jpg
+   - Original Geograph record: https://www.geograph.org.uk/photo/6936319
+6. **Historic Joseph Arch portrait** in public domain (source for heritage page):
+   - https://commons.wikimedia.org/wiki/File:Picture_of_Joseph_Arch.jpg
+
 **Real photos, but website reuse rights not established — link for reference only; do not copy into public demo absent permission:**
 - **Warwick Courier / Warwickshire World**, 31 March 2026, current family/team, current interior, patio and exterior:
   https://www.warwickshireworld.com/news/people/meet-the-family-breathing-life-back-into-a-barford-pub-thats-been-closed-for-nearly-a-year-6530807
