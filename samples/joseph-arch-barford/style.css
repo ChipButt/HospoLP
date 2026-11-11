@@ -76,3 +76,19 @@
 .menu-visit-v3 p{font-size:13px;margin:0;color:#ebd8c7}
 @media(max-width:800px){.menu-courses-grid{grid-template-columns:1fr;gap:60px}.menu-dessert-wrap{max-width:none}.menu-intro-v3{padding:65px 0 38px}}
 @media(max-width:600px){.menu-hero-v3{height:335px}.menu-hero-copy h1{font-size:76px}.menu-topline-inside span:last-child{display:none}.menu-topline-inside{justify-content:center}.menu-intro-v3 h2{font-size:58px}.menu-section-nav{gap:18px}.menu-section-nav a{font-size:10px}.menu-paper{padding:40px 0 70px}.menu-course-title h2{font-size:52px}.menu-food-info h3{font-size:27px}.menu-food-info p{font-size:11px}.menu-dessert-wrap{margin-top:52px}.menu-visit-v3>.shell{display:block}.menu-visit-v3 .button{margin-top:27px}}
+
+
+/* Full October 2026 menu — all sections from the provided menu */
+.full-menu-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:66px 8%;align-items:start}
+.full-menu-grid .menu-course{min-width:0}
+.full-menu-grid .menu-course-title{margin-bottom:11px}
+.full-menu-grid .menu-food-row{padding:18px 0 20px}
+.full-menu-grid .menu-food-info h3{font-size:28px}
+.full-menu-grid .menu-food-info p{font-size:12px;line-height:1.65;margin:5px 0 0}
+.course-note{font-size:13px;line-height:1.85;color:#65564d;margin:0 0 10px;background:#eee0d1;border-left:2px solid #a87b60;padding:13px 16px}
+.course-note.after{margin-top:23px}
+.menu-bottom-note{margin-top:55px;border-top:1px solid #cdb5a0;padding-top:20px}
+.menu-intro-v3>div>p{max-width:690px}
+.menu-section-nav{gap:25px}
+@media(max-width:800px){.full-menu-grid{grid-template-columns:1fr;gap:56px}}
+@media(max-width:600px){.full-menu-grid .menu-food-info h3{font-size:27px}.full-menu-grid .menu-food-row{gap:12px}.menu-section-nav{gap:14px 24px}.course-note{font-size:12px;padding:12px}}
