@@ -128,6 +128,13 @@
       "type": "prospect-demo",
       "visible": true,
       "url": "samples/joseph-arch-barford/"
+    },
+    {
+      "slug": "royal-oak-evesham",
+      "name": "The Royal Oak · Evesham",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/royal-oak-evesham/"
     }
   ]
 }
