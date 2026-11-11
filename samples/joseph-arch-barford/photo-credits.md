@@ -1,22 +1,17 @@
-# Photo sources and demo status
+# The Joseph Arch — demo photographic sources, revised 11 November 2026
 
-This sample uses **real photographs of The Joseph Arch** and does not use generated photography. Some are older than the venue's April 2026 reopening. For a client commission, replace image links with fresh supplied photographs.
+## Current venue and family photographs (March 2026)
+https://www.warwickshireworld.com/news/people/meet-the-family-breathing-life-back-into-a-barford-pub-thats-been-closed-for-nearly-a-year-6530807
 
-Image URLs in HTML reference:
-- Ian S, exterior (2021): https://commons.wikimedia.org/wiki/File:Joseph_Arch_public_house,_Barford_-_geograph.org.uk_-_6936317.jpg
-- Ian S, portrait (2021): https://commons.wikimedia.org/wiki/File:Joseph_Arch_public_house,_Barford_-_geograph.org.uk_-_6936319.jpg
-- Mike Faherty, exterior (2017): https://www.geograph.org.uk/photo/5288128
-- Philip Halling, garden (2018): https://www.geograph.org.uk/photo/5749202
-- Philip Halling, sign (2018): https://www.geograph.org.uk/photo/5749205
-- Star Pubs, exterior and interior property photos (unknown capture date; may show an earlier layout): https://www.starpubs.co.uk/pubs/joseph-arch-barford
-- Tripadvisor, older hanging sign: https://www.tripadvisor.co.uk/Restaurant_Review-g2185953-d2173078-Reviews-The_Joseph_Arch_Pub-Barford_Warwickshire_England.html
+Photo subjects include the family (Harvey Dougan, Laura Dougan and Bradley Pike), current interior, exterior and garden at the 2026 reopening.
 
-Copyright note: The 2017, 2018 and 2021 Geograph images are CC BY-SA 2.0 and require attribution (including author, link and licence); the external third-party images are temporary references and are not claimed to be freely licensed for commercial redistribution. Do not describe these images as depicting the 2026 renovation.
+## Genuine venue food photographs, capture date unconfirmed
+https://restaurantguru.com/The-Joseph-Arch-Warwick-England
 
-Contact: 01926 898078 / 7 Bridge Street, Barford CV35 8EH.
-Food service hours are based on the 31 March 2026 reopening announcement and should be checked with operators.
-Actual upcoming events, email contact, and current full priced menu have not been confirmed.
+The restaurant listing includes food, drink and interior photographs of The Joseph Arch. Their age is not independently verified; some may be from previous management, and none are presented as a confirmed dish on today's menu.
 
-Research: https://github.com/ChipButt/HospoLP/blob/main/docs/joseph-arch-barford-research.md
+## Historical venue photographs
+https://www.starpubs.co.uk/pubs/joseph-arch-barford
+https://www.geograph.org.uk/photo/5749205
 
-Published as a **prospect demo**, not an official venue website.
+No fabricated logo or monogram is included; the actual trading name appears as a text wordmark until the current management provides a logo. All gallery and editorial photos are provisional assets for the sales demonstration, not client-authorised finished photography.
