@@ -17,3 +17,23 @@
 @media(max-width:900px){.section-head{display:block}.section-head>p{margin:25px 0 0}.family-home-grid{grid-template-columns:1fr;gap:39px}.family-home-grid>figure{order:2}.family-home-grid>div{order:1}.family-home figure{height:480px}.real-food-gallery{grid-template-columns:repeat(2,1fr)}.real-food-gallery figure{height:260px}}
 @media(max-width:600px){.hero-home{min-height:655px}.hero-home h1{font-size:clamp(65px,12vw,89px)}.section-head h2{font-size:clamp(56px,12vw,78px)}.section-head>p{font-size:13px}.food-mosaic{grid-template-columns:1fr 1fr;grid-template-rows:410px 200px;gap:9px}.food-mosaic-large{grid-column:span 2;grid-row:auto}.food-mosaic-card>span{bottom:15px;left:15px;right:10px}.food-mosaic-card small{font-size:8px;letter-spacing:.12em}.food-mosaic-card strong{font-size:26px}.food-mosaic-large strong{font-size:clamp(48px,11vw,63px)}.family-home h2{font-size:70px}.family-home figure{height:360px}.family-home figcaption{font-size:21px}.real-food-gallery{gap:9px}.real-food-gallery figure{height:205px}.photo-gallery{grid-template-columns:repeat(2,1fr)}.gallery-item{min-height:250px}.gallery-wide{grid-column:span 2}.subhero{height:460px}.subhero h1{font-size:73px}}
 @media(max-width:430px){.food-mosaic{grid-template-rows:355px 178px}.food-mosaic-large strong{font-size:44px}.food-mosaic-card strong{font-size:23px}.real-food-gallery figure{height:170px}.photo-gallery{grid-template-columns:1fr}.gallery-item{min-height:300px}.gallery-wide{grid-column:span 1}}
+
+
+/* Published Tripadvisor menu — 2 October 2026 */
+.current-menu-grid{display:grid;grid-template-columns:1fr 1fr;gap:8%;align-items:start}
+.current-menu-group{border-top:1px solid #cdb9a2}
+.current-menu-heading{display:flex;align-items:center;gap:20px;border-bottom:1px solid #cdb9a2;padding:15px 0 23px}
+.current-menu-heading>span{font:400 20px var(--serif);color:#9c7257}
+.current-menu-heading h3{font:400 54px var(--serif);margin:0;color:var(--wine)}
+.current-menu-item{display:flex;align-items:start;justify-content:space-between;gap:16px;padding:21px 0;border-bottom:1px solid #d6c5b2}
+.current-menu-item h3{margin:0 0 7px;font:400 30px/1.05 var(--serif);color:var(--wine)}
+.current-menu-item p{font-size:12px;line-height:1.6;color:#6a594f;margin:0}
+.current-menu-item strong{white-space:nowrap;font:700 13px var(--sans);color:var(--wine)}
+.current-menu-feature{margin-top:65px;background:var(--wine);color:#f6e8d7;padding:38px 45px;display:flex;align-items:center;gap:35px;justify-content:space-between}
+.current-menu-feature h3{font:400 49px/.95 var(--serif);margin:9px 0 14px}
+.current-menu-feature p{font-size:13px;margin:0 0 15px}
+.current-menu-feature .eyebrow{color:#e1be8a}
+.current-main-list{display:flex;flex-wrap:wrap;gap:8px}
+.current-main-list span{display:inline-flex;padding:8px 11px;border:1px solid #a37d78;font-size:11px;letter-spacing:.02em}
+.menu-source-note{font-size:11px;color:#7a6757;line-height:1.7;margin:22px 0 0}
+@media(max-width:760px){.current-menu-grid{grid-template-columns:1fr;gap:48px}.current-menu-heading h3{font-size:48px}.current-menu-item h3{font-size:29px}.current-menu-feature{display:block;padding:30px 22px;margin-top:40px}.current-menu-feature .button{margin-top:25px}.current-menu-feature h3{font-size:44px}}
