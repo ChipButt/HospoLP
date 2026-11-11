@@ -135,6 +135,13 @@
       "type": "prospect-demo",
       "visible": true,
       "url": "samples/royal-oak-evesham/"
+    },
+    {
+      "slug": "valkyrie-evesham",
+      "name": "The Valkyrie · Evesham",
+      "type": "prospect-demo",
+      "visible": true,
+      "url": "samples/valkyrie-evesham/"
     }
   ]
 }
