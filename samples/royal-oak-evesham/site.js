@@ -20,5 +20,4 @@ const MAP="https://www.google.com/maps/search/?api=1&query=Royal+Oak+5+Vine+Stre
  toggle.addEventListener('click',()=>{const opened=!menu.classList.contains('open');menu.classList.toggle('open',opened);toggle.setAttribute('aria-expanded',String(opened));toggle.setAttribute('aria-label',opened?'Close navigation':'Open navigation');document.body.classList.toggle('menu-open',opened)});
  document.addEventListener('keydown',event=>{if(event.key==='Escape')close()});
  document.addEventListener('click',event=>{if(menu.classList.contains('open')&&!event.target.closest('.header'))close()});
- document.getElementById('year').textContent=new Date().getFullYear();
 })();
