@@ -96,3 +96,14 @@
  .footer-top{gap:20px}
  .footer-name{font-size:44px}
 }
+
+/* Real food photography and a balanced gallery */
+.food-photo-section{background:var(--ivory)}
+.food-photo-section .media.food-shot{aspect-ratio:1.04;min-height:465px}
+.food-shot img{object-position:center 53%}
+.food-photo-section .lede{max-width:550px}
+.grid-gallery figure:last-child:nth-child(6){grid-column:span 2;aspect-ratio:2/1}
+@media(max-width:640px){
+ .food-photo-section .media.food-shot{aspect-ratio:1.02;min-height:325px}
+ .grid-gallery figure:last-child:nth-child(6){grid-column:auto;aspect-ratio:1}
+}
