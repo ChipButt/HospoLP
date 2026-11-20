@@ -179,3 +179,6 @@ body main :is(h1,h2) em { font-style: normal; font-weight: inherit; }
 
 .footer-brand h2 { display: flex; align-items: center; gap: 12px; }
 .footer-brand .pub-logo { flex: none; width: clamp(42px, 4vw, 52px); }
+
+.story-quote { padding-block: clamp(18px, 2.5vw, 32px); }
+.story-quote p { margin-block: 0; }
