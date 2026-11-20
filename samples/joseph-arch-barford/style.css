@@ -196,3 +196,5 @@ body main :is(h1,h2) em { font-style: normal; font-weight: inherit; }
 .pub-facebook strong, .pub-facebook small { display: block; }
 .pub-facebook strong { font-size: 1.22rem; }
 .pub-facebook small { font-size: 1rem; }
+
+.heritage-sign { width: 100%; min-height: 0; aspect-ratio: 712 / 454; align-self: center; }
