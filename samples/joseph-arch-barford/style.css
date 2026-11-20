@@ -176,3 +176,6 @@ body main :is(h1,h2) em { font-style: normal; font-weight: inherit; }
 @media (max-width: 800px) {
   .menu-visit-v3 .button { margin-top: 12px; }
 }
+
+.footer-brand h2 { display: flex; align-items: center; gap: 12px; }
+.footer-brand .pub-logo { flex: none; width: clamp(42px, 4vw, 52px); }
